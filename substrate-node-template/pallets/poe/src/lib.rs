@@ -5,16 +5,20 @@
 use frame_support::{
 	decl_module, decl_storage, decl_event, decl_error, dispatch, ensure,
 	traits::{Get},
+	traits::{Currency},
 };
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use sp_runtime::traits::StaticLookup;
+use codec::{Encode, Decode};
 
 #[cfg(test)]
 mod mock;
 
 #[cfg(test)]
 mod tests;
+
+type BalanceOf<T> = <<T as Trait>::Currency as Currency<<T as system::Trait>::AccountId>>::Balance;
 
 /// The pallet's configuration trait.
 pub trait Trait: system::Trait {
@@ -25,6 +29,38 @@ pub trait Trait: system::Trait {
 
 	// 附加题答案
 	type MaxClaimLength: Get<u32>;
+
+	type Currency: Currency<Self::AccountId>;
+}
+
+#[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
+#[derive(Encode, Decode)]
+pub struct PsVpp<T: Trait> {
+	pub name: Vec<u8>,
+	pub pre_total_stock: u64,
+	pub electric_power_type: u8,  //0直流 1交流
+	pub buy_price: BalanceOf<T>,
+	pub sell_price: BalanceOf<T>,
+	pub post_code: Vec<u8>,
+	pub transport_lose: u32, //线损
+	pub business_status: u8, //0 不营业  1 营业
+	pub approval_status: u8, //0 不通过  1 通过  2 审核中
+}
+
+pub struct PG<T: Trait> {
+	pub name: Vec<u8>,
+	pub electric_type: u8,  //0直流 1交流
+	pub electric_power: u64, //功率
+	pub sell_price: BalanceOf<T>,
+	pub meter_code: Vec<u8>,
+	pub post_code: Vec<u8>,
+	pub approval_status: u8, //0 不通过  1 通过  2 审核中
+}
+
+pub struct PU {
+	pub meter_code: Vec<u8>,   //电表编号
+	pub meter_number: Vec<u8>, //电表读数
+	pub post_code: Vec<u8>,
 }
 
 // This pallet's storage items.
@@ -34,6 +70,11 @@ decl_storage! {
 	// ---------------------------------vvvvvvvvvvvvvv
 	trait Store for Module<T: Trait> as TemplateModule {
 		Proofs get(fn proofs): map hasher(blake2_128_concat) Vec<u8> => (T::AccountId, T::BlockNumber);
+
+		Vpps get(fn vpps): map hasher(blake2_128_concat) (T::AccountId, u64) => Option<PsVpp<T>>;
+		BusinessVolumes get(fn business_volumes): map hasher(blake2_128_concat) (T::AccountId, u64) => u64;
+		Counts get(fn counts): map hasher(blake2_128_concat) T::AccountId => u64;
+		VppBalances get(fn vppbalances): map hasher(blake2_128_concat) T::AccountId => BalanceOf<T>;
 	}
 }
 
@@ -118,5 +159,26 @@ decl_module! {
 
 			Ok(())
 		}
+
+		#[weight = 0]
+		pub fn apply_ps(origin) -> dispatch::DispatchResult{
+			Ok(())
+		}
+
+		#[weight = 0]
+		pub fn apply_pg(origin) -> dispatch::DispatchResult{
+			Ok(())
+		}
+
+		#[weight = 0]
+		pub fn apply_pu(origin) -> dispatch::DispatchResult{
+			Ok(())
+		}
+
+		#[weight = 0]
+		pub fn transfer_vpp_token(origin)-> dispatch::DispatchResult{
+			Ok(())
+		}
+
 	}
 }

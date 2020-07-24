@@ -264,6 +264,8 @@ parameter_types! {
 
 impl poe::Trait for Runtime {
 	type Event = Event;
+
+	type Currency = Balances;
 	
 	// 附加题答案
 	type MaxClaimLength = MaxClaimLength;
