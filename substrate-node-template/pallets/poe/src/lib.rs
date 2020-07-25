@@ -38,7 +38,7 @@ pub trait Trait: system::Trait {
 pub struct PsVpp<T: Trait> {
 	pub name: Vec<u8>,
 	pub pre_total_stock: u64,
-	pub electric_power_type: u8,  //0直流 1交流
+	pub electric_type: u8,  //0直流 1交流
 	pub buy_price: BalanceOf<T>,
 	pub sell_price: BalanceOf<T>,
 	pub post_code: Vec<u8>,
@@ -47,6 +47,8 @@ pub struct PsVpp<T: Trait> {
 	pub approval_status: u8, //0 不通过  1 通过  2 审核中
 }
 
+#[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
+#[derive(Encode, Decode)]
 pub struct PG<T: Trait> {
 	pub name: Vec<u8>,
 	pub electric_type: u8,  //0直流 1交流
@@ -57,6 +59,8 @@ pub struct PG<T: Trait> {
 	pub approval_status: u8, //0 不通过  1 通过  2 审核中
 }
 
+#[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
+#[derive(Encode, Decode)]
 pub struct PU {
 	pub meter_code: Vec<u8>,   //电表编号
 	pub meter_number: Vec<u8>, //电表读数
@@ -176,7 +180,7 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn transfer_vpp_token(origin)-> dispatch::DispatchResult{
+		pub fn transfer_token(origin)-> dispatch::DispatchResult{
 			Ok(())
 		}
 
