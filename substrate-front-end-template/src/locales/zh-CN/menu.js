@@ -51,6 +51,6 @@ export default {
   'menu.editor.koni': '拓扑编辑器',
   'menu.trade': '交易大厅',
   'menu.contact': '合同管理',
-  'menu.council': '议会大厅'
-
+  'menu.council': '议会大厅',
+  'menu.identity': '身份管理',
 };

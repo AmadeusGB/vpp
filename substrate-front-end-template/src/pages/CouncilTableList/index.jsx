@@ -1,262 +1,151 @@
-import { DownOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Dropdown, Menu, message, Input } from 'antd';
+import { Divider } from 'antd';
 import React, { useState, useRef } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
-import CreateForm from './components/CreateForm';
-import UpdateForm from './components/UpdateForm';
-import { queryRule, updateRule, addRule, removeRule } from './service';
-/**
- * 添加节点
- * @param fields
- */
 
-const handleAdd = async fields => {
-  const hide = message.loading('正在添加');
+const columns = [
+  {
+    title: '提案名称',
+    dataIndex: 'name',
+    valueEnum: {
+      0: {
+        text: '申请AS角色',
+        status: '0',
+      },
+      1: {
+        text: '申请PS角色',
+        status: '1',
+      },
+      2: {
+        text: '申请SG角色',
+        status: '2',
+      },
+    },
+  },
+  {
+    title: '提案功能',
+    dataIndex: 'councilSort',
+    sorter: false,
+    hideInForm: false,
+    valueEnum: {
+      0: {
+        text: '增加调度功能',
+        status: 'buy',
+      },
+      1: {
+        text: '开通角色权限',
+        status: 'sell',
+      },
+    },
+  },
+  {
+    title: '提案角色',
+    dataIndex: 'councilId',
+    sorter: false,
+    hideInForm: false,
+    valueEnum: {
+      0: {
+        text: 'AS',
+        status: 'AS',
+      },
+      1: {
+        text: 'PG',
+        status: 'PG',
+      },
+      2: {
+        text: 'PU',
+        status: 'PU',
+      },
+    },
+  },
+  {
+    title: '提案状态',
+    dataIndex: 'councilStatus',
+    sorter: false,
+    hideInForm: false,
+    valueEnum: {
+      0: {
+        text: '待通过',
+        status: 'AS',
+      },
+      1: {
+        text: '已通过',
+        status: 'PG',
+      },
+      2: {
+        text: '已拒绝',
+        status: 'PU',
+      },
+    },
+  },
+  {
+    title: '附件情况',
+    dataIndex: 'energyStatus',
+    hideInForm: false,
+    valueEnum: {
+      0: {
+        text: '有',
+        status: '0',
+      },
+      1: {
+        text: '无',
+        status: '1',
+      },
+    },
+  },
+  {
+    title: '操作',
+    dataIndex: 'option',
+    valueType: 'option',
+    render: (_, record) => (
+      <>
+        <a
+          onClick={() => {
+            window.console.log(record)
+          }}
+        >
+          同意
+        </a>
+        <Divider type="vertical" />
+        <a
+          onClick={() => {
+            window.console.log(record)
+          }}
+        >
+          拒绝
+        </a>
+      </>
+    ),
+  },
+];
 
-  try {
-    await addRule({ ...fields });
-    hide();
-    message.success('添加成功');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('添加失败请重试！');
-    return false;
-  }
-};
-/**
- * 更新节点
- * @param fields
- */
-
-const handleUpdate = async fields => {
-  const hide = message.loading('正在配置');
-
-  try {
-    await updateRule({
-      name: fields.name,
-      desc: fields.desc,
-      key: fields.key,
-    });
-    hide();
-    message.success('配置成功');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('配置失败请重试！');
-    return false;
-  }
-};
-/**
- *  删除节点
- * @param selectedRows
- */
-
-const handleRemove = async selectedRows => {
-  const hide = message.loading('正在删除');
-  if (!selectedRows) return true;
-
-  try {
-    await removeRule({
-      key: selectedRows.map(row => row.key),
-    });
-    hide();
-    message.success('删除成功，即将刷新');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('删除失败，请重试');
-    return false;
-  }
-};
+const dataSource = [];
+for (let i = 0; i < 20; i += 1) {
+  dataSource.push({
+    key: i,
+    name: Math.floor(Math.random() * 10) % 3,
+    councilSort: Math.floor(Math.random() * 10) % 2,
+    councilId: Math.floor(Math.random() * 10) % 3,
+    councilStatus: Math.floor(Math.random() * 10) % 3,
+    energyStatus: Math.floor(Math.random() * 10) % 2
+  });
+}
 
 const TableList = () => {
-  const [createModalVisible, handleModalVisible] = useState(false);
-  const [updateModalVisible, handleUpdateModalVisible] = useState(false);
-  const [stepFormValues, setStepFormValues] = useState({});
   const actionRef = useRef();
-  const columns = [
-    {
-      title: '规则名称',
-      dataIndex: 'name',
-      rules: [
-        {
-          required: true,
-          message: '规则名称为必填项',
-        },
-      ],
-    },
-    {
-      title: '描述',
-      dataIndex: 'desc',
-      valueType: 'textarea',
-    },
-    {
-      title: '服务调用次数',
-      dataIndex: 'callNo',
-      sorter: true,
-      hideInForm: true,
-      renderText: val => `${val} 万`,
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      hideInForm: true,
-      valueEnum: {
-        0: {
-          text: '关闭',
-          status: 'Default',
-        },
-        1: {
-          text: '运行中',
-          status: 'Processing',
-        },
-        2: {
-          text: '已上线',
-          status: 'Success',
-        },
-        3: {
-          text: '异常',
-          status: 'Error',
-        },
-      },
-    },
-    {
-      title: '上次调度时间',
-      dataIndex: 'updatedAt',
-      sorter: true,
-      valueType: 'dateTime',
-      hideInForm: true,
-      renderFormItem: (item, { defaultRender, ...rest }, form) => {
-        const status = form.getFieldValue('status');
 
-        if (`${status}` === '0') {
-          return false;
-        }
-
-        if (`${status}` === '3') {
-          return <Input {...rest} placeholder="请输入异常原因！" />;
-        }
-
-        return defaultRender(item);
-      },
-    },
-    {
-      title: '操作',
-      dataIndex: 'option',
-      valueType: 'option',
-      render: (_, record) => (
-        <>
-          <a
-            onClick={() => {
-              handleUpdateModalVisible(true);
-              setStepFormValues(record);
-            }}
-          >
-            配置
-          </a>
-          <Divider type="vertical" />
-          <a href="">订阅警报</a>
-        </>
-      ),
-    },
-  ];
   return (
-    <PageHeaderWrapper>
-      <ProTable
-        headerTitle="查询表格"
-        actionRef={actionRef}
-        rowKey="key"
-        toolBarRender={(action, { selectedRows }) => [
-          <Button type="primary" onClick={() => handleModalVisible(true)}>
-            <PlusOutlined /> 新建
-          </Button>,
-          selectedRows && selectedRows.length > 0 && (
-            <Dropdown
-              overlay={
-                <Menu
-                  onClick={async e => {
-                    if (e.key === 'remove') {
-                      await handleRemove(selectedRows);
-                      action.reload();
-                    }
-                  }}
-                  selectedKeys={[]}
-                >
-                  <Menu.Item key="remove">批量删除</Menu.Item>
-                  <Menu.Item key="approval">批量审批</Menu.Item>
-                </Menu>
-              }
-            >
-              <Button>
-                批量操作 <DownOutlined />
-              </Button>
-            </Dropdown>
-          ),
-        ]}
-        tableAlertRender={({ selectedRowKeys, selectedRows }) => (
-          <div>
-            已选择{' '}
-            <a
-              style={{
-                fontWeight: 600,
-              }}
-            >
-              {selectedRowKeys.length}
-            </a>{' '}
-            项&nbsp;&nbsp;
-            <span>
-              服务调用次数总计 {selectedRows.reduce((pre, item) => pre + item.callNo, 0)} 万
-            </span>
-          </div>
-        )}
-        request={(params, sorter, filter) => queryRule({ ...params, sorter, filter })}
-        columns={columns}
-        rowSelection={{}}
-      />
-      <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
+    <div>
+      <PageHeaderWrapper>
         <ProTable
-          onSubmit={async value => {
-            const success = await handleAdd(value);
-
-            if (success) {
-              handleModalVisible(false);
-
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
-            }
-          }}
+          actionRef={actionRef}
           rowKey="key"
-          type="form"
           columns={columns}
-          rowSelection={{}}
+          dataSource={dataSource}
+          rowSelection={false}
         />
-      </CreateForm>
-      {stepFormValues && Object.keys(stepFormValues).length ? (
-        <UpdateForm
-          onSubmit={async value => {
-            const success = await handleUpdate(value);
-
-            if (success) {
-              handleUpdateModalVisible(false);
-              setStepFormValues({});
-
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
-            }
-          }}
-          onCancel={() => {
-            handleUpdateModalVisible(false);
-            setStepFormValues({});
-          }}
-          updateModalVisible={updateModalVisible}
-          values={stepFormValues}
-        />
-      ) : null}
-    </PageHeaderWrapper>
+      </PageHeaderWrapper>
+    </div>
   );
 };
 
