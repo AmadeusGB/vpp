@@ -70,12 +70,12 @@ export default defineConfig({
                 },
               ],
             },
-            {
-              name: 'list.table-list',
-              icon: 'table',
-              path: '/list',
-              component: './ListTableList',
-            },
+            // {
+            //   name: 'list.table-list',
+            //   icon: 'table',
+            //   path: '/list',
+            //   component: './ListTableList',
+            // },
             {
               name: 'trade',
               icon: 'table',
@@ -87,6 +87,12 @@ export default defineConfig({
               icon: 'smile',
               path: '/contacttablelist',
               component: './ContactTableList',
+            },
+            {
+              name: 'identity',
+              icon: 'smile',
+              path: '/identity',
+              component: './identity',
             },
             {
               name: 'council',
