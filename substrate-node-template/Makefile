@@ -1,11 +1,6 @@
 restart: build purge run
 rerun: purge run
 
-expand:
-	cd runtime; \
-	BUILD_DUMMY_WASM_BINARY=1 cargo +nightly rustc -- \
-	-Z unstable-options --pretty=expanded > xxxexpendedxxxx.rs
-
 run:
 	RUST_LOG=warn;babe=debug target/debug/node-template --dev -d target/substrate --execution=Both --ws-external -lruntime=debug
 
@@ -39,8 +34,6 @@ bob:
 		--validator \
 		--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWQeYDidtBt2f7j5F8ASVcw8EgvRowzcEAQwXe2rkr7Rt4
 
-#######################
-
 check:
 	SKIP_WASM_BUILD= cargo check
 
@@ -52,8 +45,6 @@ check-dummy:
 
 check-wasm:
 	WASM_BUILD_TYPE=release cargo check
-
-#####################
 
 toolchain:
 	./scripts/init.sh

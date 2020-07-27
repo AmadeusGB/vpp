@@ -2645,8 +2645,8 @@ dependencies = [
  "pallet-balances",
  "pallet-grandpa",
  "pallet-poe",
- "pallet-role",
  "pallet-randomness-collective-flip",
+ "pallet-role",
  "pallet-sudo",
  "pallet-template",
  "pallet-timestamp",
@@ -2890,19 +2890,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-role"
-version = "2.0.0-rc2"
-dependencies = [
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
 name = "pallet-randomness-collective-flip"
 version = "2.0.0-rc2"
 source = "git+https://github.com/paritytech/substrate.git?tag=v2.0.0-rc2#45b9f0a9cbf901abaa9f1fca5fe8baeed029133d"
@@ -2911,6 +2898,19 @@ dependencies = [
  "frame-system",
  "parity-scale-codec",
  "safe-mix",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-role"
+version = "2.0.0-rc2"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "sp-core",
+ "sp-io",
  "sp-runtime",
  "sp-std",
 ]
