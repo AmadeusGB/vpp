@@ -36,35 +36,36 @@ pub trait Trait: system::Trait {
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
 #[derive(Encode, Decode)]
 pub struct PsVpp<T: Trait> {
-	pub name: Vec<u8>,
-	pub pre_total_stock: u64,
-	pub electric_type: u8,  //0直流 1交流
+	pub ps_name: Vec<u8>,
+	pub pre_total_stock: u64,			//预售总额度
+	pub sold_total: u64,					  //已售总额度
+	pub electric_type: u8,  				//0直流 1交流
 	pub buy_price: BalanceOf<T>,
 	pub sell_price: BalanceOf<T>,
 	pub post_code: Vec<u8>,
-	pub transport_lose: u32, //线损
-	pub business_status: u8, //0 不营业  1 营业
-	pub approval_status: u8, //0 不通过  1 通过  2 审核中
+	pub transport_lose: u32, 			//线损
+	pub business_status: u8, 			//0 不营业  1 营业
+	pub approval_status: u8, 			//0 不通过  1 通过  2 审核中
+	pub device_id: u8,						   //设备编号
 }
 
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
 #[derive(Encode, Decode)]
-pub struct PG<T: Trait> {
-	pub name: Vec<u8>,
-	pub electric_type: u8,  //0直流 1交流
-	pub electric_power: u64, //功率
-	pub sell_price: BalanceOf<T>,
-	pub meter_code: Vec<u8>,
-	pub post_code: Vec<u8>,
-	pub approval_status: u8, //0 不通过  1 通过  2 审核中
+pub struct MultiRole {
+	pub PU: bool,
+	pub PG: bool,
+	pub PS: bool,
+	pub SG: bool,
+	pub AS: bool,
+	pub POM: bool,
 }
 
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
 #[derive(Encode, Decode)]
-pub struct PU {
-	pub meter_code: Vec<u8>,   //电表编号
-	pub meter_number: Vec<u8>, //电表读数
-	pub post_code: Vec<u8>,
+pub struct PuRole {
+	pub meter_code: Vec<u8>,			//电表编号
+	pub meter_number: Vec<u8>,		//电表读数
+	pub post_code: Vec<u8>,				  //邮编
 }
 
 // This pallet's storage items.
@@ -75,10 +76,10 @@ decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
 		Proofs get(fn proofs): map hasher(blake2_128_concat) Vec<u8> => (T::AccountId, T::BlockNumber);
 
-		Vpps get(fn vpps): map hasher(blake2_128_concat) (T::AccountId, u64) => Option<PsVpp<T>>;
-		BusinessVolumes get(fn business_volumes): map hasher(blake2_128_concat) (T::AccountId, u64) => u64;
-		Counts get(fn counts): map hasher(blake2_128_concat) T::AccountId => u64;
-		VppBalances get(fn vppbalances): map hasher(blake2_128_concat) T::AccountId => BalanceOf<T>;
+		Vpps get(fn vpps): map hasher(blake2_128_concat) (T::AccountId, u64) => Option<PsVpp<T>>;											//虚拟电厂申请列表
+		Roles get(fn roles): map hasher(blake2_128_concat) T::AccountId => Option<MultiRole>;											  		   //身份属性
+		Vppcounts get(fn vpp_counts): map hasher(blake2_128_concat) T::AccountId => u64;															 //PS申请虚拟电厂数量
+		Transaction_amount get(fn transaction_amount): map hasher(blake2_128_concat) (T::AccountId, u64) => u64;			 //虚拟电厂交易额
 	}
 }
 
@@ -97,6 +98,7 @@ decl_error! {
 		ClaimNotExist,
 		NotClaimOwner,
 		ProofTooLong,
+		IdentityAlreadyExist,
 	}
 }
 
@@ -129,23 +131,6 @@ decl_module! {
 			Ok(())
 		}
 
-		#[weight = 0]
-		pub fn revoke_claim(origin, claim: Vec<u8>) -> dispatch::DispatchResult {
-			let sender = ensure_signed(origin)?;
-
-			ensure!(Proofs::<T>::contains_key(&claim), Error::<T>::ClaimNotExist);
-
-			let (owner, _block_number) = Proofs::<T>::get(&claim);
-
-			ensure!(owner == sender, Error::<T>::NotClaimOwner);
-
-			Proofs::<T>::remove(&claim);
-
-			Self::deposit_event(RawEvent::ClaimRevoked(sender, claim));
-
-			Ok(())
-		}
-
 		// 第二题答案
 		#[weight = 0]
 		pub fn transfer_claim(origin, claim: Vec<u8>, dest: <T::Lookup as StaticLookup>::Source) -> dispatch::DispatchResult {
@@ -166,6 +151,8 @@ decl_module! {
 
 		#[weight = 0]
 		pub fn apply_ps(origin) -> dispatch::DispatchResult{
+			let sender = ensure_signed(origin)?;
+
 			Ok(())
 		}
 
