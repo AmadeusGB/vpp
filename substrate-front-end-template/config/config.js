@@ -37,76 +37,82 @@ export default defineConfig({
     },
     {
       path: '/',
-      component: '../layouts/SecurityLayout',
+      component: '../layouts/App',
       routes: [
         {
           path: '/',
-          component: '../layouts/BasicLayout',
-          authority: ['admin', 'user'],
+          component: '../layouts/SecurityLayout',
           routes: [
             {
               path: '/',
-              redirect: '/welcome',
-            },
-            {
-              path: '/welcome',
-              name: 'home',
-              icon: 'smile',
-              component: './Welcome',
-            },
-            {
-              path: '/admin',
-              name: 'admin',
-              icon: 'crown',
-              component: './Admin',
-              authority: ['admin'],
+              component: '../layouts/BasicLayout',
+              authority: ['admin', 'user'],
               routes: [
                 {
-                  path: '/admin/sub-page',
-                  name: 'sub-page',
+                  path: '/',
+                  redirect: '/welcome',
+                },
+                {
+                  path: '/welcome',
+                  name: 'home',
                   icon: 'smile',
                   component: './Welcome',
+                },
+                {
+                  path: '/admin',
+                  name: 'admin',
+                  icon: 'crown',
+                  component: './Admin',
                   authority: ['admin'],
+                  routes: [
+                    {
+                      path: '/admin/sub-page',
+                      name: 'sub-page',
+                      icon: 'smile',
+                      component: './Welcome',
+                      authority: ['admin'],
+                    },
+                  ],
+                },
+                // {
+                //   name: 'list.table-list',
+                //   icon: 'table',
+                //   path: '/list',
+                //   component: './ListTableList',
+                // },
+                {
+                  name: 'trade',
+                  icon: 'table',
+                  path: '/tradelist',
+                  component: './TradeList',
+                },
+                {
+                  name: 'contact',
+                  icon: 'smile',
+                  path: '/contacttablelist',
+                  component: './ContactTableList',
+                },
+                {
+                  name: 'identity',
+                  icon: 'smile',
+                  path: '/identity',
+                  component: './identity',
+                },
+                {
+                  name: 'council',
+                  icon: 'smile',
+                  path: '/counciltablelist',
+                  component: './CouncilTableList',
+                },
+                {
+                  component: './404',
                 },
               ],
-            },
-            // {
-            //   name: 'list.table-list',
-            //   icon: 'table',
-            //   path: '/list',
-            //   component: './ListTableList',
-            // },
-            {
-              name: 'trade',
-              icon: 'table',
-              path: '/tradelist',
-              component: './TradeList',
-            },
-            {
-              name: 'contact',
-              icon: 'smile',
-              path: '/contacttablelist',
-              component: './ContactTableList',
-            },
-            {
-              name: 'identity',
-              icon: 'smile',
-              path: '/identity',
-              component: './identity',
-            },
-            {
-              name: 'council',
-              icon: 'smile',
-              path: '/counciltablelist',
-              component: './CouncilTableList',
             },
             {
               component: './404',
             },
           ],
-        },
-        {
-          component: './404',
         },
       ],
     },

@@ -1,37 +1,23 @@
 import React, {useRef, useState, useEffect} from 'react';
 import {DownOutlined} from '@ant-design/icons';
 import {
-  Avatar,
   Card,
-  Dropdown,
   Input,
   List,
-  Menu,
-  Modal,
   Radio,
+  Button
 } from 'antd';
 import {findDOMNode} from 'react-dom';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
 import {connect} from 'umi';
+import TradeListCell from "@/pages/TradeList/components/TradeListCell";
 import OperationModal from './components/OperationModal';
+import AddEditModal from "./components/AddEditModal";
 import styles from './style.less';
 
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const {Search} = Input;
-
-const ListContent = ({data: {canSell, needBuy, sellPrice, buyPrice}}) => (
-  <div className={styles.listContent}>
-    <div className={styles.listContentItem}>
-      <span>{`可销售度数: ${canSell}`}</span>
-      <p>{`售价: ${sellPrice}`}</p>
-    </div>
-    <div className={styles.listContentItem}>
-      <span>{`需购买度数: ${needBuy}`}</span>
-      <p>{`售价: ${buyPrice}`}</p>
-    </div>
-  </div>
-);
 
 export const TradeList = props => {
   const addBtn = useRef(null);
@@ -42,6 +28,7 @@ export const TradeList = props => {
   const [done, setDone] = useState(false);
   const [visible, setVisible] = useState(false);
   const [operation, setOperation] = useState(1);// 1 buy 2 sell
+  const [visibleModal, setVisibleModal] = useState(false);
   useEffect(() => {
     dispatch({
       type: 'tradeList/fetch',
@@ -68,27 +55,6 @@ export const TradeList = props => {
     setOperation(2);
   };
 
-  const buyAndSell = (key, currentItem) => {
-    if (key === 'buy') {
-      Modal.confirm({
-        title: '购买电能',
-        content: '确定购买电能吗？',
-        okText: '确认',
-        cancelText: '取消',
-        onOk: () => showBuyModal(currentItem),
-      });
-    }
-    else if (key === 'sell') {
-      Modal.confirm({
-        title: '出售电能',
-        content: '确定出售电能吗？',
-        okText: '确认',
-        cancelText: '取消',
-        onOk: () => showSellModal(currentItem),
-      });
-    }
-  };
-
   const extraContent = (
     <div className={styles.extraContent}>
       <RadioGroup defaultValue="all">
@@ -97,22 +63,12 @@ export const TradeList = props => {
         <RadioButton value="waiting">歇业中</RadioButton>
       </RadioGroup>
       <Search className={styles.extraContentSearch} placeholder="请输入邮编进行搜索" onSearch={() => ({})}/>
+      <Button type="primary" onClick={() => {
+        setVisibleModal(true);
+      }}>
+        新增电厂
+      </Button>
     </div>
-  );
-
-  const MoreBtn = ({item}) => (
-    <Dropdown
-      overlay={
-        <Menu onClick={({key}) => buyAndSell(key, item)}>
-          <Menu.Item key="buy">购买电能</Menu.Item>
-          <Menu.Item key="sell">出售电能</Menu.Item>
-        </Menu>
-      }
-    >
-      <a>
-        更多 <DownOutlined/>
-      </a>
-    </Dropdown>
   );
 
   const setAddBtnblur = () => {
@@ -127,11 +83,13 @@ export const TradeList = props => {
     setAddBtnblur();
     setDone(false);
     setVisible(false);
+    setVisibleModal(false);
   };
 
   const handleCancel = () => {
     setAddBtnblur();
     setVisible(false);
+    setVisibleModal(false);
   };
 
   const handleSubmit = values => {
@@ -169,27 +127,15 @@ export const TradeList = props => {
               pagination={paginationProps}
               dataSource={list}
               renderItem={item => (
-                <List.Item
-                  actions={[
-                    <a
-                      key="buy"
-                      onClick={e => {
-                        e.preventDefault();
-                        showBuyModal(item);
-                      }}
-                    >
-                      购买
-                    </a>,
-                    <MoreBtn key="more" item={item}/>,
-                  ]}
-                >
-                  <List.Item.Meta
-                    avatar={<Avatar src={item.logo} shape="square" size="large"/>}
-                    title={item.name}
-                    description={item.address}
-                  />
-                  <ListContent data={item}/>
-                </List.Item>
+                <TradeListCell
+                  item={item}
+                  buyClick={() => {
+                    showBuyModal(item);
+                  }}
+                  sellClick={() => {
+                    showSellModal(item)
+                  }}
+                />
               )}
             />
           </Card>
@@ -201,6 +147,12 @@ export const TradeList = props => {
         operation={operation}
         visible={visible}
         onDone={handleDone}
+        onCancel={handleCancel}
+        onSubmit={handleSubmit}
+      />
+
+      <AddEditModal
+        visible={visibleModal}
         onCancel={handleCancel}
         onSubmit={handleSubmit}
       />
