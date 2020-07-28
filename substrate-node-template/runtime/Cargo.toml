@@ -165,6 +165,12 @@ package = 'pallet-role'
 path = '../pallets/role'
 version = '2.0.0-rc2'
 
+[dependencies.role]
+default-features = false
+package = 'pallet-token'
+path = '../pallets/token'
+version = '2.0.0-rc2'
+
 [dependencies.timestamp]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
@@ -209,6 +215,7 @@ std = [
     'template/std',
     'poe/std',
     'role/std',
+    'token/std',
 ]
 
 [build-dependencies.wasm-builder-runner]

@@ -257,6 +257,10 @@ impl template::Trait for Runtime {
 	type Event = Event;
 }
 
+impl token::Trait for Runtime {
+	type Event = Event;
+}
+
 // 附加题答案
 parameter_types! {
 	pub const MaxClaimLength: u32 = 6;
@@ -298,6 +302,7 @@ construct_runtime!(
 		TemplateModule: template::{Module, Call, Storage, Event<T>},
 		PoeModule: poe::{Module, Call, Storage, Event<T>},
 		RoleModule: role::{Module, Call, Storage, Event<T>},
+		TokenModule: token::{Module, Call, Storage, Event<T>},
 	}
 );
 
