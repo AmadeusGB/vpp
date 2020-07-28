@@ -2646,6 +2646,7 @@ dependencies = [
  "pallet-grandpa",
  "pallet-poe",
  "pallet-randomness-collective-flip",
+ "pallet-role",
  "pallet-sudo",
  "pallet-template",
  "pallet-timestamp",
@@ -2897,6 +2898,19 @@ dependencies = [
  "frame-system",
  "parity-scale-codec",
  "safe-mix",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-role"
+version = "2.0.0-rc2"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "sp-core",
+ "sp-io",
  "sp-runtime",
  "sp-std",
 ]
