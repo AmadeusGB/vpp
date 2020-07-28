@@ -165,7 +165,7 @@ package = 'pallet-role'
 path = '../pallets/role'
 version = '2.0.0-rc2'
 
-[dependencies.role]
+[dependencies.token]
 default-features = false
 package = 'pallet-token'
 path = '../pallets/token'
