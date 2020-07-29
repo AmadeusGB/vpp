@@ -4,7 +4,7 @@ description = 'FRAME pallet proof of existence'
 edition = '2018'
 homepage = 'https://substrate.io'
 license = 'Unlicense'
-name = 'pallet-poe'
+name = 'pallet-trade'
 repository = 'https://github.com/substrate-developer-hub/substrate-node-template/'
 version = '2.0.0-rc2'
 

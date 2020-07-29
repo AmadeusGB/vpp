@@ -3,13 +3,12 @@
 /// A FRAME pallet proof of existence with necessary imports
 
 use frame_support::{
-	decl_module, decl_storage, decl_event, decl_error, dispatch, ensure,
+	decl_module, decl_storage, decl_event, decl_error, dispatch,
 	traits::{Get},
 	traits::{Currency},
 };
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
-use sp_runtime::traits::StaticLookup;
 use codec::{Encode, Decode};
 
 #[cfg(test)]
@@ -17,8 +16,6 @@ mod mock;
 
 #[cfg(test)]
 mod tests;
-
-type BalanceOf<T> = <<T as Trait>::Currency as Currency<<T as system::Trait>::AccountId>>::Balance;
 
 /// The pallet's configuration trait.
 pub trait Trait: system::Trait {
@@ -35,29 +32,13 @@ pub trait Trait: system::Trait {
 
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
 #[derive(Encode, Decode)]
-pub struct PsVpp<T: Trait> {
-	pub ps_name: Vec<u8>,
-	pub pre_total_stock: u64,			//预售总额度
-	pub sold_total: u64,					  //已售总额度
-	pub electric_type: u8,  				//0直流 1交流
-	pub buy_price: BalanceOf<T>,
-	pub sell_price: BalanceOf<T>,
-	pub post_code: Vec<u8>,
-	pub transport_lose: u32, 			//线损
-	pub business_status: u8, 			//0 不营业  1 营业
-	pub approval_status: u8, 			//0 不通过  1 通过  2 审核中
-	pub device_id: u8,						   //设备编号
-}
-
-#[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
-#[derive(Encode, Decode)]
 pub struct MultiRole {
-	pub PU: bool,
-	pub PG: bool,
-	pub PS: bool,
-	pub SG: bool,
-	pub AS: bool,
-	pub POM: bool,
+	pub pu: bool,
+	pub pg: bool,
+	pub ps: bool,
+	pub sg: bool,
+	pub ass: bool,
+	pub pom: bool,
 }
 
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
@@ -76,18 +57,15 @@ decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
 		Proofs get(fn proofs): map hasher(blake2_128_concat) Vec<u8> => (T::AccountId, T::BlockNumber);
 
-		Vpps get(fn vpps): map hasher(blake2_128_concat) (T::AccountId, u64) => Option<PsVpp<T>>;											//虚拟电厂申请列表
 		Roles get(fn roles): map hasher(blake2_128_concat) T::AccountId => Option<MultiRole>;											  		   //身份属性
-		Vppcounts get(fn vpp_counts): map hasher(blake2_128_concat) T::AccountId => u64;															 //PS申请虚拟电厂数量
-		Transaction_amount get(fn transaction_amount): map hasher(blake2_128_concat) (T::AccountId, u64) => u64;			 //虚拟电厂交易额
 	}
 }
 
 // The pallet's events
 decl_event!(
 	pub enum Event<T> where AccountId = <T as system::Trait>::AccountId {
-		ClaimCreated(AccountId, Vec<u8>),
-		ClaimRevoked(AccountId, Vec<u8>),
+		ApplyRoled(AccountId, u8),
+		LogoutRoled(AccountId, u8),
 	}
 );
 
@@ -116,60 +94,63 @@ decl_module! {
 		fn deposit_event() = default;
 
 		#[weight = 0]
-		pub fn create_claim(origin, claim: Vec<u8>) -> dispatch::DispatchResult {
+		pub fn apply(origin, apply_role: u8) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
-			ensure!(!Proofs::<T>::contains_key(&claim), Error::<T>::ProofAlreadyExist);
+			let mut ps_role = <Roles<T>>::get(sender.clone()).unwrap_or_else(|| MultiRole {
+				pu: true,
+				pg: false,
+				ps: false,
+				sg: false,
+				ass: false,
+				pom: false,
+			});
 
-			// 附加题答案
-			ensure!(T::MaxClaimLength::get() >= claim.len() as u32, Error::<T>::ProofTooLong);
+			 match apply_role {
+				0 => ps_role.pu = true,
+				1 => ps_role.pg = true,
+				2 => ps_role.ps = true,
+				3 => ps_role.sg = true,
+				4 => ps_role.ass = true,
+				5 => ps_role.pom = true,
+				_ => ps_role.pom = false,
+			};
 
-			Proofs::<T>::insert(&claim, (sender.clone(), system::Module::<T>::block_number()));
+			Roles::<T>::insert(sender.clone(), ps_role);
 
-			Self::deposit_event(RawEvent::ClaimCreated(sender, claim));
+			Self::deposit_event(RawEvent::ApplyRoled(sender, apply_role));
 
 			Ok(())
 		}
 
-		// 第二题答案
 		#[weight = 0]
-		pub fn transfer_claim(origin, claim: Vec<u8>, dest: <T::Lookup as StaticLookup>::Source) -> dispatch::DispatchResult {
+		pub fn logout(origin, apply_role: u8) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
-			ensure!(Proofs::<T>::contains_key(&claim), Error::<T>::ClaimNotExist);
+			let mut ps_role = <Roles<T>>::get(sender.clone()).unwrap_or_else(|| MultiRole {
+				pu: true,
+				pg: false,
+				ps: false,
+				sg: false,
+				ass: false,
+				pom: false,
+			});
 
-			let (owner, _block_number) = Proofs::<T>::get(&claim);
+			 match apply_role {
+				0 => ps_role.pu = false,
+				1 => ps_role.pg = false,
+				2 => ps_role.ps = false,
+				3 => ps_role.sg = false,
+				4 => ps_role.ass = false,
+				5 => ps_role.pom = false,
+				_ => ps_role.pom = false,
+			};
 
-			ensure!(owner == sender, Error::<T>::NotClaimOwner);
+			Roles::<T>::insert(sender.clone(), ps_role);
 
-			let dest = T::Lookup::lookup(dest)?;
-
-			Proofs::<T>::insert(&claim, (dest, system::Module::<T>::block_number()));
+			Self::deposit_event(RawEvent::LogoutRoled(sender, apply_role));
 
 			Ok(())
 		}
-
-		#[weight = 0]
-		pub fn apply_ps(origin) -> dispatch::DispatchResult{
-			let sender = ensure_signed(origin)?;
-
-			Ok(())
-		}
-
-		#[weight = 0]
-		pub fn apply_pg(origin) -> dispatch::DispatchResult{
-			Ok(())
-		}
-
-		#[weight = 0]
-		pub fn apply_pu(origin) -> dispatch::DispatchResult{
-			Ok(())
-		}
-
-		#[weight = 0]
-		pub fn transfer_token(origin)-> dispatch::DispatchResult{
-			Ok(())
-		}
-
 	}
 }
