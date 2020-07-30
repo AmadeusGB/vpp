@@ -177,10 +177,6 @@ package = 'pallet-typetransfer'
 path = '../pallets/typetransfer'
 version = '2.0.0-rc2'
 
-[dependencies]
-parliament = {package='pallet-parliament',default-features = false, path = '../pallets/parliament'}
-trade = {package='pallet-trade',default-features = false, path = '../pallets/trade'}
-
 [dependencies.timestamp]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
@@ -194,6 +190,11 @@ git = 'https://github.com/paritytech/substrate.git'
 package = 'pallet-transaction-payment'
 tag = 'v2.0.0-rc2'
 version = '2.0.0-rc2'
+
+[dependencies]
+parliament = {package='pallet-parliament',default-features = false, path = '../pallets/parliament'}
+trade = {package='pallet-trade',default-features = false, path = '../pallets/trade'}
+primitives = { default-features = false, path = '../primitives' }
 
 [features]
 default = ['std']
@@ -227,6 +228,7 @@ std = [
     'token/std',
     'parliament/std',
     'trade/std',
+    'primitives/std',
 ]
 
 [build-dependencies.wasm-builder-runner]

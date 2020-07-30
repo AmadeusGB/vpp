@@ -5,8 +5,11 @@ use frame_support::dispatch;
 use codec::{Encode, Decode};
 use sp_runtime::RuntimeDebug;
 
+pub type Balance = u128;
+
 pub trait Vpp<AccountId> {
-    fn update_status(who: &AccountId, vpp_number: u64, approval_status: ApprovalStatus) -> dispatch::DispatchResult;
+    fn update_status(vpp: &AccountId, vpp_number: u64, approval_status: ApprovalStatus) -> dispatch::DispatchResult;
+    fn buy(who: &AccountId, vpp: &AccountId, vpp_number: u64, price: Balance, energy_amount: u64) -> dispatch::DispatchResult;
     fn vpp_exists(who: &AccountId, vpp_number: u64) -> bool;
 }
 

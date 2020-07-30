@@ -10,7 +10,8 @@ use frame_support::{
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
-use primitives::{Vpp, ApprovalStatus, BusinessStatus, Role};
+use primitives::{Vpp, ApprovalStatus, BusinessStatus, Role, Balance};
+use frame_support::dispatch::DispatchResult;
 
 #[cfg(test)]
 mod mock;
@@ -206,13 +207,17 @@ decl_module! {
 //noinspection RsUnresolvedReference
 impl<T> Vpp<T::AccountId> for Module<T> where T: Trait {
 	//noinspection ALL
-	fn update_status(who: &T::AccountId, vpp_number: u64, approval_status: ApprovalStatus) ->  dispatch::DispatchResult {
-		let mut ps_vpp = Vpps::<T>::get((who, vpp_number)).ok_or(Error::<T>::VppNotExist)?;
+	fn update_status(vpp: &T::AccountId, vpp_number: u64, approval_status: ApprovalStatus) ->  dispatch::DispatchResult {
+		let mut ps_vpp = Vpps::<T>::get((vpp, vpp_number)).ok_or(Error::<T>::VppNotExist)?;
 		if ps_vpp.approval_status != approval_status {
 			ps_vpp.approval_status = approval_status;
-			Vpps::<T>::insert((who, vpp_number), ps_vpp);
-			Self::deposit_event(RawEvent::VppApprovalStatusChanged(who.clone(), vpp_number, approval_status));
+			Vpps::<T>::insert((vpp, vpp_number), ps_vpp);
+			Self::deposit_event(RawEvent::VppApprovalStatusChanged(vpp.clone(), vpp_number, approval_status));
 		}
+		Ok(())
+	}
+
+	fn buy(who: &T::AccountId, vpp: &T::AccountId, vpp_number: u64, price: Balance, energy_amount: u64) -> DispatchResult {
 		Ok(())
 	}
 

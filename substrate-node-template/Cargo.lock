@@ -2656,6 +2656,7 @@ dependencies = [
  "pallet-transaction-payment",
  "pallet-typetransfer",
  "parity-scale-codec",
+ "primitives",
  "serde",
  "sp-api",
  "sp-block-builder",
