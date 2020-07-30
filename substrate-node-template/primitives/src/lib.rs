@@ -6,7 +6,7 @@ use codec::{Encode, Decode};
 use sp_runtime::RuntimeDebug;
 
 pub trait Vpp<AccountId> {
-    fn update_status(who: &AccountId, idx: u64, approval_status: ApprovalStatus) -> dispatch::DispatchResult;
+    fn update_status(who: &AccountId, vpp_number: u64, approval_status: ApprovalStatus) -> dispatch::DispatchResult;
 }
 
 pub trait Role<AccountId> {

@@ -69,9 +69,9 @@ decl_event!(
 	pub enum Event<T> where AccountId = <T as system::Trait>::AccountId {
 		CreateVpp(AccountId, u8),
 		LogoutRoled(AccountId, u8),
-		/// VppStatusChanged(who, idx, approval_status)
+		/// VppStatusChanged(who, vpp_number, approval_status)
 		VppApprovalStatusChanged(AccountId, u64, ApprovalStatus),
-		/// VppStatusChanged(who, idx, business_status)
+		/// VppStatusChanged(who, vpp_number, business_status)
 		VppBusinessStatusChanged(AccountId, u64, BusinessStatus),
 	}
 );
@@ -204,12 +204,12 @@ decl_module! {
 //noinspection RsUnresolvedReference
 impl<T> Vpp<T::AccountId> for Module<T> where T: Trait {
 	//noinspection ALL
-	fn update_status(who: &T::AccountId, idx: u64, approval_status: ApprovalStatus) ->  dispatch::DispatchResult {
-		let mut ps_vpp = Vpps::<T>::get((who, idx)).ok_or(Error::<T>::VppNotExist)?;
+	fn update_status(who: &T::AccountId, vpp_number: u64, approval_status: ApprovalStatus) ->  dispatch::DispatchResult {
+		let mut ps_vpp = Vpps::<T>::get((who, vpp_number)).ok_or(Error::<T>::VppNotExist)?;
 		if ps_vpp.approval_status != approval_status {
 			ps_vpp.approval_status = approval_status;
-			Vpps::<T>::insert((who, idx), ps_vpp);
-			Self::deposit_event(RawEvent::VppApprovalStatusChanged(who.clone(), idx, approval_status));
+			Vpps::<T>::insert((who, vpp_number), ps_vpp);
+			Self::deposit_event(RawEvent::VppApprovalStatusChanged(who.clone(), vpp_number, approval_status));
 		}
 		Ok(())
 	}
