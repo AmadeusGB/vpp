@@ -1,6 +1,6 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-/// A FRAME pallet proof of existence with necessary imports
+/// A FRAME pallet by which we handle the energy trading. 
 
 use frame_support::{
 	decl_module, decl_storage, decl_event, decl_error, dispatch, ensure,
@@ -9,7 +9,6 @@ use frame_support::{
 };
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
-//use sp_runtime::traits::StaticLookup;
 use codec::{Encode, Decode};
 
 #[cfg(test)]
@@ -26,9 +25,6 @@ pub trait Trait: system::Trait {
 
 	/// The overarching event type.
 	type Event: From<Event<Self>> + Into<<Self as system::Trait>::Event>;
-
-	// 附加题答案
-	type MaxClaimLength: Get<u32>;
 
 	type Currency: Currency<Self::AccountId>;
 }
@@ -60,11 +56,9 @@ pub struct RoleInfo {
 // This pallet's storage items.
 decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
-		Proofs get(fn proofs): map hasher(blake2_128_concat) Vec<u8> => (T::AccountId, T::BlockNumber);
-
 		Vpps get(fn vpps): map hasher(blake2_128_concat) (T::AccountId, u64) => Option<PsVpp<T>>;											//虚拟电厂申请列表
 		Vppcounts get(fn vpp_counts): map hasher(blake2_128_concat) T::AccountId => u64;															 //PS申请虚拟电厂数量
-		Transaction_amount get(fn transaction_amount): map hasher(blake2_128_concat) (T::AccountId, u64) => u64;			 //虚拟电厂交易额
+		Transaction_amount get(fn transaction_amount): map hasher(blake2_128_concat) (T::AccountId, u64) => BalanceOf<T>;			 //虚拟电厂交易额
 	}
 }
 
