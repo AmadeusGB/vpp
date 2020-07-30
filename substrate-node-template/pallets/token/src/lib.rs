@@ -57,11 +57,20 @@ decl_module! {
 		fn deposit_event() = default;
 
 		#[weight = 0]
-		pub fn setvppstatus(origin, price: BalanceOf<T>) -> dispatch::DispatchResult{
+		pub fn buytoken(origin, price: BalanceOf<T>) -> dispatch::DispatchResult{
 
-			//let mut amount = price + 10;
+			let amount = <BalanceOf<T>>::from(10);
 
 			Ok(())
+		}
+	}
+}
+
+impl<T: Trait> Module<T> {
+	fn buy(sender: &T::AccountId, price: BalanceOf<T>)  {
+		match price {
+			<BalanceOf<T>>::from(1) => (),
+			_ => (),
 		}
 	}
 }

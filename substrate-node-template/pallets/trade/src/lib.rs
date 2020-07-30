@@ -36,7 +36,7 @@ pub trait Trait: system::Trait {
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
 #[derive(Encode, Decode)]
 pub struct PsVpp<T: Trait> {
-	pub ps_name: Vec<u8>,
+	pub vpp_name: Vec<u8>,
 	pub pre_total_stock: u64,			//预售总额度
 	pub sold_total: u64,					  //已售总额度
 	pub electric_type: u8,  				//0直流 1交流
@@ -94,7 +94,7 @@ decl_module! {
 		#[weight = 0]
 		pub fn createvpp(
 			origin, 
-			ps_name: Vec<u8>, 
+			vpp_name: Vec<u8>, 
 			pre_total_stock: u64,
 			sold_total: u64,					  //已售总额度
 			electric_type: u8,   				//0直流 1交流
