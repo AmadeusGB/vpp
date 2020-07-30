@@ -10,7 +10,7 @@ use frame_support::{
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
-use primitives::{Vpp, ApprovalStatus, BusinessStatus};
+use primitives::{Vpp, ApprovalStatus, BusinessStatus, Role};
 
 #[cfg(test)]
 mod mock;
@@ -28,6 +28,7 @@ pub trait Trait: system::Trait {
 	type Event: From<Event<Self>> + Into<<Self as system::Trait>::Event>;
 
 	type Currency: Currency<Self::AccountId>;
+	type Role: Role<Self::AccountId>;
 }
 
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
@@ -82,6 +83,7 @@ decl_error! {
 		IdentityAlreadyExist,
 		VppNotExist,
 		Overflow,
+		OnlyPsAllowed,
 	}
 }
 
@@ -110,6 +112,7 @@ decl_module! {
 			let sender = ensure_signed(origin)?;
 
 			//check address identity
+			ensure!(T::Role::has_role(&sender, 2), Error::<T>::OnlyPsAllowed);
 
 			let idx = <Vppcounts<T>>::get(sender.clone());
 			let next_id = idx.checked_add(1).ok_or(Error::<T>::Overflow)?;
