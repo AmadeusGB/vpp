@@ -1,7 +1,5 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-/// A FRAME pallet proof of existence with necessary imports
-
 use frame_support::{
 	decl_module, decl_storage, decl_event, decl_error, dispatch,
 	traits::{Get},
@@ -10,6 +8,7 @@ use frame_support::{
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
+use primitives::Role;
 
 #[cfg(test)]
 mod mock;
@@ -19,14 +18,8 @@ mod tests;
 
 /// The pallet's configuration trait.
 pub trait Trait: system::Trait {
-	// Add other types and constants required to configure this pallet.
-
 	/// The overarching event type.
 	type Event: From<Event<Self>> + Into<<Self as system::Trait>::Event>;
-
-	// 附加题答案
-	type MaxClaimLength: Get<u32>;
-
 	type Currency: Currency<Self::AccountId>;
 }
 
@@ -51,12 +44,7 @@ pub struct PuRole {
 
 // This pallet's storage items.
 decl_storage! {
-	// It is important to update your storage name so that your pallet's
-	// storage items are isolated from other pallets.
-	// ---------------------------------vvvvvvvvvvvvvv
 	trait Store for Module<T: Trait> as TemplateModule {
-		Proofs get(fn proofs): map hasher(blake2_128_concat) Vec<u8> => (T::AccountId, T::BlockNumber);
-
 		Roles get(fn roles): map hasher(blake2_128_concat) T::AccountId => Option<MultiRole>;											  		   //身份属性
 	}
 }
@@ -151,6 +139,30 @@ decl_module! {
 			Self::deposit_event(RawEvent::LogoutRoled(sender, apply_role));
 
 			Ok(())
+		}
+	}
+}
+
+//noinspection RsUnresolvedReference
+impl<T> Role<T::AccountId> for Module<T> where T: Trait {
+	//noinspection ALL
+	fn has_role(who: &T::AccountId, apply_role: u8) -> bool {
+		let ps_role = <Roles<T>>::get(who).unwrap_or_else(|| MultiRole {
+			pu: false,
+			pg: false,
+			ps: false,
+			sg: false,
+			ass: false,
+			pom: false,
+		});
+		match apply_role {
+			0 => ps_role.pu,
+			1 => ps_role.pg,
+			2 => ps_role.ps,
+			3 => ps_role.sg,
+			4 => ps_role.ass,
+			5 => ps_role.pom,
+			_ => false,
 		}
 	}
 }

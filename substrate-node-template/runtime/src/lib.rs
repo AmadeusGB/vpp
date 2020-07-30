@@ -270,11 +270,17 @@ impl token::Trait for Runtime {
 impl trade::Trait for Runtime {
 	type Event = Event;
 	type Currency = Balances;
+	type Role = IdentityModule;
+}
+
+parameter_types! {
+	pub const MaxMemberCount: usize = 10;
 }
 
 impl parliament::Trait for Runtime {
 	type Event = Event;
 	type Trade = trade::Module<Runtime>;
+<<<<<<< HEAD
 }
 
 impl typetransfer::Trait for Runtime {
@@ -285,15 +291,14 @@ impl typetransfer::Trait for Runtime {
 // 附加题答案
 parameter_types! {
 	pub const MaxClaimLength: u32 = 6;
+=======
+	type MaxMemberCount = MaxMemberCount;
+>>>>>>> 36167ef5ad94a9249016810284445d2f0dcf931a
 }
 
 impl identity::Trait for Runtime {
 	type Event = Event;
-
 	type Currency = Balances;
-
-	// 附加题答案
-	type MaxClaimLength = MaxClaimLength;
 }
 
 construct_runtime!(

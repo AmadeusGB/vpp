@@ -12,6 +12,7 @@ targets = ["x86_64-unknown-linux-gnu"]
 sp-std  = { tag = 'v2.0.0-rc2', version = "2.0.0-rc2", default-features = false, git = 'https://github.com/paritytech/substrate.git' }
 frame-support  = { tag = 'v2.0.0-rc2', version = "2.0.0-rc2", default-features = false, git = 'https://github.com/paritytech/substrate.git' }
 codec = {default-features = false, features = ['derive'], package = 'parity-scale-codec', version = '1.3.0'}
+sp-runtime = { tag = 'v2.0.0-rc2', version = "2.0.0-rc2", default-features = false, git = 'https://github.com/paritytech/substrate.git'}
 
 [features]
 default = ['std']
@@ -19,5 +20,6 @@ std = [
     'codec/std',
     'sp-std/std',
     'frame-support/std',
+    'sp-runtime/std',
 ]
 

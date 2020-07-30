@@ -10,7 +10,7 @@ use frame_support::{
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
-use primitives::{Vpp, ApprovalStatus};
+use primitives::{Vpp, ApprovalStatus, BusinessStatus, Role};
 
 #[cfg(test)]
 mod mock;
@@ -28,6 +28,7 @@ pub trait Trait: system::Trait {
 	type Event: From<Event<Self>> + Into<<Self as system::Trait>::Event>;
 
 	type Currency: Currency<Self::AccountId>;
+	type Role: Role<Self::AccountId>;
 }
 
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
@@ -41,7 +42,7 @@ pub struct PsVpp<T: Trait> {
 	pub sell_price: BalanceOf<T>,
 	pub post_code: Vec<u8>,
 	pub transport_lose: u32, 			  //线损
-	pub business_status: bool, 			//0 不营业  1 营业
+	pub business_status: BusinessStatus, 			//0 不营业  1 营业
 	pub approval_status: ApprovalStatus, 			  //0 不通过  1 通过  2 审核中
 	pub device_id: u64,						   //设备编号
 }
@@ -69,7 +70,9 @@ decl_event!(
 		CreateVpp(AccountId, u8),
 		LogoutRoled(AccountId, u8),
 		/// VppStatusChanged(who, idx, approval_status)
-		VppStatusChanged(AccountId, u64, ApprovalStatus),
+		VppApprovalStatusChanged(AccountId, u64, ApprovalStatus),
+		/// VppStatusChanged(who, idx, business_status)
+		VppBusinessStatusChanged(AccountId, u64, BusinessStatus),
 	}
 );
 
@@ -79,6 +82,8 @@ decl_error! {
 		VppNumberError,
 		IdentityAlreadyExist,
 		VppNotExist,
+		Overflow,
+		OnlyPsAllowed,
 	}
 }
 
@@ -100,15 +105,17 @@ decl_module! {
 			sell_price: BalanceOf<T>,
 			post_code: Vec<u8>,
 			transport_lose: u32, 			//线损
-			business_status: bool, 			//0 不营业  1 营业
+			business_status: BusinessStatus, 			//0 不营业  1 营业
 			// approval_status: u8, 			//0 不通过  1 通过  2 审核中
 			device_id: u64						   //设备编号
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
 			//check address identity
+			ensure!(T::Role::has_role(&sender, 2), Error::<T>::OnlyPsAllowed);
 
-			let number = <Vppcounts<T>>::get(sender.clone());
+			let idx = <Vppcounts<T>>::get(sender.clone());
+			let next_id = idx.checked_add(1).ok_or(Error::<T>::Overflow)?;
 
 			let new_vpp = Self::vpp_structure (
 				vpp_name,
@@ -124,9 +131,9 @@ decl_module! {
 			   device_id
 		   );
 
-			Vpps::<T>::insert((sender.clone(), number), new_vpp);
+			Vpps::<T>::insert((sender.clone(), idx), new_vpp);
 
-			Vppcounts::<T>::insert(sender.clone(), number +1);
+			Vppcounts::<T>::insert(sender.clone(), next_id);
 
 			Ok(())
 		}
@@ -142,7 +149,7 @@ decl_module! {
 			sell_price: BalanceOf<T>,
 			post_code: Vec<u8>,
 			transport_lose: u32, 			//线损
-			business_status: bool, 			//0 不营业  1 营业
+			business_status: BusinessStatus, 			//0 不营业  1 营业
 			//approval_status: u8, 			//0 不通过  1 通过  2 审核中
 			device_id: u64,						   //设备编号
 			vpp_number: u64
@@ -171,11 +178,14 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn setvppstatus(origin, vpp_number: u64, status: bool) -> dispatch::DispatchResult{		
+		pub fn setvppstatus(origin, #[compact] vpp_number: u64, status: BusinessStatus) -> dispatch::DispatchResult{		
 			let sender = ensure_signed(origin)?;
-
-			let mut vpp = <Vpps<T>>::get((sender.clone(), vpp_number));
-
+			let mut vpp = <Vpps<T>>::get((&sender, vpp_number)).ok_or(Error::<T>::VppNotExist)?;
+			if vpp.business_status != status {
+				vpp.business_status = status;
+				Vpps::<T>::insert((&sender, vpp_number), vpp);
+				Self::deposit_event(RawEvent::VppBusinessStatusChanged(sender, vpp_number, status));
+			}
 			Ok(())
 		}
 
@@ -198,9 +208,11 @@ impl<T> Vpp<T::AccountId> for Module<T> where T: Trait {
 	//noinspection ALL
 	fn update_status(who: &T::AccountId, idx: u64, approval_status: ApprovalStatus) ->  dispatch::DispatchResult {
 		let mut ps_vpp = Vpps::<T>::get((who, idx)).ok_or(Error::<T>::VppNotExist)?;
-		ps_vpp.approval_status = approval_status;
-		Vpps::<T>::insert((who, idx), ps_vpp);
-		Self::deposit_event(RawEvent::VppStatusChanged(who.clone(), idx, approval_status));
+		if ps_vpp.approval_status != approval_status {
+			ps_vpp.approval_status = approval_status;
+			Vpps::<T>::insert((who, idx), ps_vpp);
+			Self::deposit_event(RawEvent::VppApprovalStatusChanged(who.clone(), idx, approval_status));
+		}
 		Ok(())
 	}
 }
@@ -215,7 +227,7 @@ impl<T: Trait> Module<T> {
 			sell_price: BalanceOf<T>,
 			post_code: Vec<u8>,
 			transport_lose: u32, 			//线损
-			business_status: bool, 			//0 不营业  1 营业
+			business_status: BusinessStatus, 			//0 不营业  1 营业
 			approval_status: ApprovalStatus, 			//0 不通过  1 通过  2 审核中
 			device_id: u64,						   //设备编号
 	) ->  PsVpp::<T> {
