@@ -78,7 +78,7 @@ decl_error! {
 	pub enum Error for Module<T: Trait> {
 		VppNumberError,
 		IdentityAlreadyExist,
-		IdentityNotExist,
+		VppNotExist,
 	}
 }
 
@@ -197,7 +197,7 @@ decl_module! {
 impl<T> Vpp<T::AccountId> for Module<T> where T: Trait {
 	//noinspection ALL
 	fn update_status(who: &T::AccountId, idx: u64, approval_status: ApprovalStatus) ->  dispatch::DispatchResult {
-		let mut ps_vpp = Vpps::<T>::get((who, idx)).ok_or(Error::<T>::IdentityNotExist)?;
+		let mut ps_vpp = Vpps::<T>::get((who, idx)).ok_or(Error::<T>::VppNotExist)?;
 		ps_vpp.approval_status = approval_status;
 		Vpps::<T>::insert((who, idx), ps_vpp);
 		Self::deposit_event(RawEvent::VppStatusChanged(who.clone(), idx, approval_status));

@@ -262,6 +262,16 @@ impl token::Trait for Runtime {
 	type Currency = Balances;
 }
 
+impl trade::Trait for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+}
+
+impl parliament::Trait for Runtime {
+	type Event = Event;
+	type Trade = trade::Module<Runtime>;
+}
+
 // 附加题答案
 parameter_types! {
 	pub const MaxClaimLength: u32 = 6;
@@ -294,6 +304,8 @@ construct_runtime!(
 		TemplateModule: template::{Module, Call, Storage, Event<T>},
 		IdentityModule: identity::{Module, Call, Storage, Event<T>},
 		TokenModule: token::{Module, Call, Storage, Event<T>},
+		TradeModule: trade::{Module, Call, Storage, Event<T>},
+		ParliamentModule: parliament::{Module, Call, Storage, Event<T>},
 	}
 );
 

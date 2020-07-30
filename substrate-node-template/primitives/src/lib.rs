@@ -8,8 +8,8 @@ pub trait Vpp<AccountId> {
     fn update_status(who: &AccountId, idx: u64, approval_status: ApprovalStatus) -> dispatch::DispatchResult;
 }
 
-#[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq, Clone, Copy))]
-#[derive(Encode, Decode)]
+#[cfg_attr(feature = "std", derive(Debug))]
+#[derive(Encode, Decode, PartialEq, Eq, Clone, Copy)]
 pub enum ApprovalStatus {
     Denied,
     Passed,
