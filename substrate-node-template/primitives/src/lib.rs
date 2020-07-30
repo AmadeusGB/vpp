@@ -7,6 +7,7 @@ use sp_runtime::RuntimeDebug;
 
 pub trait Vpp<AccountId> {
     fn update_status(who: &AccountId, vpp_number: u64, approval_status: ApprovalStatus) -> dispatch::DispatchResult;
+    fn vpp_exists(who: &AccountId, vpp_number: u64) -> bool;
 }
 
 pub trait Role<AccountId> {

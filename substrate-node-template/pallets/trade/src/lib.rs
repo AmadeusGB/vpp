@@ -215,6 +215,10 @@ impl<T> Vpp<T::AccountId> for Module<T> where T: Trait {
 		}
 		Ok(())
 	}
+
+	fn vpp_exists(who: &T::AccountId, vpp_number: u64) -> bool {
+		Vpps::<T>::contains_key((who, vpp_number))
+	}
 }
 
 impl<T: Trait> Module<T> {
