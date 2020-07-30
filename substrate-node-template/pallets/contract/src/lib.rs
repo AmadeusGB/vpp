@@ -27,7 +27,7 @@ pub trait Trait: system::Trait {
 #[derive(Encode, Decode)]
 pub struct ContractT<T: Trait> {
 	pub ps_addr: T::AccountId,							//合同PS地址(通过地址和ID取得VPP所有信息)
-	pub vpp_id: u64,											 //该地址下虚拟电厂ID
+	pub vpp_number: u64,											 //该地址下虚拟电厂ID
 	pub block_number: T::BlockNumber,								//合同成交时区块号
 	pub contract_price: BalanceOf<T>,		  //合同总价
 	pub energy_amount: u64,							  //购买电能度数
@@ -72,7 +72,7 @@ decl_module! {
 		pub fn addcontract(
 			origin, 
 			ps_addr: T::AccountId,							//合同PS地址(通过地址和ID取得VPP所有信息)
-			vpp_id: u64,											 //该地址下虚拟电厂ID
+			vpp_number: u64,											 //该地址下虚拟电厂ID
 			block_number: u64,								//合同成交时区块号
 			contract_price: BalanceOf<T>,		  //合同总价
 			energy_amount: u64,							  //购买电能度数
@@ -85,7 +85,7 @@ decl_module! {
 			let contract_number = <Contractcounts<T>>::get(sender.clone());
 			let contract_template = ContractT::<T> {
 				ps_addr: ps_addr,
-				vpp_id: vpp_id,
+				vpp_number: vpp_number,
 				block_number: system::Module::<T>::block_number(),
 				contract_price: contract_price,
 				energy_amount: energy_amount,

@@ -156,8 +156,6 @@ decl_module! {
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
-			ensure!(vpp_number > 0, Error::<T>::VppNumberError);
-
 			let modify_vpp = Self::vpp_structure (
 				 vpp_name,
 				 pre_total_stock,
