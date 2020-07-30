@@ -280,7 +280,7 @@ parameter_types! {
 impl parliament::Trait for Runtime {
 	type Event = Event;
 	type Trade = trade::Module<Runtime>;
-<<<<<<< HEAD
+	type MaxMemberCount = MaxMemberCount;
 }
 
 impl typetransfer::Trait for Runtime {
@@ -291,9 +291,6 @@ impl typetransfer::Trait for Runtime {
 // 附加题答案
 parameter_types! {
 	pub const MaxClaimLength: u32 = 6;
-=======
-	type MaxMemberCount = MaxMemberCount;
->>>>>>> 36167ef5ad94a9249016810284445d2f0dcf931a
 }
 
 impl identity::Trait for Runtime {
