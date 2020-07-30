@@ -167,7 +167,7 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn setvppstatus(origin, status: bool) -> dispatch::DispatchResult{
+		pub fn setvppstatus(origin, status: bool) -> dispatch::DispatchResult{		
 
 			Ok(())
 		}
