@@ -11,4 +11,5 @@ members = [
     'pallets/identity',
     'pallets/parliament',
     'runtime',
+    'primitives',
 ]
