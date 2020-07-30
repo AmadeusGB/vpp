@@ -2908,6 +2908,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "parity-scale-codec",
+ "primitives",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -3008,6 +3009,7 @@ dependencies = [
  "frame-system",
  "pallet-balances",
  "parity-scale-codec",
+ "primitives",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -3351,6 +3353,15 @@ dependencies = [
  "impl-codec",
  "impl-serde 0.3.1",
  "uint",
+]
+
+[[package]]
+name = "primitives"
+version = "2.0.0-rc5"
+dependencies = [
+ "frame-support",
+ "parity-scale-codec",
+ "sp-std",
 ]
 
 [[package]]
