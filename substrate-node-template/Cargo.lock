@@ -2644,12 +2644,12 @@ dependencies = [
  "pallet-aura",
  "pallet-balances",
  "pallet-grandpa",
- "pallet-poe",
+ "pallet-identity",
  "pallet-randomness-collective-flip",
- "pallet-role",
  "pallet-sudo",
  "pallet-template",
  "pallet-timestamp",
+ "pallet-token",
  "pallet-transaction-payment",
  "parity-scale-codec",
  "serde",
@@ -2841,6 +2841,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-contract"
+version = "2.0.0-rc2"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
 name = "pallet-finality-tracker"
 version = "2.0.0-rc2"
 source = "git+https://github.com/paritytech/substrate.git?tag=v2.0.0-rc2#45b9f0a9cbf901abaa9f1fca5fe8baeed029133d"
@@ -2877,7 +2889,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-poe"
+name = "pallet-identity"
 version = "2.0.0-rc2"
 dependencies = [
  "frame-support",
@@ -2887,6 +2899,18 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
+]
+
+[[package]]
+name = "pallet-parliament"
+version = "2.0.0-rc2"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
 ]
 
 [[package]]
@@ -2898,19 +2922,6 @@ dependencies = [
  "frame-system",
  "parity-scale-codec",
  "safe-mix",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
-name = "pallet-role"
-version = "2.0.0-rc2"
-dependencies = [
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "sp-core",
- "sp-io",
  "sp-runtime",
  "sp-std",
 ]
@@ -2974,6 +2985,33 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "sp-timestamp",
+]
+
+[[package]]
+name = "pallet-token"
+version = "2.0.0-rc2"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-trade"
+version = "2.0.0-rc2"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "pallet-balances",
+ "parity-scale-codec",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]

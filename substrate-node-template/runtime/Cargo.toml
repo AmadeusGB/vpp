@@ -153,16 +153,16 @@ package = 'pallet-template'
 path = '../pallets/template'
 version = '2.0.0-rc2'
 
-[dependencies.poe]
+[dependencies.identity]
 default-features = false
-package = 'pallet-poe'
-path = '../pallets/poe'
+package = 'pallet-identity'
+path = '../pallets/identity'
 version = '2.0.0-rc2'
 
-[dependencies.role]
+[dependencies.token]
 default-features = false
-package = 'pallet-role'
-path = '../pallets/role'
+package = 'pallet-token'
+path = '../pallets/token'
 version = '2.0.0-rc2'
 
 [dependencies.timestamp]
@@ -207,8 +207,8 @@ std = [
     'timestamp/std',
     'transaction-payment/std',
     'template/std',
-    'poe/std',
-    'role/std',
+    'identity/std',
+    'token/std',
 ]
 
 [build-dependencies.wasm-builder-runner]

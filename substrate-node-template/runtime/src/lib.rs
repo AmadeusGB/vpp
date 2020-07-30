@@ -257,21 +257,17 @@ impl template::Trait for Runtime {
 	type Event = Event;
 }
 
+impl token::Trait for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+}
+
 // 附加题答案
 parameter_types! {
 	pub const MaxClaimLength: u32 = 6;
 }
 
-impl poe::Trait for Runtime {
-	type Event = Event;
-
-	type Currency = Balances;
-	
-	// 附加题答案
-	type MaxClaimLength = MaxClaimLength;
-}
-
-impl role::Trait for Runtime {
+impl identity::Trait for Runtime {
 	type Event = Event;
 
 	type Currency = Balances;
@@ -296,8 +292,8 @@ construct_runtime!(
 		Sudo: sudo::{Module, Call, Config<T>, Storage, Event<T>},
 		// Used for the module template in `./template.rs`
 		TemplateModule: template::{Module, Call, Storage, Event<T>},
-		PoeModule: poe::{Module, Call, Storage, Event<T>},
-		RoleModule: role::{Module, Call, Storage, Event<T>},
+		IdentityModule: identity::{Module, Call, Storage, Event<T>},
+		TokenModule: token::{Module, Call, Storage, Event<T>},
 	}
 );
 
