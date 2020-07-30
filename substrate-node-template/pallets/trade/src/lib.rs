@@ -111,8 +111,8 @@ decl_module! {
 
 			//check address identity
 
-			let number = <Vppcounts<T>>::get(sender.clone());
-			let number = number.checked_add(1).ok_or(Error::<T>::Overflow)?;
+			let idx = <Vppcounts<T>>::get(sender.clone());
+			let next_id = idx.checked_add(1).ok_or(Error::<T>::Overflow)?;
 
 			let new_vpp = Self::vpp_structure (
 				vpp_name,
@@ -128,9 +128,9 @@ decl_module! {
 			   device_id
 		   );
 
-			Vpps::<T>::insert((sender.clone(), number), new_vpp);
+			Vpps::<T>::insert((sender.clone(), idx), new_vpp);
 
-			Vppcounts::<T>::insert(sender.clone(), number +1);
+			Vppcounts::<T>::insert(sender.clone(), next_id);
 
 			Ok(())
 		}
