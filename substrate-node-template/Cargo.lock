@@ -2643,6 +2643,7 @@ dependencies = [
  "frame-system",
  "pallet-aura",
  "pallet-balances",
+ "pallet-contract",
  "pallet-grandpa",
  "pallet-identity",
  "pallet-parliament",
@@ -2653,6 +2654,7 @@ dependencies = [
  "pallet-token",
  "pallet-trade",
  "pallet-transaction-payment",
+ "pallet-typetransfer",
  "parity-scale-codec",
  "serde",
  "sp-api",
@@ -2852,6 +2854,7 @@ dependencies = [
  "sp-core",
  "sp-io",
  "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]
@@ -3041,6 +3044,19 @@ dependencies = [
  "parity-scale-codec",
  "serde",
  "sp-api",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-typetransfer"
+version = "2.0.0-rc2"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "sp-core",
+ "sp-io",
  "sp-runtime",
  "sp-std",
 ]
