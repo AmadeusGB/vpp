@@ -101,7 +101,7 @@ decl_module! {
 			post_code: Vec<u8>,
 			transport_lose: u32, 			//线损
 			business_status: bool, 			//0 不营业  1 营业
-			approval_status: u8, 			//0 不通过  1 通过  2 审核中
+			// approval_status: u8, 			//0 不通过  1 通过  2 审核中
 			device_id: u64						   //设备编号
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
@@ -120,7 +120,7 @@ decl_module! {
 				post_code,
 				transport_lose,
 				business_status,
-				approval_status,
+				ApprovalStatus::Pending,
 			   device_id
 		   );
 
@@ -143,7 +143,7 @@ decl_module! {
 			post_code: Vec<u8>,
 			transport_lose: u32, 			//线损
 			business_status: bool, 			//0 不营业  1 营业
-			approval_status: u8, 			//0 不通过  1 通过  2 审核中
+			//approval_status: u8, 			//0 不通过  1 通过  2 审核中
 			device_id: u64,						   //设备编号
 			vpp_number: u64
 		) -> dispatch::DispatchResult{
@@ -161,7 +161,7 @@ decl_module! {
 				 post_code,
 				 transport_lose,
 				 business_status,
-				 approval_status,
+				 ApprovalStatus::Pending,
 				 device_id
 			);
 
@@ -213,7 +213,7 @@ impl<T: Trait> Module<T> {
 			post_code: Vec<u8>,
 			transport_lose: u32, 			//线损
 			business_status: bool, 			//0 不营业  1 营业
-			approval_status: u8, 			//0 不通过  1 通过  2 审核中
+			approval_status: ApprovalStatus, 			//0 不通过  1 通过  2 审核中
 			device_id: u64,						   //设备编号
 	) ->  PsVpp::<T> {
 		let vpp =  PsVpp::<T> {
