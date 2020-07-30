@@ -10,6 +10,7 @@ use frame_support::{
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
+use primitives::{Vpp, ApprovalStatus};
 
 #[cfg(test)]
 mod mock;
@@ -41,7 +42,7 @@ pub struct PsVpp<T: Trait> {
 	pub post_code: Vec<u8>,
 	pub transport_lose: u32, 			  //线损
 	pub business_status: bool, 			//0 不营业  1 营业
-	pub approval_status: u8, 			  //0 不通过  1 通过  2 审核中
+	pub approval_status: ApprovalStatus, 			  //0 不通过  1 通过  2 审核中
 	pub device_id: u64,						   //设备编号
 }
 
@@ -67,6 +68,8 @@ decl_event!(
 	pub enum Event<T> where AccountId = <T as system::Trait>::AccountId {
 		CreateVpp(AccountId, u8),
 		LogoutRoled(AccountId, u8),
+		/// VppStatusChanged(who, idx, approval_status)
+		VppStatusChanged(AccountId, u64, ApprovalStatus),
 	}
 );
 
@@ -75,6 +78,7 @@ decl_error! {
 	pub enum Error for Module<T: Trait> {
 		VppNumberError,
 		IdentityAlreadyExist,
+		IdentityNotExist,
 	}
 }
 
@@ -183,6 +187,18 @@ decl_module! {
 
 			Ok(())
 		}
+	}
+}
+
+//noinspection RsUnresolvedReference
+impl<T> Vpp<T::AccountId> for Module<T> where T: Trait {
+	//noinspection ALL
+	fn update_status(who: &T::AccountId, idx: u64, approval_status: ApprovalStatus) ->  dispatch::DispatchResult {
+		let mut ps_vpp = Vpps::<T>::get((who, idx)).ok_or(Error::<T>::IdentityNotExist)?;
+		ps_vpp.approval_status = approval_status;
+		Vpps::<T>::insert((who, idx), ps_vpp);
+		Self::deposit_event(RawEvent::VppStatusChanged(who.clone(), idx, approval_status));
+		Ok(())
 	}
 }
 

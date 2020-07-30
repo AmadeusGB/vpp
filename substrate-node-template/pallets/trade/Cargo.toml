@@ -8,8 +8,11 @@ name = 'pallet-trade'
 repository = 'https://github.com/substrate-developer-hub/substrate-node-template/'
 version = '2.0.0-rc2'
 
+[dev-dependencies]
+balances = { package = 'pallet-balances',tag = 'v2.0.0-rc2', version = "2.0.0-rc2", git = 'https://github.com/paritytech/substrate.git' }
+
 [dependencies]
-balances = { package = 'pallet-balances',tag = 'v2.0.0-rc2', version = "2.0.0-rc2", default-features = false, git = 'https://github.com/paritytech/substrate.git' }
+primitives = { default-features = false, path = '../../primitives' }
 
 [dependencies.codec]
 default-features = false
@@ -59,5 +62,5 @@ std = [
     'codec/std',
     'frame-support/std',
     'frame-system/std',
-    'balances/std',
+    'primitives/std',
 ]
