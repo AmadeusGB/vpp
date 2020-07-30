@@ -171,7 +171,10 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn setvppstatus(origin, status: bool) -> dispatch::DispatchResult{		
+		pub fn setvppstatus(origin, vpp_number: u64, status: bool) -> dispatch::DispatchResult{		
+			let sender = ensure_signed(origin)?;
+
+			let mut vpp = <Vpps<T>>::get((sender.clone(), vpp_number));
 
 			Ok(())
 		}
