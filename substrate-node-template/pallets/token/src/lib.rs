@@ -68,9 +68,6 @@ decl_module! {
 
 impl<T: Trait> Module<T> {
 	fn buy(sender: &T::AccountId, price: BalanceOf<T>)  {
-		match price {
-			<BalanceOf<T>>::from(1) => (),
-			_ => (),
-		}
+		
 	}
 }

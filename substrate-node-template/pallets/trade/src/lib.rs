@@ -39,10 +39,10 @@ pub struct PsVpp<T: Trait> {
 	pub buy_price: BalanceOf<T>,
 	pub sell_price: BalanceOf<T>,
 	pub post_code: Vec<u8>,
-	pub transport_lose: u32, 			//线损
+	pub transport_lose: u32, 			  //线损
 	pub business_status: bool, 			//0 不营业  1 营业
-	pub approval_status: u8, 			//0 不通过  1 通过  2 审核中
-	pub device_id: u8,						   //设备编号
+	pub approval_status: u8, 			  //0 不通过  1 通过  2 审核中
+	pub device_id: u64,						   //设备编号
 }
 
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
@@ -98,7 +98,7 @@ decl_module! {
 			transport_lose: u32, 			//线损
 			business_status: bool, 			//0 不营业  1 营业
 			approval_status: u8, 			//0 不通过  1 通过  2 审核中
-			device_id: u8						   //设备编号
+			device_id: u64						   //设备编号
 		) -> dispatch::DispatchResult{
 
 			Ok(())
@@ -107,7 +107,7 @@ decl_module! {
 		#[weight = 0]
 		pub fn editvpp(
 			origin, 
-			ps_name: Vec<u8>, 
+			vpp_name: Vec<u8>, 
 			pre_total_stock: u64,
 			sold_total: u64,					  //已售总额度
 			electric_type: u8,   				//0直流 1交流
@@ -117,7 +117,7 @@ decl_module! {
 			transport_lose: u32, 			//线损
 			business_status: bool, 			//0 不营业  1 营业
 			approval_status: u8, 			//0 不通过  1 通过  2 审核中
-			device_id: u8						   //设备编号
+			device_id: u64						   //设备编号
 		) -> dispatch::DispatchResult{
 
 			Ok(())
