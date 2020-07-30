@@ -268,9 +268,14 @@ impl trade::Trait for Runtime {
 	type Role = IdentityModule;
 }
 
+parameter_types! {
+	pub const MaxMemberCount: usize = 10;
+}
+
 impl parliament::Trait for Runtime {
 	type Event = Event;
 	type Trade = trade::Module<Runtime>;
+	type MaxMemberCount = MaxMemberCount;
 }
 
 impl identity::Trait for Runtime {
