@@ -8,9 +8,6 @@ name = 'pallet-typetransfer'
 repository = 'https://github.com/substrate-developer-hub/substrate-node-template/'
 version = '2.0.0-rc2'
 
-[dependencies]
-pallet-trade = { default-features = false, path = '../../pallets/trade' }
-
 [dependencies.codec]
 default-features = false
 features = ['derive']
@@ -59,5 +56,4 @@ std = [
     'codec/std',
     'frame-support/std',
     'frame-system/std',
-    'pallet-trade/std',
 ]

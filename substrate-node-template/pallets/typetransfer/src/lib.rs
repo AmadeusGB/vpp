@@ -3,13 +3,12 @@
 use frame_support::{
 	decl_module, decl_storage, decl_event, decl_error, dispatch, ensure,
 	traits::{Get},
-	traits::{Currency},
+	traits::{Currency, ExistenceRequirement},
 };
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 //use sp_runtime::traits::StaticLookup;
 use codec::{Encode, Decode};
-use pallet_trade::{PsVpp, RoleInfo};
 
 #[cfg(test)]
 mod mock;
@@ -29,7 +28,6 @@ pub trait Trait: system::Trait {
 decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
 		Something get(fn something): Option<u32>;
-
 
 	}
 }
@@ -61,45 +59,54 @@ decl_module! {
 		pub fn buytransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_amount: u64) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
-			
+			//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
+			//校验PS交易行为是否存在异常
+
+			T::Currency::transfer(&sender, &ps_addr, contract_price, ExistenceRequirement::KeepAlive)?;
 
 			Ok(())
 		}
 
 		#[weight = 0]
-		pub fn selltransfer(origin, price: BalanceOf<T>) -> dispatch::DispatchResult{
+		pub fn selltransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_amount: u64) -> dispatch::DispatchResult{
+			let sender = ensure_signed(origin)?;
+
+			//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
+			//校验PS交易行为是否存在异常
+
+			T::Currency::transfer(&ps_addr, &sender, contract_price, ExistenceRequirement::KeepAlive)?;
 
 			Ok(())
 		}
 
 		#[weight = 0]
-		pub fn algorithmtransfer(origin, price: BalanceOf<T>) -> dispatch::DispatchResult{
+		pub fn algorithmtransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_amount: u64) -> dispatch::DispatchResult{
+			let sender = ensure_signed(origin)?;
+
+			//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
+			//校验PS交易行为是否存在异常
+
+			T::Currency::transfer(&sender, &ps_addr, contract_price, ExistenceRequirement::KeepAlive)?;
 
 			Ok(())
 		}
 
 		#[weight = 0]
-		pub fn staketransfer(origin, price: BalanceOf<T>) -> dispatch::DispatchResult{
+		pub fn staketransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_amount: u64) -> dispatch::DispatchResult{
 
 			Ok(())
 		}
 
 		#[weight = 0]
-		pub fn incentivetransfer(origin, price: BalanceOf<T>) -> dispatch::DispatchResult{
+		pub fn incentivetransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_amount: u64) -> dispatch::DispatchResult{
 
 			Ok(())
 		}
 
 		#[weight = 0]
-		pub fn dividendtransfer(origin, price: BalanceOf<T>) -> dispatch::DispatchResult{
+		pub fn dividendtransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_amount: u64) -> dispatch::DispatchResult{
 
 			Ok(())
 		}
-	}
-}
-
-impl<T: Trait> Module<T> {
-	fn buy(_sender: &T::AccountId, price: BalanceOf<T>)  {
-		
 	}
 }
