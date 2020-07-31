@@ -1,15 +1,12 @@
 [package]
 authors = ['Substrate DevHub <https://github.com/substrate-developer-hub>']
-description = 'FRAME pallet proof of existence'
+description = 'FRAME pallet typetransfer'
 edition = '2018'
 homepage = 'https://substrate.io'
 license = 'Unlicense'
-name = 'pallet-identity'
+name = 'pallet-typetransfer'
 repository = 'https://github.com/substrate-developer-hub/substrate-node-template/'
 version = '2.0.0-rc2'
-
-[dependencies]
-primitives = { default-features = false, path = '../../primitives' }
 
 [dependencies.codec]
 default-features = false
@@ -59,5 +56,4 @@ std = [
     'codec/std',
     'frame-support/std',
     'frame-system/std',
-    'primitives/std',
 ]

@@ -2643,15 +2643,20 @@ dependencies = [
  "frame-system",
  "pallet-aura",
  "pallet-balances",
+ "pallet-contract",
  "pallet-grandpa",
  "pallet-identity",
+ "pallet-parliament",
  "pallet-randomness-collective-flip",
  "pallet-sudo",
  "pallet-template",
  "pallet-timestamp",
  "pallet-token",
+ "pallet-trade",
  "pallet-transaction-payment",
+ "pallet-typetransfer",
  "parity-scale-codec",
+ "primitives",
  "serde",
  "sp-api",
  "sp-block-builder",
@@ -2846,10 +2851,13 @@ version = "2.0.0-rc2"
 dependencies = [
  "frame-support",
  "frame-system",
+ "pallet-trade",
  "parity-scale-codec",
+ "primitives",
  "sp-core",
  "sp-io",
  "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]
@@ -2895,6 +2903,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "parity-scale-codec",
+ "primitives",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -2908,9 +2917,11 @@ dependencies = [
  "frame-support",
  "frame-system",
  "parity-scale-codec",
+ "primitives",
  "sp-core",
  "sp-io",
  "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]
@@ -3008,6 +3019,7 @@ dependencies = [
  "frame-system",
  "pallet-balances",
  "parity-scale-codec",
+ "primitives",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -3037,6 +3049,19 @@ dependencies = [
  "parity-scale-codec",
  "serde",
  "sp-api",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-typetransfer"
+version = "2.0.0-rc2"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "sp-core",
+ "sp-io",
  "sp-runtime",
  "sp-std",
 ]
@@ -3351,6 +3376,16 @@ dependencies = [
  "impl-codec",
  "impl-serde 0.3.1",
  "uint",
+]
+
+[[package]]
+name = "primitives"
+version = "2.0.0-rc5"
+dependencies = [
+ "frame-support",
+ "parity-scale-codec",
+ "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]
