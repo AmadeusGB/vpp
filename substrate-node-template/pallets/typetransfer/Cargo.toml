@@ -1,6 +1,6 @@
 [package]
 authors = ['Substrate DevHub <https://github.com/substrate-developer-hub>']
-description = 'FRAME pallet token'
+description = 'FRAME pallet typetransfer'
 edition = '2018'
 homepage = 'https://substrate.io'
 license = 'Unlicense'

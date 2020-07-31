@@ -91,14 +91,14 @@ decl_module! {
 				block_number: block_number_now,
 				contract_price: contract_price,
 				energy_amount: energy_amount,
-				execution_status: 1,
+				execution_status: 1,									//合同执行状态（执行中：1，已完成：2，已终止：3）
 				contract_type: contract_type,
 				ammeter_id: ammeter_id
 			};
 
 			Contracts::<T>::insert((sender.clone(), contract_number), contract_template);
 			SearchContracts::<T>::insert(block_number_now, (sender.clone(), contract_number));
-			Contractcounts::<T>::insert(sender, contract_number+1);
+			Contractcounts::<T>::insert(sender.clone(), contract_number+1);
 
 			Self::deposit_event(RawEvent::ContractCraeted(sender, contract_number, 1));
 
@@ -115,7 +115,7 @@ decl_module! {
 			let mut contract = <Contracts<T>>::get((sender.clone(), contract_number)).ok_or(Error::<T>::ContractNotExist)?;
 
 			if(contract.execution_status != 3) {
-				contract.execution_status = 3;
+				contract.execution_status = 3;					//合同执行状态（执行中：1，已完成：2，已终止：3）
 				Contracts::<T>::insert((sender.clone(), contract_number), contract);
 				Self::deposit_event(RawEvent::ContractExecutionStatusChanged(sender, contract_number, 3));
 			}

@@ -57,9 +57,40 @@ decl_module! {
 		fn deposit_event() = default;
 
 		#[weight = 0]
-		pub fn buytoken(origin, price: BalanceOf<T>) -> dispatch::DispatchResult{
+		pub fn buytransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_amount: u64) -> dispatch::DispatchResult{
+			let sender = ensure_signed(origin)?;
 
-			//let amount = <BalanceOf<T>>::from(10);
+			
+
+			Ok(())
+		}
+
+		#[weight = 0]
+		pub fn selltransfer(origin, price: BalanceOf<T>) -> dispatch::DispatchResult{
+
+			Ok(())
+		}
+
+		#[weight = 0]
+		pub fn algorithmtransfer(origin, price: BalanceOf<T>) -> dispatch::DispatchResult{
+
+			Ok(())
+		}
+
+		#[weight = 0]
+		pub fn staketransfer(origin, price: BalanceOf<T>) -> dispatch::DispatchResult{
+
+			Ok(())
+		}
+
+		#[weight = 0]
+		pub fn incentivetransfer(origin, price: BalanceOf<T>) -> dispatch::DispatchResult{
+
+			Ok(())
+		}
+
+		#[weight = 0]
+		pub fn dividendtransfer(origin, price: BalanceOf<T>) -> dispatch::DispatchResult{
 
 			Ok(())
 		}
