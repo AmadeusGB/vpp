@@ -218,6 +218,9 @@ impl<T> Vpp<T::AccountId> for Module<T> where T: Trait {
 	}
 
 	fn buy(who: &T::AccountId, vpp: &T::AccountId, vpp_number: u64, price: Balance, energy_amount: u64) -> DispatchResult {
+		let price: BalanceOf<T> = to_balance_of::<T>(price);
+		// todo: update VppList
+		// e.g.: VppList::<T>::insert((vpp, vpp_number), ps_vpp);
 		Ok(())
 	}
 
@@ -257,3 +260,5 @@ impl<T: Trait> Module<T> {
 		vpp
 	}
 }
+
+fn to_balance_of<T:Trait>(b: Balance)->BalanceOf<T>{unsafe{*(&b as *const Balance as *const BalanceOf<T>)}}

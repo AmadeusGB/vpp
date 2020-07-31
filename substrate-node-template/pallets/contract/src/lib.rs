@@ -8,7 +8,7 @@ use frame_support::{
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
-use primitives::Vpp;
+use primitives::{Vpp, Balance};
 
 #[cfg(test)]
 mod mock;
@@ -81,6 +81,9 @@ decl_module! {
 			ammeter_id: Vec<u8> 									//电表编号
 		) -> dispatch::DispatchResult {
 			let sender = ensure_signed(origin)?;
+			
+			// update the vpp
+			T::Vpp::buy(&sender, &ps_addr, vpp_number, from_balance_of::<T>(contract_price),energy_amount)?;
 
 			let contract_number = <Contractcounts<T>>::get(sender.clone());
 			let block_number_now = system::Module::<T>::block_number();
@@ -136,3 +139,5 @@ decl_module! {
 
 	}
 }
+
+fn from_balance_of<T:Trait>(b: BalanceOf<T>)->Balance{unsafe{*(&b as *const BalanceOf<T> as *const Balance)}}
