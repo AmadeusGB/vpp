@@ -27,14 +27,14 @@ pub trait Trait: system::Trait {
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
 #[derive(Encode, Decode)]
 pub struct ContractT<T: Trait> {
-	pub ps_addr: T::AccountId,							//合同PS地址(通过地址和ID取得VPP所有信息)
+	pub ps_addr: T::AccountId,										//合同PS地址(通过地址和ID取得VPP所有信息)
 	pub vpp_number: u64,											 //该地址下虚拟电厂ID
-	pub block_number: T::BlockNumber,								//合同成交时区块号
-	pub contract_price: BalanceOf<T>,		  //合同总价
-	pub energy_amount: u64,							  //购买电能度数
-	pub execution_status:u8,							//合同执行状态
-	pub contract_type:bool,								 //合同分类（购买/出售）
-	pub ammeter_id: Vec<u8>,						 //电表编号
+	pub block_number: T::BlockNumber,				   //合同成交时区块号
+	pub contract_price: BalanceOf<T>,		  			 //合同总价
+	pub energy_amount: u64,							  			 //购买电能度数
+	pub execution_status:u8,									  //合同执行状态
+	pub contract_type:bool,								 		   //合同分类（购买/出售）
+	pub ammeter_id: Vec<u8>,						 		   //电表编号
 }
 
 // This pallet's storage items.
