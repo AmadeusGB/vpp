@@ -58,7 +58,7 @@ pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::Account
 pub type AccountIndex = u32;
 
 /// Balance of an account.
-pub type Balance = u128;
+pub type Balance = primitives::Balance;
 
 /// Index of a transaction in the chain.
 pub type Index = u32;
@@ -259,6 +259,7 @@ impl template::Trait for Runtime {
 
 impl contract::Trait for Runtime {
 	type Event = Event;
+	type Vpp = trade::Module<Runtime>;
 	type Currency = Balances;
 }
 
@@ -279,7 +280,7 @@ parameter_types! {
 
 impl parliament::Trait for Runtime {
 	type Event = Event;
-	type Trade = trade::Module<Runtime>;
+	type Vpp = trade::Module<Runtime>;
 	type MaxMemberCount = MaxMemberCount;
 }
 

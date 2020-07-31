@@ -15,7 +15,7 @@ mod tests;
 pub trait Trait: system::Trait {
 	/// The overarching event type.
 	type Event: From<Event<Self>> + Into<<Self as system::Trait>::Event>;
-	type Trade: Vpp<Self::AccountId>;
+	type Vpp: Vpp<Self::AccountId>;
 	type MaxMemberCount: Get<usize>;
 }
 
@@ -58,7 +58,7 @@ decl_module! {
 			let sender = ensure_signed(origin)?;
 			let members = Self::get_members();
 			ensure!(members.contains(&sender), Error::<T>::NotMember);
-			T::Trade::update_status(&who, idx, ApprovalStatus::Passed)?;
+			T::Vpp::update_status(&who, idx, ApprovalStatus::Passed)?;
 			Ok(())
 		}
 	
@@ -67,7 +67,7 @@ decl_module! {
 			let sender = ensure_signed(origin)?;
 			let members = Self::get_members();
 			ensure!(members.contains(&sender), Error::<T>::NotMember);
-			T::Trade::update_status(&who, idx, ApprovalStatus::Denied)?;
+			T::Vpp::update_status(&who, idx, ApprovalStatus::Denied)?;
 			Ok(())
 		}
 	

@@ -8,6 +8,7 @@ use frame_support::{
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
+use primitives::Vpp;
 
 #[cfg(test)]
 mod mock;
@@ -19,7 +20,7 @@ type BalanceOf<T> = <<T as Trait>::Currency as Currency<<T as system::Trait>::Ac
 
 pub trait Trait: system::Trait {
 	type Event: From<Event<Self>> + Into<<Self as system::Trait>::Event>;
-
+	type Vpp: Vpp<Self::AccountId>;
 	type Currency: Currency<Self::AccountId>;
 }
 
@@ -56,8 +57,7 @@ decl_event!(
 // The pallet's errors
 decl_error! {
 	pub enum Error for Module<T: Trait> {
-		NoneValue,
-		StorageOverflow,
+		VppNotExists,
 	}
 }
 
@@ -81,6 +81,7 @@ decl_module! {
 			ammeter_id: Vec<u8> 									//电表编号
 		) -> dispatch::DispatchResult {
 			let sender = ensure_signed(origin)?;
+			ensure!(T::Vpp::vpp_exists(&ps_addr,vpp_number), Error::<T>::VppNotExists);
 
 			let contract_number = <Contractcounts<T>>::get(sender.clone());
 			let contract_template = ContractT::<T> {
