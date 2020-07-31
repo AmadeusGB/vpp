@@ -2851,6 +2851,7 @@ version = "2.0.0-rc2"
 dependencies = [
  "frame-support",
  "frame-system",
+ "pallet-trade",
  "parity-scale-codec",
  "primitives",
  "sp-core",
@@ -3058,6 +3059,7 @@ version = "2.0.0-rc2"
 dependencies = [
  "frame-support",
  "frame-system",
+ "pallet-trade",
  "parity-scale-codec",
  "sp-core",
  "sp-io",

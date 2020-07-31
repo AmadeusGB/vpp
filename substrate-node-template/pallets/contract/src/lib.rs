@@ -34,7 +34,7 @@ pub struct ContractT<T: Trait> {
 	pub energy_amount: u64,							  			 //购买电能度数
 	pub execution_status:u8,									  //合同执行状态（执行中：1，已完成：2，已终止：3）
 	pub contract_type:bool,								 		   //合同分类（购买/出售）
-	pub ammeter_id: Vec<u8>,						 		   //电表编号
+	pub ammeter_id: Vec<u8>,						 		   //消费者电表编号
 }
 
 // This pallet's storage items.
@@ -57,7 +57,7 @@ decl_event!(
 // The pallet's errors
 decl_error! {
 	pub enum Error for Module<T: Trait> {
-		VppNotExists,
+		VppNotExist,
 		ContractNotExist,
 	}
 }
@@ -81,7 +81,6 @@ decl_module! {
 			ammeter_id: Vec<u8> 									//电表编号
 		) -> dispatch::DispatchResult {
 			let sender = ensure_signed(origin)?;
-			ensure!(T::Vpp::vpp_exists(&ps_addr,vpp_number), Error::<T>::VppNotExists);
 
 			let contract_number = <Contractcounts<T>>::get(sender.clone());
 			let block_number_now = system::Module::<T>::block_number();
@@ -130,7 +129,7 @@ decl_module! {
 			//为简化，默认同一个电表，同一时间只有一个可执行合同；
 			//合同开始执行，读取电表一个度数；
 			//OCW按周期查询该电表度数；
-			//当电表度数>=电表度数（合同开始时刻）+购买电能度数，自动将合同标记为已完成
+			//当电表度数=电表度数（合同开始时刻）+购买电能度数，自动将合同标记为已完成
 
 			Ok(())
 		}

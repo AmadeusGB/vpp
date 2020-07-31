@@ -59,7 +59,7 @@ pub struct RoleInfo {
 // This pallet's storage items.
 decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
-		Vpps get(fn vpps): map hasher(blake2_128_concat) (T::AccountId, u64) => Option<PsVpp<T>>;																//虚拟电厂申请列表
+		VppList get(fn vpplist): map hasher(blake2_128_concat) (T::AccountId, u64) => Option<PsVpp<T>>;																//虚拟电厂申请列表
 		Vppcounts get(fn vpp_counts): map hasher(blake2_128_concat) T::AccountId => u64;															 					//PS申请虚拟电厂数量
 		Transaction_amount get(fn transaction_amount): map hasher(blake2_128_concat) (T::AccountId, u64) => BalanceOf<T>;			 //虚拟电厂交易额
 	}
@@ -132,7 +132,7 @@ decl_module! {
 			   device_id
 		   );
 
-			Vpps::<T>::insert((sender.clone(), idx), new_vpp);
+		   VppList::<T>::insert((sender.clone(), idx), new_vpp);
 
 			Vppcounts::<T>::insert(sender.clone(), next_id);
 
@@ -156,7 +156,7 @@ decl_module! {
 			vpp_number: u64
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
-			let vpp = <Vpps<T>>::get((&sender, vpp_number)).ok_or(Error::<T>::VppNotExist)?;
+			let vpp = <VppList<T>>::get((&sender, vpp_number)).ok_or(Error::<T>::VppNotExist)?;
 
 			let modify_vpp = PsVpp {
 				 vpp_name,
@@ -173,7 +173,7 @@ decl_module! {
 				 ..vpp
 			};
 
-			Vpps::<T>::insert((sender.clone(), vpp_number), modify_vpp);
+			VppList::<T>::insert((sender.clone(), vpp_number), modify_vpp);
 
 			Ok(())
 		}
@@ -181,10 +181,10 @@ decl_module! {
 		#[weight = 0]
 		pub fn setvppstatus(origin, #[compact] vpp_number: u64, status: BusinessStatus) -> dispatch::DispatchResult{		
 			let sender = ensure_signed(origin)?;
-			let mut vpp = <Vpps<T>>::get((&sender, vpp_number)).ok_or(Error::<T>::VppNotExist)?;
+			let mut vpp = <VppList<T>>::get((&sender, vpp_number)).ok_or(Error::<T>::VppNotExist)?;
 			if vpp.business_status != status {
 				vpp.business_status = status;
-				Vpps::<T>::insert((&sender, vpp_number), vpp);
+				VppList::<T>::insert((&sender, vpp_number), vpp);
 				Self::deposit_event(RawEvent::VppBusinessStatusChanged(sender, vpp_number, status));
 			}
 			Ok(())
@@ -208,10 +208,10 @@ decl_module! {
 impl<T> Vpp<T::AccountId> for Module<T> where T: Trait {
 	//noinspection ALL
 	fn update_status(vpp: &T::AccountId, vpp_number: u64, approval_status: ApprovalStatus) ->  dispatch::DispatchResult {
-		let mut ps_vpp = Vpps::<T>::get((vpp, vpp_number)).ok_or(Error::<T>::VppNotExist)?;
+		let mut ps_vpp = VppList::<T>::get((vpp, vpp_number)).ok_or(Error::<T>::VppNotExist)?;
 		if ps_vpp.approval_status != approval_status {
 			ps_vpp.approval_status = approval_status;
-			Vpps::<T>::insert((vpp, vpp_number), ps_vpp);
+			VppList::<T>::insert((vpp, vpp_number), ps_vpp);
 			Self::deposit_event(RawEvent::VppApprovalStatusChanged(vpp.clone(), vpp_number, approval_status));
 		}
 		Ok(())
@@ -222,7 +222,7 @@ impl<T> Vpp<T::AccountId> for Module<T> where T: Trait {
 	}
 
 	fn vpp_exists(who: &T::AccountId, vpp_number: u64) -> bool {
-		Vpps::<T>::contains_key((who, vpp_number))
+		VppList::<T>::contains_key((who, vpp_number))
 	}
 }
 
