@@ -2,7 +2,7 @@
 
 use frame_support::{decl_module, decl_storage, ensure, decl_event, decl_error, dispatch, traits::Get,};
 use frame_system::{self as system, ensure_root, ensure_signed};
-use primitives::{Vpp, ApprovalStatus};
+use primitives::{Vpp, ApprovalStatus, Parliament};
 use sp_std::prelude::*;
 
 #[cfg(test)]
@@ -90,5 +90,11 @@ decl_module! {
 			Self::deposit_event(RawEvent::ForceToRemoveMember(old_member));
 			Ok(())
 		}
+	}
+}
+
+impl<T:Trait> Parliament<T::AccountId> for Module<T>{
+	fn is_member(who: &T::AccountId) -> bool {
+		Self::get_members().contains(&who)
 	}
 }

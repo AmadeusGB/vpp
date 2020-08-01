@@ -2,13 +2,13 @@
 
 use frame_support::{
 	decl_module, decl_storage, decl_event, decl_error, dispatch,
-	traits::{Get},
 	traits::{Currency},
 };
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
 use primitives::Role;
+use frame_support::dispatch::DispatchResult;
 
 #[cfg(test)]
 mod mock;
@@ -82,32 +82,9 @@ decl_module! {
 		fn deposit_event() = default;
 
 		#[weight = 0]
-		pub fn apply(origin, apply_role: u8) -> dispatch::DispatchResult{
-			let sender = ensure_signed(origin)?;
-
-			let mut ps_role = <Roles<T>>::get(sender.clone()).unwrap_or_else(|| MultiRole {
-				pu: true,
-				pg: false,
-				ps: false,
-				sg: false,
-				ass: false,
-				pom: false,
-			});
-
-			 match apply_role {
-				0 => ps_role.pu = true,
-				1 => ps_role.pg = true,
-				2 => ps_role.ps = true,
-				3 => ps_role.sg = true,
-				4 => ps_role.ass = true,
-				5 => ps_role.pom = true,
-				_ => ps_role.pom = false,
-			};
-
-			Roles::<T>::insert(sender.clone(), ps_role);
-
-			Self::deposit_event(RawEvent::ApplyRoled(sender, apply_role));
-
+		pub fn apply(origin, owner: T::AccountId, apply_role: u8) -> dispatch::DispatchResult{
+			let _sender = ensure_signed(origin)?;
+			Self::do_apply(owner, apply_role)?;
 			Ok(())
 		}
 
@@ -164,5 +141,31 @@ impl<T> Role<T::AccountId> for Module<T> where T: Trait {
 			5 => ps_role.pom,
 			_ => false,
 		}
+	}
+
+	fn do_apply(owner: T::AccountId, apply_role: u8) -> DispatchResult {
+		let mut ps_role = <Roles<T>>::get(owner.clone()).unwrap_or_else(|| MultiRole {
+			pu: true,
+			pg: false,
+			ps: false,
+			sg: false,
+			ass: false,
+			pom: false,
+		});
+
+		match apply_role {
+			0 => ps_role.pu = true,
+			1 => ps_role.pg = true,
+			2 => ps_role.ps = true,
+			3 => ps_role.sg = true,
+			4 => ps_role.ass = true,
+			5 => ps_role.pom = true,
+			_ => ps_role.pom = false,
+		};
+
+		Roles::<T>::insert(owner.clone(), ps_role);
+
+		Self::deposit_event(RawEvent::ApplyRoled(owner, apply_role));
+		Ok(())
 	}
 }

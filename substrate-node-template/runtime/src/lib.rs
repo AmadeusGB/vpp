@@ -257,6 +257,14 @@ impl template::Trait for Runtime {
 	type Event = Event;
 }
 
+impl audit::Trait for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type TypeTransfer = typetransfer::Module<Runtime>;
+	type Parliament = parliament::Module<Runtime>;
+	type Role = identity::Module<Runtime>;
+}
+
 impl contract::Trait for Runtime {
 	type Event = Event;
 	type Vpp = trade::Module<Runtime>;
@@ -272,6 +280,8 @@ impl trade::Trait for Runtime {
 	type Event = Event;
 	type Currency = Balances;
 	type Role = IdentityModule;
+	type TypeTransfer = typetransfer::Module<Runtime>;
+	type Contract = contract::Module<Runtime>;
 }
 
 parameter_types! {
@@ -287,11 +297,15 @@ impl parliament::Trait for Runtime {
 impl typetransfer::Trait for Runtime {
 	type Event = Event;
 	type Currency = Balances;
+	type Token = token::Module<Runtime>;
+	type MinDustCheckBalance = MinDustCheckBalance;
+	type MinDustCheckSeconds = MinDustCheckSeconds;
 }
 
-// 附加题答案
 parameter_types! {
 	pub const MaxClaimLength: u32 = 6;
+	pub const MinDustCheckBalance:u32 = 100;
+	pub const MinDustCheckSeconds:u32 = 5;
 }
 
 impl identity::Trait for Runtime {
@@ -315,6 +329,7 @@ construct_runtime!(
 		Sudo: sudo::{Module, Call, Config<T>, Storage, Event<T>},
 		// Used for the module template in `./template.rs`
 		TemplateModule: template::{Module, Call, Storage, Event<T>},
+		AuditModule: audit::{Module, Call, Storage, Event<T>},
 		ContractModule: contract::{Module, Call, Storage, Event<T>},
 		IdentityModule: identity::{Module, Call, Storage, Event<T>},
 		TokenModule: token::{Module, Call, Storage, Event<T>},

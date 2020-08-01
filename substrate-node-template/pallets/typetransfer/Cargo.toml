@@ -10,6 +10,7 @@ version = '2.0.0-rc2'
 
 [dependencies]
 pallet-token = { default-features = false, path = '../../pallets/token' }
+primitives = { default-features = false, path = '../../primitives' }
 
 
 [dependencies.codec]
@@ -25,6 +26,12 @@ tag = 'v2.0.0-rc2'
 version = '2.0.0-rc2'
 
 [dependencies.frame-system]
+default-features = false
+git = 'https://github.com/paritytech/substrate.git'
+tag = 'v2.0.0-rc2'
+version = '2.0.0-rc2'
+
+[dependencies.pallet-timestamp]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
 tag = 'v2.0.0-rc2'
@@ -61,4 +68,7 @@ std = [
     'frame-support/std',
     'frame-system/std',
     'pallet-token/std',
+    'primitives/std',
+    'pallet-timestamp/std',
+
 ]
