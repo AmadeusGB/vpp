@@ -9,6 +9,7 @@ use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
 use pallet_token::{BuyRate, SellRate, BalanceToken};
+use pallet_timestamp as timestamp;
 
 #[cfg(test)]
 mod mock;
@@ -18,17 +19,19 @@ mod tests;
 
 type BalanceOf<T> = <<T as Trait>::Currency as Currency<<T as system::Trait>::AccountId>>::Balance;
 
-pub trait Trait: system::Trait{
+pub trait Trait: system::Trait+ timestamp::Trait{
 	type Event: From<Event<Self>> + Into<<Self as system::Trait>::Event>;
 
 	type Currency: Currency<Self::AccountId>;
+	type MinDustCheckBalance: Get<u32>;
+	type MinDustCheckSeconds: Get<u32>;
 }
 
 // This pallet's storage items.
 decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
 		Something get(fn something): Option<u32>;
-
+		DustCheckData get(fn dust_check_data): map hasher(blake2_128_concat) T::AccountId => Option<T::Moment>;
 	}
 }
 
@@ -118,3 +121,27 @@ decl_module! {
 	}
 }
 
+impl<T: Trait> Module<T> {
+
+	pub fn check_dust_attack(sender: T::AccountId, contract_price: BalanceOf<T>, moment: T::Moment) -> bool {
+		//策略1 交易间隔小于x秒
+		//策略2  各个交易余额小于100
+		// if (contract_price < T::MinDustCheckBalance::get() ) {
+		// 	if (DustCheckData::<T>::contains_key(&sender)) {
+		// 		let lastmoment = DustCheckData::<T>::get(&sender).unwrap();
+
+		// 		if (moment - lastmoment < T::MinDustCheckSeconds::get()) {
+		// 			<DustCheckData::<T>>::insert(sender, moment);
+		// 			true
+		// 		}
+		// 	}
+		// 	<DustCheckData::<T>>::insert(sender, moment);
+		// }
+
+		false
+	}
+
+	pub fn check_ps_exception() -> bool {
+		true
+	}
+}
