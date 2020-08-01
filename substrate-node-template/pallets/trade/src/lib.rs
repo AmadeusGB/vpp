@@ -35,14 +35,14 @@ pub trait Trait: system::Trait {
 
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
 #[derive(Encode, Decode)]
-pub struct PsVpp<T: Trait> {
+pub struct PsVpp {
 	pub vpp_name: Vec<u8>,
 	pub pre_total_stock: u64,			//预售总额度
 	pub sold_total: u64,					  //已售总额度
 	pub electric_type: u8,  				//0直流 1交流
 	pub energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
-	pub buy_price: BalanceOf<T>,
-	pub sell_price: BalanceOf<T>,
+	pub buy_price: u32,
+	pub sell_price: u32,
 	pub post_code: Vec<u8>,
 	pub transport_lose: u32, 			  //线损
 	pub business_status: BusinessStatus, 			//0 不营业  1 营业
@@ -61,10 +61,10 @@ pub struct RoleInfo {
 // This pallet's storage items.
 decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
-		VppList get(fn vpplist): map hasher(blake2_128_concat) (T::AccountId, u64) => Option<PsVpp<T>>;														//虚拟电厂申请列表
+		VppList get(fn vpplist): map hasher(blake2_128_concat) (T::AccountId, u64) => Option<PsVpp>;															//虚拟电厂申请列表
 		VppCounts get(fn vpp_counts): map hasher(blake2_128_concat) T::AccountId => u64;															 					//PS申请虚拟电厂数量
-		TransactionAmount get(fn transactionamount): map hasher(blake2_128_concat) (T::AccountId, u64) => BalanceOf<T>;			 //虚拟电厂交易额
-		CurrentRemainingBattery get(fn currentremainingbattery): map hasher(blake2_128_concat) T::AccountId => u64;																   //当前电表电量
+		TransactionAmount get(fn transactionamount): map hasher(blake2_128_concat) (T::AccountId, u64) => u32;			 						  //虚拟电厂交易额
+		CurrentRemainingBattery get(fn currentremainingbattery): map hasher(blake2_128_concat) T::AccountId => u64;							//当前电表电量
 	}
 }
 
@@ -106,8 +106,8 @@ decl_module! {
 			sold_total: u64,					  //已售总额度
 			electric_type: u8,   				//0直流 1交流
 			energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
-			buy_price: BalanceOf<T>,
-			sell_price: BalanceOf<T>,
+			buy_price: u32,
+			sell_price: u32,
 			post_code: Vec<u8>,
 			transport_lose: u32, 			//线损
 			business_status: BusinessStatus, 			//0 不营业  1 营业
@@ -152,8 +152,8 @@ decl_module! {
 			// sold_total: u64,					  //已售总额度
 			electric_type: u8,   				//0直流 1交流
 			energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
-			buy_price: BalanceOf<T>,
-			sell_price: BalanceOf<T>,
+			buy_price: u32,
+			sell_price: u32,
 			// post_code: Vec<u8>,
 			transport_lose: u32, 			//线损
 			// business_status: BusinessStatus, 			//0 不营业  1 营业
@@ -204,8 +204,10 @@ decl_module! {
 			T::TypeTransfer::do_buytransfer(vpp_addr.clone(), vpp_number, sender.clone(), buy_energy_token_amount)?;
 			
 			//调用contract模块addcontract签订购买电能合同
-			T::Contract::do_addcontract(sender.clone(),vpp_addr,vpp_number,0,0,0,true,0,vec![0,0])?;
+			T::Contract::do_addcontract(sender.clone(),vpp_addr.clone(),vpp_number,0,0,0,true,0,vec![0,0])?;
 
+			
+			//TransactionAmount::<T>::insert((&vpp_addr, vpp_number), )
 			CurrentRemainingBattery::<T>::insert(&sender, buy_energy_number);
 
 			Ok(())
@@ -257,15 +259,15 @@ impl<T: Trait> Module<T> {
 			sold_total: u64,					  //已售总额度
 			electric_type: u8,   				//0直流 1交流
 			energy_type: u8,   				//0直流 1交流
-			buy_price: BalanceOf<T>,
-			sell_price: BalanceOf<T>,
+			buy_price: u32,
+			sell_price: u32,
 			post_code: Vec<u8>,
 			transport_lose: u32, 			//线损
 			business_status: BusinessStatus, 			//0 不营业  1 营业
 			approval_status: ApprovalStatus, 			//0 不通过  1 通过  2 审核中
 			device_id: u64,						   //设备编号
-	) ->  PsVpp::<T> {
-		let vpp =  PsVpp::<T> {
+	) ->  PsVpp {
+		let vpp =  PsVpp {
 			vpp_name: vpp_name,
 			pre_total_stock: pre_total_stock,
 			sold_total: sold_total,
