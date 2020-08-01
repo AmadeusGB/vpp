@@ -262,6 +262,7 @@ impl audit::Trait for Runtime {
 	type Currency = Balances;
 	type TypeTransfer = typetransfer::Module<Runtime>;
 	type Parliament = parliament::Module<Runtime>;
+	type Role = identity::Module<Runtime>;
 }
 
 impl contract::Trait for Runtime {
