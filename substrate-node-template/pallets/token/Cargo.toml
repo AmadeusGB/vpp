@@ -8,6 +8,9 @@ name = 'pallet-token'
 repository = 'https://github.com/substrate-developer-hub/substrate-node-template/'
 version = '2.0.0-rc2'
 
+[dependencies]
+balances = { package = 'pallet-balances',tag = 'v2.0.0-rc2', version = "2.0.0-rc2", git = 'https://github.com/paritytech/substrate.git' }
+
 [dependencies.codec]
 default-features = false
 features = ['derive']
