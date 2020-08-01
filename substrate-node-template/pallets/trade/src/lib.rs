@@ -212,8 +212,9 @@ decl_module! {
 
 		#[weight = 0]
 		pub fn sellenergy(origin, sell_number: u8, amount_token: u32) -> dispatch::DispatchResult{
-			//调用typetransfer模块selltransfer函数付款(chenwei)
-			
+			//调用typetransfer模块selltransfer函数付款
+			//T::TypeTransfer::do_selltransfer(vpp_addr, vpp_number, sender.clone(), buy_energy_token_amount)?;
+
 			//调用contract模块addcontract签订出售电能合同(chenwei)
 
 			Ok(())

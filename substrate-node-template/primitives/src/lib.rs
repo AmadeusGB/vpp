@@ -21,6 +21,7 @@ pub trait Role<AccountId> {
 pub trait TypeTransfer<AccountId> {
     fn staketransfer(who: &AccountId, energy_token: u64) -> dispatch::DispatchResult;
     fn do_buytransfer(vpp_addr: AccountId, vpp_number: u64, payment_addr: AccountId, payment_token: u32) -> dispatch::DispatchResult;
+    fn do_selltransfer(ps_addr: AccountId, vpp_number: u64, payment_addr: AccountId, payment_token: u32) -> dispatch::DispatchResult;
 }
 
 pub trait Parliament<AccountId> {
