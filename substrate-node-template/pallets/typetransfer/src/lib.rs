@@ -9,6 +9,7 @@ use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 //use sp_runtime::traits::StaticLookup;
 use codec::{Encode, Decode};
+use pallet_token::{BuyRate, SellRate, BalanceToken};
 
 #[cfg(test)]
 mod mock;
@@ -98,7 +99,10 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn incentivetransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_amount: u64) -> dispatch::DispatchResult{
+		pub fn incentivetransfer(origin, incentive_addr: T::AccountId, incentive_status: bool, energy_token: u64) -> dispatch::DispatchResult{
+			let sender = ensure_signed(origin)?;
+
+			//let token_amount_now = <BalanceToken<T>>::get(sender.clone());
 
 			Ok(())
 		}
@@ -110,3 +114,4 @@ decl_module! {
 		}
 	}
 }
+
