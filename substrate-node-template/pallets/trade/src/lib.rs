@@ -151,7 +151,7 @@ decl_module! {
 			pre_total_stock: u64,
 			// sold_total: u64,					  //已售总额度
 			electric_type: u8,   				//0直流 1交流
-			energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电） 
+			energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
 			buy_price: BalanceOf<T>,
 			sell_price: BalanceOf<T>,
 			// post_code: Vec<u8>,
