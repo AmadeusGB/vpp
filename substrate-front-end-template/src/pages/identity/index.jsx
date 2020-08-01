@@ -3,6 +3,7 @@ import {Col, Row, Button, Typography} from 'antd';
 import {PageContainer} from "@ant-design/pro-layout";
 import AccountCard from "./components/AccountCard";
 import AccountHistory from "./components/AccountHistory";
+import {TxButton} from "@/substrate-lib/components";
 import GroupSvg from './assets/group.svg';
 import styles from './index.less';
 
@@ -32,6 +33,9 @@ const IdCard = ({type, text}) => {
         <img alt="logo" className={styles.logo} src={GroupSvg} />
         <Title level={2} style={{color: '#FFF', position: 'absolute', top: '30px', right: '30px'}}>{type}</Title>
       </div>
+      {
+        type !== 'PU' ? <div style={{height: '180px', width: '100%', background: 'rgba(0,0,0,.5)', position: 'absolute', top: 0, left: 0}}/> : null
+      }
       <Button type="link" style={{color: '#FFF', position: 'absolute', bottom: '10px', right: '20px'}}>
         {text}
       </Button>

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { PageContainer } from '@ant-design/pro-layout';
 import { Spin } from 'antd';
 import { AccountsContext } from '@/context/accounts';
 import { ApiContext } from '@/context/api';
@@ -30,9 +29,11 @@ function Welcome() {
   const Main = () => {
     return (
       <div
-        style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        style={{ width: '100%', display: 'flex', justifyContent: 'center', textAlign: 'center' }}
       >
-        {nodeInfo.chain + nodeInfo.nodeName + nodeInfo.nodeVersion}
+        {`${nodeInfo.chain  } | ${  nodeInfo.nodeName  } | ${  nodeInfo.nodeVersion}`}
+        <br/>
+        {account}
       </div>
     );
   };
