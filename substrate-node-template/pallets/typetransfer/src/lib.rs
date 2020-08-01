@@ -9,6 +9,8 @@ use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
 use pallet_token::{BuyRate, SellRate, BalanceToken};
+use primitives::TypeTransfer;
+use frame_support::dispatch::DispatchResult;
 
 #[cfg(test)]
 mod mock;
@@ -56,25 +58,25 @@ decl_module! {
 		fn deposit_event() = default;
 
 		#[weight = 0]
-		pub fn buytransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_token: u64) -> dispatch::DispatchResult{
+		pub fn buytransfer(origin, vpp_addr: T::AccountId, vpp_number: u64, payment_addr: T::AccountId, payment_token: u32) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
 			//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
-			//校验PS交易行为是否存在异常
+			//校验PS交易行为是否存在异常（检查交易金额合法性）
 
-			T::Currency::transfer(&sender, &ps_addr, contract_price, ExistenceRequirement::KeepAlive)?;
+			//调用token模块transfertoken函数进行支付(chenwei)
 
 			Ok(())
 		}
 
 		#[weight = 0]
-		pub fn selltransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_token: u64) -> dispatch::DispatchResult{
+		pub fn selltransfer(origin, ps_addr: T::AccountId, vpp_number: u64, payment_addr: T::AccountId, payment_token: u32) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
 			//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
-			//校验PS交易行为是否存在异常
+			//校验PS交易行为是否存在异常（检查交易金额合法性）
 
-			T::Currency::transfer(&ps_addr, &sender, contract_price, ExistenceRequirement::KeepAlive)?;
+			//调用token模块transfertoken函数进行支付(chenwei)
 
 			Ok(())
 		}
@@ -94,11 +96,7 @@ decl_module! {
 		#[weight = 0]
 		pub fn staketransfer(origin, energy_token: u64) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
-
-			//调用token模块的staketoken函数，以实现申请PS身份质押token功能(chenwei)
-
-			//调用audit模块，形成该地址的申请PS身份提案(chenwei)
-
+			<Self as TypeTransfer<T::AccountId>>::staketransfer(&sender, energy_token)?;
 			Ok(())
 		}
 
@@ -118,3 +116,11 @@ decl_module! {
 	}
 }
 
+impl<T:Trait> TypeTransfer<T::AccountId> for Module<T> {
+	fn staketransfer(who: &T::AccountId, energy_token: u64) -> DispatchResult {
+		//调用token模块的staketoken函数，以实现申请PS身份质押token功能(chenwei)
+
+		//调用audit模块，形成该地址的申请PS身份提案(chenwei)
+		Ok(())
+	}
+}

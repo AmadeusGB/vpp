@@ -8,6 +8,7 @@ use frame_support::{
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
+use primitives::TypeTransfer;
 
 #[cfg(test)]
 mod mock;
@@ -21,6 +22,15 @@ pub trait Trait: system::Trait {
 	type Event: From<Event<Self>> + Into<<Self as system::Trait>::Event>;
 
 	type Currency: Currency<Self::AccountId>;
+	type TypeTransfer: TypeTransfer<Self::AccountId>;
+}
+
+#[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
+#[derive(Encode, Decode)]
+pub struct ProposalInfo {
+	pub apply_role: u8,							   //申请角色（0:pu, 1:pg，2:ps，3:sg，4:ass）
+	pub apply_status: u8,						//提案状态（0：待通过，1：已通过，2：已拒绝）
+	pub apply_annex: bool,					 //附件情况（0:无附件，1:有附件）
 }
 
 // This pallet's storage items.
@@ -28,9 +38,8 @@ decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
 		Something get(fn something): Option<u32>;
 
-		pub BuyRate get(fn buyrate):  u32;
-		pub SellRate get(fn sellrate):  u32;
-		pub BalanceToken get(fn balancetoken):  map hasher(blake2_128_concat) T::AccountId => u32;
+		pub ProposalCount get(fn proposalcount):  u32;
+		pub ProposalInformation get(fn proposalinformation):  map hasher(blake2_128_concat) u32 => Option<ProposalInfo>;
 	}
 }
 
@@ -46,6 +55,7 @@ decl_error! {
 	pub enum Error for Module<T: Trait> {
 		NoneValue,
 		StorageOverflow,
+		ProposalNotExist,
 	}
 }
 
@@ -58,39 +68,37 @@ decl_module! {
 		fn deposit_event() = default;
 
 		#[weight = 0]
-		pub fn buytoken(origin, token: u32, treasure: T::AccountId, amount_price: BalanceOf<T>) -> dispatch::DispatchResult{
+		pub fn applyproposalrole(origin, apply_role: u8, apply_annex: bool) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
-			BuyRate::put(112);
-
-			//let amount = <BalanceOf<T>>::from(10);
-			let amount = token * BuyRate::get() / 100;
-
-			if(<BalanceOf<T>>::from(amount) == amount_price) {
-				BalanceToken::<T>::insert(&sender, token);
-
-				T::Currency::transfer(&sender, &treasure, amount_price, ExistenceRequirement::KeepAlive)?;
+			if(apply_role == 2) {
+				//调用typetransfer模块staketransfer质押函数(chenwei)
+				T::TypeTransfer::staketransfer(&sender, 200)?;
 			}
+
+			let Proposal_number = ProposalCount::get();
+			let proposal_template = ProposalInfo {
+				apply_role: apply_role,
+				apply_status: 0,
+				apply_annex: apply_annex,
+			};
+
+			ProposalInformation::insert(Proposal_number, proposal_template);
 
 			Ok(())
 		}
 
 		#[weight = 0]
-		pub fn selltoken(origin, token: u32, treasure: T::AccountId, amount_price: BalanceOf<T>) -> dispatch::DispatchResult{
+		pub fn setproposalrole(origin, proposal_number: u32, vote_result: u8) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
-			SellRate::put(98);
+			//检查当前sender是否为委员会成员(chenwei)
 
-			let amount = token * SellRate::get() / 100;
-
-			if(<BalanceOf<T>>::from(amount) == amount_price) {
-				let token_amount_now = <BalanceToken<T>>::get(&sender);
-				BalanceToken::<T>::insert(&sender, token_amount_now - token);
-				
-				T::Currency::transfer(&treasure, &sender, amount_price, ExistenceRequirement::KeepAlive)?;
-			}
+			let mut proposal_information = <ProposalInformation>::get(proposal_number).ok_or(Error::<T>::ProposalNotExist)?;;
+			proposal_information.apply_status = vote_result;
 
 			Ok(())
 		}
+
 	}
 }
