@@ -125,15 +125,7 @@ decl_module! {
 		#[weight = 0]
 		pub fn incentivetoken(origin, incentive_status: bool, incentive_token: u32) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
-
-			let mut tokeninfo = <BalanceToken<T>>::get(&sender).ok_or(Error::<T>::TokenAcountNotExist)?;
-			match incentive_status {
-				true => tokeninfo.token_balance += incentive_token,			//正向激励
-				false => tokeninfo.token_balance -= incentive_token,			//负向激励
-			}
-
-			BalanceToken::<T>::insert(&sender, tokeninfo);
-
+			Self::do_incentivetoken(sender, incentive_status, incentive_token)?;
 			Ok(())
 		}
 
@@ -167,6 +159,16 @@ decl_module! {
 }
 
 impl<T:Trait> Token<T::AccountId> for Module<T>{
+	fn do_incentivetoken(sender: T::AccountId,incentive_status: bool, incentive_token: u32) -> dispatch::DispatchResult {
+		let mut tokeninfo = <BalanceToken<T>>::get(&sender).ok_or(Error::<T>::TokenAcountNotExist)?;
+		match incentive_status {
+			true => tokeninfo.token_balance += incentive_token,			//正向激励
+			false => tokeninfo.token_balance -= incentive_token,			//负向激励
+		}
+		BalanceToken::<T>::insert(&sender, tokeninfo);
+		Ok(())
+	}
+	
 	fn do_transfertoken(from: T::AccountId, to: T::AccountId, token_amount: u32) -> DispatchResult {
 		let mut from_tokeninfo = <BalanceToken<T>>::get(&from).ok_or(Error::<T>::TokenAcountNotExist)?;
 		let mut to_tokeninfo = <BalanceToken<T>>::get(&to).ok_or(Error::<T>::TokenAcountNotExist)?;

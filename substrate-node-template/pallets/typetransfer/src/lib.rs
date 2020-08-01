@@ -75,8 +75,8 @@ decl_module! {
 			//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
 			//校验PS交易行为是否存在异常（检查交易金额合法性）
 
-			//调用token模块transfertoken函数进行支付(chenwei)
-
+			//调用token模块transfertoken函数进行支付
+			T::Token::do_transfertoken(ps_addr,payment_addr,payment_token)?;
 			Ok(())
 		}
 
@@ -103,7 +103,7 @@ decl_module! {
 		pub fn incentivetransfer(origin, incentive_addr: T::AccountId, incentive_status: bool, energy_token: u64) -> dispatch::DispatchResult{
 		
 			//调用token模块的incentivetoken函数，以实现奖惩激励功能(chenwei)
-
+			T::Token::do_incentivetoken(incentive_addr, incentive_status, energy_token as u32)?;
 			Ok(())
 		}
 
