@@ -30,6 +30,7 @@ pub trait Parliament<AccountId> {
 pub trait Token<AccountId> {
     fn do_transfertoken(from: AccountId, to: AccountId, token_amount: u32) -> dispatch::DispatchResult;
     fn do_incentivetoken(sender: AccountId, incentive_status: bool, incentive_token: u32) -> dispatch::DispatchResult;
+    fn do_staketoken(sender: AccountId,stake_token:u32) -> dispatch::DispatchResult;
 }
 
 #[derive(Encode, Decode, PartialEq, Eq, Clone, Copy, RuntimeDebug)]
