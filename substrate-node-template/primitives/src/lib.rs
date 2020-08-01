@@ -15,6 +15,7 @@ pub trait Vpp<AccountId> {
 
 pub trait Role<AccountId> {
     fn has_role(who: &AccountId, apply_role: u8) -> bool;
+    fn do_apply(owner: AccountId, apply_role: u8) -> dispatch::DispatchResult;
 }
 
 pub trait TypeTransfer<AccountId> {
