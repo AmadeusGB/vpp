@@ -102,7 +102,7 @@ decl_module! {
 		#[weight = 0]
 		pub fn incentivetransfer(origin, incentive_addr: T::AccountId, incentive_status: bool, energy_token: u64) -> dispatch::DispatchResult{
 		
-			//调用token模块的incentivetoken函数，以实现奖惩激励功能(chenwei)
+			//调用token模块的incentivetoken函数，以实现奖惩激励功能
 			T::Token::do_incentivetoken(incentive_addr, incentive_status, energy_token as u32)?;
 			Ok(())
 		}
@@ -117,7 +117,8 @@ decl_module! {
 
 impl<T:Trait> TypeTransfer<T::AccountId> for Module<T> {
 	fn staketransfer(who: &T::AccountId, energy_token: u64) -> DispatchResult {
-		//调用token模块的staketoken函数，以实现申请PS身份质押token功能(chenwei)
+		//调用token模块的staketoken函数，以实现申请PS身份质押token功能
+		T::Token::do_staketoken(who.clone(), energy_token as u32)?;
 
 		//调用audit模块，形成该地址的申请PS身份提案(chenwei)
 		Ok(())

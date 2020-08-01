@@ -132,13 +132,7 @@ decl_module! {
 		#[weight = 0]
 		pub fn staketoken(origin, stake_token: u32) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
-
-			let mut tokeninfo = <BalanceToken<T>>::get(&sender).ok_or(Error::<T>::TokenAcountNotExist)?;
-			tokeninfo.token_balance -= stake_token;
-			tokeninfo.token_stake += stake_token;
-
-			BalanceToken::<T>::insert(&sender, tokeninfo);
-
+			Self::do_staketoken(sender, stake_token)?;
 			Ok(())
 		}
 
@@ -159,6 +153,15 @@ decl_module! {
 }
 
 impl<T:Trait> Token<T::AccountId> for Module<T>{
+	fn do_staketoken(sender: T::AccountId,stake_token:u32) -> dispatch::DispatchResult {
+		let mut tokeninfo = <BalanceToken<T>>::get(&sender).ok_or(Error::<T>::TokenAcountNotExist)?;
+		tokeninfo.token_balance -= stake_token;
+		tokeninfo.token_stake += stake_token;
+
+		BalanceToken::<T>::insert(&sender, tokeninfo);
+		Ok(())
+	}
+	
 	fn do_incentivetoken(sender: T::AccountId,incentive_status: bool, incentive_token: u32) -> dispatch::DispatchResult {
 		let mut tokeninfo = <BalanceToken<T>>::get(&sender).ok_or(Error::<T>::TokenAcountNotExist)?;
 		match incentive_status {
