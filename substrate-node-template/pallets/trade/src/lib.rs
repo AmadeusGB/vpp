@@ -206,21 +206,24 @@ decl_module! {
 			//调用contract模块addcontract签订购买电能合同
 			T::Contract::do_addcontract(sender.clone(),vpp_addr.clone(),vpp_number,0,0,0,true,0,vec![0,0])?;
 
-			
-			//TransactionAmount::<T>::insert((&vpp_addr, vpp_number), )
+			let vpp_transcation_amount = <TransactionAmount<T>>::get((vpp_addr.clone(), vpp_number));
+			TransactionAmount::<T>::insert((&vpp_addr, vpp_number), vpp_transcation_amount + buy_energy_token_amount);
 			CurrentRemainingBattery::<T>::insert(&sender, buy_energy_number);
 
 			Ok(())
 		}
 
 		#[weight = 0]
-		pub fn sellenergy(origin, sell_number: u8, amount_token: u32) -> dispatch::DispatchResult{
+		pub fn sellenergy(origin, vpp_addr: T::AccountId, vpp_number: u64, sell_energy_number: u64, sell_energy_token_amount: u32) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 			//调用typetransfer模块selltransfer函数付款
-			//T::TypeTransfer::do_selltransfer(vpp_addr, vpp_number, sender.clone(), buy_energy_token_amount)?;
+			T::TypeTransfer::do_selltransfer(vpp_addr.clone(), vpp_number, sender.clone(), sell_energy_token_amount)?;
 
 			//调用contract模块addcontract签订出售电能合同
 			T::Contract::do_addcontract(sender.clone(),sender.clone(),0,0,0,0,true,0,vec![0,0])?;
+
+			let vpp_transcation_amount = <TransactionAmount<T>>::get((vpp_addr.clone(), vpp_number));
+			TransactionAmount::<T>::insert((&vpp_addr, vpp_number), vpp_transcation_amount + sell_energy_token_amount);
 
 			Ok(())
 		}
