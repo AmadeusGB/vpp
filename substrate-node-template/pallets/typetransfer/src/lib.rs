@@ -102,7 +102,7 @@ decl_module! {
 		pub fn incentivetransfer(origin, incentive_addr: T::AccountId, incentive_status: bool, energy_token: u64) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
-			let token_amount_now = <BalanceToken<T>>::get(sender.clone());
+			//let token_amount_now = <BalanceToken<T>>::get(sender.clone());
 
 			Ok(())
 		}
@@ -114,3 +114,4 @@ decl_module! {
 		}
 	}
 }
+
