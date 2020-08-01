@@ -119,8 +119,7 @@ impl<T:Trait> TypeTransfer<T::AccountId> for Module<T> {
 	fn staketransfer(who: &T::AccountId, energy_token: u64) -> DispatchResult {
 		//调用token模块的staketoken函数，以实现申请PS身份质押token功能
 		T::Token::do_staketoken(who.clone(), energy_token as u32)?;
-
-		//调用audit模块，形成该地址的申请PS身份提案(chenwei)
+		
 		Ok(())
 	}
 
