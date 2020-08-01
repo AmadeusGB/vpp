@@ -279,6 +279,7 @@ impl trade::Trait for Runtime {
 	type Event = Event;
 	type Currency = Balances;
 	type Role = IdentityModule;
+	type TypeTransfer = typetransfer::Module<Runtime>;
 }
 
 parameter_types! {

@@ -10,7 +10,7 @@ use frame_support::{
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
-use primitives::{Vpp, ApprovalStatus, BusinessStatus, Role, Balance};
+use primitives::{Vpp, ApprovalStatus, BusinessStatus, Role, Balance, TypeTransfer};
 use frame_support::dispatch::DispatchResult;
 
 #[cfg(test)]
@@ -30,6 +30,7 @@ pub trait Trait: system::Trait {
 
 	type Currency: Currency<Self::AccountId>;
 	type Role: Role<Self::AccountId>;
+	type TypeTransfer: TypeTransfer<Self::AccountId>;
 }
 
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]

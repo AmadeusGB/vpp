@@ -64,12 +64,7 @@ decl_module! {
 		#[weight = 0]
 		pub fn buytransfer(origin, vpp_addr: T::AccountId, vpp_number: u64, payment_addr: T::AccountId, payment_token: u32) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
-
-			//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
-			//校验PS交易行为是否存在异常（检查交易金额合法性）
-
-			//调用token模块transfertoken函数进行支付
-			T::Token::do_transfertoken(vpp_addr,payment_addr,payment_token)?;
+			Self::do_buytransfer(vpp_addr,vpp_number,payment_addr,payment_token)?;
 			Ok(())
 		}
 
@@ -125,6 +120,15 @@ impl<T:Trait> TypeTransfer<T::AccountId> for Module<T> {
 		//调用token模块的staketoken函数，以实现申请PS身份质押token功能(chenwei)
 
 		//调用audit模块，形成该地址的申请PS身份提案(chenwei)
+		Ok(())
+	}
+
+	fn do_buytransfer(vpp_addr: T::AccountId, vpp_number: u64, payment_addr: T::AccountId, payment_token: u32) -> dispatch::DispatchResult {
+		//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
+		//校验PS交易行为是否存在异常（检查交易金额合法性）
+
+		//调用token模块transfertoken函数进行支付
+		T::Token::do_transfertoken(vpp_addr,payment_addr,payment_token)?;
 		Ok(())
 	}
 }
