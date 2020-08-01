@@ -37,17 +37,17 @@ pub trait Trait: system::Trait {
 #[derive(Encode, Decode)]
 pub struct PsVpp {
 	pub vpp_name: Vec<u8>,
-	pub pre_total_stock: u64,			//预售总额度
-	pub sold_total: u64,					  //已售总额度
-	pub electric_type: u8,  				//0直流 1交流
-	pub energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
-	pub buy_price: u32,
-	pub sell_price: u32,
-	pub post_code: Vec<u8>,
-	pub transport_lose: u32, 			  //线损
-	pub business_status: BusinessStatus, 			//0 不营业  1 营业
+	pub pre_total_stock: u64,										//预售总额度
+	pub sold_total: u64,					  							  //已售总额度
+	pub electric_type: bool,  										  //0直流 1交流
+	pub energy_type: u8,											   //能源类型（0：光电，1：风电，2：火电）
+	pub buy_price: u32,													 //购买价格
+	pub sell_price: u32,												  //出售价格
+	pub post_code: Vec<u8>,										  //邮编
+	pub transport_lose: u32, 			  							//线损
+	pub business_status: BusinessStatus, 				//0 不营业  1 营业
 	pub approval_status: ApprovalStatus, 			  //0 不通过  1 通过  2 审核中
-	pub device_id: u64,						   //设备编号
+	pub device_id: u64,						  							 //设备编号
 }
 
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
@@ -103,16 +103,16 @@ decl_module! {
 			origin, 
 			vpp_name: Vec<u8>, 
 			pre_total_stock: u64,
-			sold_total: u64,					  //已售总额度
-			electric_type: u8,   				//0直流 1交流
+			sold_total: u64,					  							 //已售总额度
+			electric_type: bool,   										   //0直流 1交流
 			energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
 			buy_price: u32,
 			sell_price: u32,
 			post_code: Vec<u8>,
-			transport_lose: u32, 			//线损
-			business_status: BusinessStatus, 			//0 不营业  1 营业
-			// approval_status: u8, 			//0 不通过  1 通过  2 审核中
-			device_id: u64						   //设备编号
+			transport_lose: u32, 										//线损
+			business_status: BusinessStatus, 			   //0 不营业  1 营业
+			// approval_status: u8, 								  //0 不通过  1 通过  2 审核中
+			device_id: u64						   							//设备编号
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
@@ -150,7 +150,7 @@ decl_module! {
 			vpp_name: Vec<u8>, 
 			pre_total_stock: u64,
 			// sold_total: u64,					  //已售总额度
-			electric_type: u8,   				//0直流 1交流
+			electric_type: bool,   				//0直流 1交流
 			energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
 			buy_price: u32,
 			sell_price: u32,
@@ -260,7 +260,7 @@ impl<T: Trait> Module<T> {
 			vpp_name: Vec<u8>, 
 			pre_total_stock: u64,
 			sold_total: u64,					  //已售总额度
-			electric_type: u8,   				//0直流 1交流
+			electric_type: bool,   				//0直流 1交流
 			energy_type: u8,   				//0直流 1交流
 			buy_price: u32,
 			sell_price: u32,
