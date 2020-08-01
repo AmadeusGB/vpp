@@ -23,7 +23,6 @@ pub trait Trait: system::Trait {
 
 	type Currency: Currency<Self::AccountId>;
 	type TypeTransfer: TypeTransfer<Self::AccountId>;
-	type Parliament: Parliament<Self::AccountId>;
 }
 
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
@@ -74,7 +73,7 @@ decl_module! {
 
 			if(apply_role == 2) {
 				//调用typetransfer模块staketransfer质押函数
-				T::TypeTransfer::staketransfer(&sender, 0)?;
+				T::TypeTransfer::staketransfer(&sender, 200)?;
 			}
 
 			let Proposal_number = ProposalCount::get();
