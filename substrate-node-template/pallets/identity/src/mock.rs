@@ -7,7 +7,6 @@ use sp_runtime::{
 	traits::{BlakeTwo256, IdentityLookup}, testing::Header, Perbill,
 };
 use frame_system as system;
-use pallet_balances as balances;
 
 impl_outer_origin! {
 	pub enum Origin for Test {}
@@ -45,25 +44,29 @@ impl system::Trait for Test {
 	type AvailableBlockRatio = AvailableBlockRatio;
 	type Version = ();
 	type ModuleToIndex = ();
-	type AccountData = ();
 	type OnNewAccount = ();
 	type OnKilledAccount = ();
+	type AccountData = balances::AccountData<u64>;
 }
 
 parameter_types! {
-
+	pub const ExistentialDeposit: u64 = 1;
 }
 
-//pub type Balances = balances::Module<Test>;
 impl balances::Trait for Test {
 	type Balance = u64;
 	type Event = ();
+	type DustRemoval = ();
+	type ExistentialDeposit = ExistentialDeposit;
+	type AccountStore = System;
 }
 impl Trait for Test {
-	type Currency = balances::Module<Test>;
 	type Event = ();
+	type Currency = Balances;
 }
 
+type System = system::Module<Test>;
+type Balances = balances::Module<Test>;
 pub type RoleModule = Module<Test>;
 
 // This function basically just builds a genesis storage key/value store according to
