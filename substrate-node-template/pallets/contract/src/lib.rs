@@ -114,7 +114,7 @@ decl_module! {
 
 		#[weight = 0]
 		pub fn completecontract(
-			origin, 
+			_origin, 
 		) -> dispatch::DispatchResult {
 			//为简化，默认同一个电表，同一时间只有一个可执行合同；
 			//合同开始执行，读取电表一个度数；
