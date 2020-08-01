@@ -124,12 +124,12 @@ impl<T:Trait> TypeTransfer<T::AccountId> for Module<T> {
 		Ok(())
 	}
 
-	fn do_buytransfer(vpp_addr: T::AccountId, _vpp_number: u64, payment_addr: T::AccountId, payment_token: u32) -> dispatch::DispatchResult {
+	fn do_buytransfer(ps_addr: T::AccountId, _vpp_number: u64, payment_addr: T::AccountId, payment_token: u32) -> dispatch::DispatchResult {
 		//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
 		//校验PS交易行为是否存在异常（检查交易金额合法性）
 
 		//调用token模块transfertoken函数进行支付
-		T::Token::do_transfertoken(vpp_addr,payment_addr,payment_token)?;
+		T::Token::do_transfertoken(payment_addr, ps_addr, payment_token)?;
 		Ok(())
 	}
 }
