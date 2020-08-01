@@ -82,10 +82,10 @@ decl_module! {
 		fn deposit_event() = default;
 
 		#[weight = 0]
-		pub fn apply(origin, apply_role: u8) -> dispatch::DispatchResult{
+		pub fn apply(origin, owner: T::AccountId, apply_role: u8) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
-			let mut ps_role = <Roles<T>>::get(sender.clone()).unwrap_or_else(|| MultiRole {
+			let mut ps_role = <Roles<T>>::get(owner.clone()).unwrap_or_else(|| MultiRole {
 				pu: true,
 				pg: false,
 				ps: false,
@@ -104,9 +104,9 @@ decl_module! {
 				_ => ps_role.pom = false,
 			};
 
-			Roles::<T>::insert(sender.clone(), ps_role);
+			Roles::<T>::insert(owner.clone(), ps_role);
 
-			Self::deposit_event(RawEvent::ApplyRoled(sender, apply_role));
+			Self::deposit_event(RawEvent::ApplyRoled(owner, apply_role));
 
 			Ok(())
 		}
