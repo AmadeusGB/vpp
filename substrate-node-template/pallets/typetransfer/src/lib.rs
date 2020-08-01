@@ -9,6 +9,8 @@ use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
 use pallet_token::{BuyRate, SellRate, BalanceToken};
+use primitives::TypeTransfer;
+use frame_support::dispatch::DispatchResult;
 
 #[cfg(test)]
 mod mock;
@@ -94,11 +96,7 @@ decl_module! {
 		#[weight = 0]
 		pub fn staketransfer(origin, energy_token: u64) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
-
-			//调用token模块的staketoken函数，以实现申请PS身份质押token功能(chenwei)
-
-			//调用audit模块，形成该地址的申请PS身份提案(chenwei)
-
+			<Self as TypeTransfer<T::AccountId>>::staketransfer(&sender, energy_token)?;
 			Ok(())
 		}
 
@@ -118,3 +116,11 @@ decl_module! {
 	}
 }
 
+impl<T:Trait> TypeTransfer<T::AccountId> for Module<T> {
+	fn staketransfer(who: &T::AccountId, energy_token: u64) -> DispatchResult {
+		//调用token模块的staketoken函数，以实现申请PS身份质押token功能(chenwei)
+
+		//调用audit模块，形成该地址的申请PS身份提案(chenwei)
+		Ok(())
+	}
+}

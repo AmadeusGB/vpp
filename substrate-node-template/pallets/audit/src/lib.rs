@@ -8,6 +8,7 @@ use frame_support::{
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
+use primitives::TypeTransfer;
 
 #[cfg(test)]
 mod mock;
@@ -21,6 +22,7 @@ pub trait Trait: system::Trait {
 	type Event: From<Event<Self>> + Into<<Self as system::Trait>::Event>;
 
 	type Currency: Currency<Self::AccountId>;
+	type TypeTransfer: TypeTransfer<Self::AccountId>;
 }
 
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
@@ -71,6 +73,7 @@ decl_module! {
 
 			if(apply_role == 2) {
 				//调用typetransfer模块staketransfer质押函数(chenwei)
+				T::TypeTransfer::staketransfer(&sender, 0)?;
 			}
 
 			let Proposal_number = ProposalCount::get();
