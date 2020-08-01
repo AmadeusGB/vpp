@@ -73,7 +73,7 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn algorithmtransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_token: u64) -> dispatch::DispatchResult{
+		pub fn algorithmtransfer(origin, ps_addr: T::AccountId, _vpp_number: u64, contract_price: BalanceOf<T>, _energy_token: u64) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
 			//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
@@ -92,7 +92,7 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn incentivetransfer(origin, incentive_addr: T::AccountId, incentive_status: bool, energy_token: u64) -> dispatch::DispatchResult{
+		pub fn incentivetransfer(_origin, incentive_addr: T::AccountId, incentive_status: bool, energy_token: u64) -> dispatch::DispatchResult{
 		
 			//调用token模块的incentivetoken函数，以实现奖惩激励功能
 			T::Token::do_incentivetoken(incentive_addr, incentive_status, energy_token as u32)?;
@@ -100,7 +100,7 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn dividendtransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_token: u64) -> dispatch::DispatchResult{
+		pub fn dividendtransfer(_origin, _ps_addr: T::AccountId, _vpp_number: u64, _contract_price: BalanceOf<T>, _energy_token: u64) -> dispatch::DispatchResult{
 
 			Ok(())
 		}

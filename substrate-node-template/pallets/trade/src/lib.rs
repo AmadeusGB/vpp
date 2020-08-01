@@ -198,13 +198,14 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn buyenergy(origin, ps_addr: T::AccountId, vpp_number: u64, buy_energy_number: u64, buy_energy_token_amount: u32) -> dispatch::DispatchResult{
+		pub fn buyenergy(origin, ps_addr: T::AccountId, vpp_number: u64, buy_energy_number: u64, buy_energy_token_amount: u32, pu_ammeter_id: Vec<u8>) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 			//调用typetransfer模块buytransfer函数付款
 			T::TypeTransfer::do_buytransfer(ps_addr.clone(), vpp_number, sender.clone(), buy_energy_token_amount)?;
 			
 			//调用contract模块addcontract签订购买电能合同
-			T::Contract::do_addcontract(sender.clone(),ps_addr.clone(),vpp_number,0,0,0,true,0,vec![0,0])?;
+			let vpp = <VppList<T>>::get((ps_addr.clone(), vpp_number)).ok_or(Error::<T>::VppNotExist)?;
+			T::Contract::do_addcontract(sender.clone(), ps_addr.clone(), vpp_number, buy_energy_token_amount, buy_energy_number, true, vpp.energy_type, pu_ammeter_id)?;
 
 			let vpp_transcation_amount = <TransactionAmount<T>>::get((ps_addr.clone(), vpp_number));
 			TransactionAmount::<T>::insert((&ps_addr, vpp_number), vpp_transcation_amount + buy_energy_token_amount);
@@ -214,13 +215,14 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn sellenergy(origin, ps_addr: T::AccountId, vpp_number: u64, sell_energy_number: u64, sell_energy_token_amount: u32) -> dispatch::DispatchResult{
+		pub fn sellenergy(origin, ps_addr: T::AccountId, vpp_number: u64, sell_energy_number: u64, sell_energy_token_amount: u32, pg_ammeter_id: Vec<u8>) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 			//调用typetransfer模块selltransfer函数付款
 			T::TypeTransfer::do_selltransfer(ps_addr.clone(), vpp_number, sender.clone(), sell_energy_token_amount)?;
 
 			//调用contract模块addcontract签订出售电能合同
-			T::Contract::do_addcontract(sender.clone(),sender.clone(),0,0,0,0,true,0,vec![0,0])?;
+			let vpp = <VppList<T>>::get((ps_addr.clone(), vpp_number)).ok_or(Error::<T>::VppNotExist)?;
+			T::Contract::do_addcontract(sender.clone(), ps_addr.clone(), vpp_number, sell_energy_token_amount, sell_energy_number, false, vpp.energy_type, pg_ammeter_id)?;
 
 			let vpp_transcation_amount = <TransactionAmount<T>>::get((ps_addr.clone(), vpp_number));
 			TransactionAmount::<T>::insert((&ps_addr, vpp_number), vpp_transcation_amount + sell_energy_token_amount);

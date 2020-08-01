@@ -35,14 +35,15 @@ pub trait Token<AccountId> {
 }
 
 pub trait Contract<AccountId> {
-    fn do_addcontract(sender: AccountId,		ps_addr: AccountId,									   //签订该合同的PS地址(通过地址和ID取得VPP所有信息)
-                      vpp_number: u64,											//该地址下虚拟电厂ID
-                      block_number: u64,										   //合同创建时区块号
-                      contract_price: Balance,		  			 //合同总价
-                      energy_amount: u64,							  			 //购买电能度数
-                      contract_type:bool,								 			//合同分类（购买/出售）
-                      energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
-                      ammeter_id: Vec<u8> 									//电表编号
+    fn do_addcontract(
+                    sender: AccountId,		
+                    ps_addr: AccountId,									   //签订该合同的PS地址(通过地址和ID取得VPP所有信息)
+                    vpp_number: u64,											//该地址下虚拟电厂ID
+                    contract_price: u32,		  			 //合同总价
+                    energy_amount: u64,							  			 //购买/出售电能度数
+                    contract_type:bool,								 			//合同分类（购买/出售）
+                    energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
+                    ammeter_id: Vec<u8> 									//电表编号
     ) -> dispatch::DispatchResult;
 }
 

@@ -116,7 +116,7 @@ decl_module! {
 		} 
 
 		#[weight = 0]
-		pub fn transfertoken(origin, from: T::AccountId, to: T::AccountId, token_amount: u32) -> dispatch::DispatchResult{
+		pub fn transfertoken(_origin, from: T::AccountId, to: T::AccountId, token_amount: u32) -> dispatch::DispatchResult{
 			Self::do_transfertoken(from, to, token_amount)?;
 			Ok(())
 		}
