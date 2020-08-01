@@ -8,7 +8,7 @@ use frame_support::{
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
-use primitives::TypeTransfer;
+use primitives::{TypeTransfer, Parliament};
 
 #[cfg(test)]
 mod mock;
@@ -23,6 +23,7 @@ pub trait Trait: system::Trait {
 
 	type Currency: Currency<Self::AccountId>;
 	type TypeTransfer: TypeTransfer<Self::AccountId>;
+	type Parliament: Parliament<Self::AccountId>;
 }
 
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
@@ -73,7 +74,7 @@ decl_module! {
 			let sender = ensure_signed(origin)?;
 
 			if(apply_role == 2) {
-				//调用typetransfer模块staketransfer质押函数(chenwei)
+				//调用typetransfer模块staketransfer质押函数
 				T::TypeTransfer::staketransfer(&sender, 200)?;
 			}
 
@@ -94,6 +95,7 @@ decl_module! {
 		pub fn setproposalrole(origin, proposal_number: u32, vote_result: u8) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
+<<<<<<< HEAD
 			//检查当前sender是否为委员会成员(chenwei)
 
 			let mut proposal_information = <ProposalInformation<T>>::get(proposal_number).ok_or(Error::<T>::ProposalNotExist)?;;
@@ -104,6 +106,13 @@ decl_module! {
 				//apply(proposal_information.apply_addr, proposal_information.apply_role);
 			}
 
+=======
+			//检查当前sender是否为委员会成员
+			if T::Parliament::is_member(&sender) {
+				let mut proposal_information = <ProposalInformation>::get(proposal_number).ok_or(Error::<T>::ProposalNotExist)?;;
+				proposal_information.apply_status = vote_result;
+			}
+>>>>>>> 6eda9cbd93432f0885e4a846423011072026b655
 			Ok(())
 		}
 
