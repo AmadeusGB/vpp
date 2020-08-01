@@ -294,11 +294,11 @@ impl parliament::Trait for Runtime {
 impl typetransfer::Trait for Runtime {
 	type Event = Event;
 	type Currency = Balances;
+	type Token = token::Module<Runtime>;
 	type MinDustCheckBalance = MinDustCheckBalance;
 	type MinDustCheckSeconds = MinDustCheckSeconds;
 }
 
-// 附加题答案
 parameter_types! {
 	pub const MaxClaimLength: u32 = 6;
 	pub const MinDustCheckBalance:u32 = 100;

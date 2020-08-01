@@ -3020,6 +3020,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "parity-scale-codec",
+ "primitives",
  "sp-core",
  "sp-io",
  "sp-runtime",

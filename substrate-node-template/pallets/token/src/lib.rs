@@ -9,6 +9,8 @@ use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 //use sp_runtime::traits::StaticLookup;
 use codec::{Encode, Decode};
+use primitives::Token;
+use frame_support::dispatch::DispatchResult;
 
 #[cfg(test)]
 mod mock;
@@ -116,14 +118,7 @@ decl_module! {
 
 		#[weight = 0]
 		pub fn transfertoken(origin, from: T::AccountId, to: T::AccountId, token_amount: u32) -> dispatch::DispatchResult{
-			let mut from_tokeninfo = <BalanceToken<T>>::get(&from).ok_or(Error::<T>::TokenAcountNotExist)?;
-			let mut to_tokeninfo = <BalanceToken<T>>::get(&to).ok_or(Error::<T>::TokenAcountNotExist)?;
-			
-			ensure!(from_tokeninfo.token_balance > token_amount, Error::<T>::BalanceNotEnough);
-
-			from_tokeninfo.token_balance -= token_amount;
-			to_tokeninfo.token_balance += token_amount;
-
+			Self::do_transfertoken(from, to, token_amount)?;
 			Ok(())
 		}
 
@@ -168,5 +163,18 @@ decl_module! {
 			Ok(())
 		}
 
+	}
+}
+
+impl<T:Trait> Token<T::AccountId> for Module<T>{
+	fn do_transfertoken(from: T::AccountId, to: T::AccountId, token_amount: u32) -> DispatchResult {
+		let mut from_tokeninfo = <BalanceToken<T>>::get(&from).ok_or(Error::<T>::TokenAcountNotExist)?;
+		let mut to_tokeninfo = <BalanceToken<T>>::get(&to).ok_or(Error::<T>::TokenAcountNotExist)?;
+
+		ensure!(from_tokeninfo.token_balance > token_amount, Error::<T>::BalanceNotEnough);
+
+		from_tokeninfo.token_balance -= token_amount;
+		to_tokeninfo.token_balance += token_amount;
+		Ok(())
 	}
 }

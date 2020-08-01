@@ -9,7 +9,7 @@ use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
 use pallet_token::{BuyRate, SellRate, BalanceToken};
-use primitives::TypeTransfer;
+use primitives::{TypeTransfer, Token};
 use frame_support::dispatch::DispatchResult;
 use pallet_timestamp as timestamp;
 
@@ -25,6 +25,7 @@ pub trait Trait: system::Trait+ timestamp::Trait{
 	type Event: From<Event<Self>> + Into<<Self as system::Trait>::Event>;
 
 	type Currency: Currency<Self::AccountId>;
+	type Token: Token<Self::AccountId>;
 	type MinDustCheckBalance: Get<u32>;
 	type MinDustCheckSeconds: Get<u32>;
 }
@@ -67,8 +68,8 @@ decl_module! {
 			//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
 			//校验PS交易行为是否存在异常（检查交易金额合法性）
 
-			//调用token模块transfertoken函数进行支付(chenwei)
-
+			//调用token模块transfertoken函数进行支付
+			T::Token::do_transfertoken(vpp_addr,payment_addr,payment_token)?;
 			Ok(())
 		}
 

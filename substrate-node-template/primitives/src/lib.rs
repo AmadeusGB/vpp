@@ -25,6 +25,10 @@ pub trait Parliament<AccountId> {
     fn is_member(who: &AccountId) -> bool;
 }
 
+pub trait Token<AccountId> {
+    fn do_transfertoken(from: AccountId, to: AccountId, token_amount: u32) -> dispatch::DispatchResult;
+}
+
 #[derive(Encode, Decode, PartialEq, Eq, Clone, Copy, RuntimeDebug)]
 pub enum ApprovalStatus {
     Denied,
