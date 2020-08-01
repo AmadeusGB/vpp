@@ -7,7 +7,6 @@ use frame_support::{
 };
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
-//use sp_runtime::traits::StaticLookup;
 use codec::{Encode, Decode};
 use pallet_token::{BuyRate, SellRate, BalanceToken};
 
@@ -57,7 +56,7 @@ decl_module! {
 		fn deposit_event() = default;
 
 		#[weight = 0]
-		pub fn buytransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_amount: u64) -> dispatch::DispatchResult{
+		pub fn buytransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_token: u64) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
 			//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
@@ -69,7 +68,7 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn selltransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_amount: u64) -> dispatch::DispatchResult{
+		pub fn selltransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_token: u64) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
 			//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
@@ -81,7 +80,7 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn algorithmtransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_amount: u64) -> dispatch::DispatchResult{
+		pub fn algorithmtransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_token: u64) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
 			//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
@@ -93,22 +92,26 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn staketransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_amount: u64) -> dispatch::DispatchResult{
+		pub fn staketransfer(origin, energy_token: u64) -> dispatch::DispatchResult{
+			let sender = ensure_signed(origin)?;
+
+			//调用token模块的staketoken函数，以实现申请PS身份质押token功能(chenwei)
+
+			//调用audit模块，形成该地址的申请PS身份提案(chenwei)
 
 			Ok(())
 		}
 
 		#[weight = 0]
 		pub fn incentivetransfer(origin, incentive_addr: T::AccountId, incentive_status: bool, energy_token: u64) -> dispatch::DispatchResult{
-			let sender = ensure_signed(origin)?;
-
-			//let token_amount_now = <BalanceToken<T>>::get(sender.clone());
+		
+			//调用token模块的incentivetoken函数，以实现奖惩激励功能(chenwei)
 
 			Ok(())
 		}
 
 		#[weight = 0]
-		pub fn dividendtransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_amount: u64) -> dispatch::DispatchResult{
+		pub fn dividendtransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_token: u64) -> dispatch::DispatchResult{
 
 			Ok(())
 		}

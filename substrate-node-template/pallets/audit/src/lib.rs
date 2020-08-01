@@ -7,7 +7,6 @@ use frame_support::{
 };
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
-//use sp_runtime::traits::StaticLookup;
 use codec::{Encode, Decode};
 
 #[cfg(test)]

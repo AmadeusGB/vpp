@@ -70,7 +70,6 @@ decl_module! {
 
 			BuyRate::put(112);
 
-			//let amount = <BalanceOf<T>>::from(10);
 			let amount = buy_token * BuyRate::get() / 100;
 
 			if(<BalanceOf<T>>::from(amount) == amount_price) {
@@ -112,6 +111,25 @@ decl_module! {
 
 			Ok(())
 		} 
+
+		#[weight = 0]
+		pub fn incentivetoken(origin, incentive_status: bool, incentive_token: u32) -> dispatch::DispatchResult{
+			let sender = ensure_signed(origin)?;
+
+			let mut tokeninfo = <BalanceToken<T>>::get(&sender).unwrap_or_else(|| TokenInfo {
+				token_total: 0,
+				token_stake: 0,
+				token_vote: 0,
+			});
+			match incentive_status {
+				true => tokeninfo.token_total += incentive_token,			//正向激励
+				false => tokeninfo.token_total -= incentive_token,			//负向激励
+			}
+
+			BalanceToken::<T>::insert(&sender, tokeninfo);
+
+			Ok(())
+		}
 
 		#[weight = 0]
 		pub fn staketoken(origin, stake_token: u32) -> dispatch::DispatchResult{
