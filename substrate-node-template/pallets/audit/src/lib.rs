@@ -27,7 +27,8 @@ pub trait Trait: system::Trait {
 
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
 #[derive(Encode, Decode)]
-pub struct ProposalInfo {
+pub struct ProposalInfo<T: Trait> {
+	pub apply_addr: T::AccountId,			  //申请者地址
 	pub apply_role: u8,							   //申请角色（0:pu, 1:pg，2:ps，3:sg，4:ass）
 	pub apply_status: u8,						//提案状态（0：待通过，1：已通过，2：已拒绝）
 	pub apply_annex: bool,					 //附件情况（0:无附件，1:有附件）
@@ -39,7 +40,7 @@ decl_storage! {
 		Something get(fn something): Option<u32>;
 
 		pub ProposalCount get(fn proposalcount):  u32;
-		pub ProposalInformation get(fn proposalinformation):  map hasher(blake2_128_concat) u32 => Option<ProposalInfo>;
+		pub ProposalInformation get(fn proposalinformation):  map hasher(blake2_128_concat) u32 => Option<ProposalInfo<T>>;
 	}
 }
 
@@ -77,7 +78,8 @@ decl_module! {
 			}
 
 			let Proposal_number = ProposalCount::get();
-			let proposal_template = ProposalInfo {
+			let proposal_template = ProposalInfo::<T> {
+				apply_addr: sender.clone(),
 				apply_role: apply_role,
 				apply_status: 0,
 				apply_annex: apply_annex,
@@ -94,8 +96,13 @@ decl_module! {
 
 			//检查当前sender是否为委员会成员(chenwei)
 
-			let mut proposal_information = <ProposalInformation>::get(proposal_number).ok_or(Error::<T>::ProposalNotExist)?;;
+			let mut proposal_information = <ProposalInformation<T>>::get(proposal_number).ok_or(Error::<T>::ProposalNotExist)?;;
 			proposal_information.apply_status = vote_result;
+
+			if(vote_result == 1) {
+				//调用identity模块apply函数，使申请者拥有该身份
+				//apply(proposal_information.apply_addr, proposal_information.apply_role);
+			}
 
 			Ok(())
 		}
