@@ -21,6 +21,10 @@ pub trait TypeTransfer<AccountId> {
     fn staketransfer(who: &AccountId, energy_token: u64) -> dispatch::DispatchResult;
 }
 
+pub trait Parliament<AccountId> {
+    fn is_member(who: &AccountId) -> bool;
+}
+
 #[derive(Encode, Decode, PartialEq, Eq, Clone, Copy, RuntimeDebug)]
 pub enum ApprovalStatus {
     Denied,
