@@ -65,13 +65,13 @@ decl_module! {
 		fn deposit_event() = default;
 
 		#[weight = 0]
-		pub fn buytoken(origin, token: u32, treasure: T::AccountId, amount_price: BalanceOf<T>) -> dispatch::DispatchResult{
+		pub fn buytoken(origin, buy_token: u32, treasure: T::AccountId, amount_price: BalanceOf<T>) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
 			BuyRate::put(112);
 
 			//let amount = <BalanceOf<T>>::from(10);
-			let amount = token * BuyRate::get() / 100;
+			let amount = buy_token * BuyRate::get() / 100;
 
 			if(<BalanceOf<T>>::from(amount) == amount_price) {
 				let mut tokeninfo = <BalanceToken<T>>::get(&sender).unwrap_or_else(|| TokenInfo {
@@ -79,7 +79,7 @@ decl_module! {
 					token_stake: 0,
 					token_vote: 0,
 				});
-				tokeninfo.token_total += token;
+				tokeninfo.token_total += buy_token;
 
 				BalanceToken::<T>::insert(&sender, tokeninfo);
 
@@ -90,12 +90,12 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn selltoken(origin, token: u32, treasure: T::AccountId, amount_price: BalanceOf<T>) -> dispatch::DispatchResult{
+		pub fn selltoken(origin, sell_token: u32, treasure: T::AccountId, amount_price: BalanceOf<T>) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
 			SellRate::put(98);
 
-			let amount = token * SellRate::get() / 100;
+			let amount = sell_token * SellRate::get() / 100;
 
 			if(<BalanceOf<T>>::from(amount) == amount_price) {
 				let mut tokeninfo = <BalanceToken<T>>::get(&sender).unwrap_or_else(|| TokenInfo {
@@ -103,7 +103,7 @@ decl_module! {
 					token_stake: 0,
 					token_vote: 0,
 				});
-				tokeninfo.token_total -= token;
+				tokeninfo.token_total -= sell_token;
 
 				BalanceToken::<T>::insert(&sender, tokeninfo);
 				
@@ -112,5 +112,40 @@ decl_module! {
 
 			Ok(())
 		} 
+
+		#[weight = 0]
+		pub fn staketoken(origin, stake_token: u32) -> dispatch::DispatchResult{
+			let sender = ensure_signed(origin)?;
+
+			let mut tokeninfo = <BalanceToken<T>>::get(&sender).unwrap_or_else(|| TokenInfo {
+				token_total: 0,
+				token_stake: 0,
+				token_vote: 0,
+			});
+			tokeninfo.token_total -= stake_token;
+			tokeninfo.token_stake += stake_token;
+
+			BalanceToken::<T>::insert(&sender, tokeninfo);
+
+			Ok(())
+		}
+
+		#[weight = 0]
+		pub fn votetoken(origin, vote_token: u32) -> dispatch::DispatchResult{
+			let sender = ensure_signed(origin)?;
+
+			let mut tokeninfo = <BalanceToken<T>>::get(&sender).unwrap_or_else(|| TokenInfo {
+				token_total: 0,
+				token_stake: 0,
+				token_vote: 0,
+			});
+			tokeninfo.token_total -= vote_token;
+			tokeninfo.token_vote += vote_token;
+
+			BalanceToken::<T>::insert(&sender, tokeninfo);
+
+			Ok(())
+		}
+
 	}
 }
