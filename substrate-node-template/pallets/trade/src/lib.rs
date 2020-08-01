@@ -200,7 +200,8 @@ decl_module! {
 		#[weight = 0]
 		pub fn buyenergy(origin, vpp_addr: T::AccountId, vpp_number: u64, buy_energy_number: u64, buy_energy_token_amount: u32) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
-			//调用typetransfer模块buytransfer函数付款(chenwei)
+			//调用typetransfer模块buytransfer函数付款
+			T::TypeTransfer::do_buytransfer(vpp_addr, vpp_number, sender.clone(), buy_energy_token_amount)?;
 			
 			//调用contract模块addcontract签订购买电能合同(chenwei)
 
@@ -251,6 +252,7 @@ impl<T: Trait> Module<T> {
 			pre_total_stock: u64,
 			sold_total: u64,					  //已售总额度
 			electric_type: u8,   				//0直流 1交流
+			energy_type: u8,   				//0直流 1交流
 			buy_price: BalanceOf<T>,
 			sell_price: BalanceOf<T>,
 			post_code: Vec<u8>,
@@ -264,6 +266,7 @@ impl<T: Trait> Module<T> {
 			pre_total_stock: pre_total_stock,
 			sold_total: sold_total,
 			electric_type: electric_type,
+			energy_type,
 			buy_price: buy_price,
 			sell_price: sell_price,
 			post_code: post_code,
