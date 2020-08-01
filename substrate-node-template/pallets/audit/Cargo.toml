@@ -50,10 +50,14 @@ git = 'https://github.com/paritytech/substrate.git'
 tag = 'v2.0.0-rc2'
 version = '2.0.0-rc2'
 
+[dependencies]
+primitives = { default-features = false, path = '../../primitives' }
+
 [features]
 default = ['std']
 std = [
     'codec/std',
     'frame-support/std',
     'frame-system/std',
+    'primitives/std',
 ]

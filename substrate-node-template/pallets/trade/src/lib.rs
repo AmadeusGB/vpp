@@ -59,9 +59,10 @@ pub struct RoleInfo {
 // This pallet's storage items.
 decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
-		VppList get(fn vpplist): map hasher(blake2_128_concat) (T::AccountId, u64) => Option<PsVpp<T>>;																//虚拟电厂申请列表
+		VppList get(fn vpplist): map hasher(blake2_128_concat) (T::AccountId, u64) => Option<PsVpp<T>>;														//虚拟电厂申请列表
 		Vppcounts get(fn vpp_counts): map hasher(blake2_128_concat) T::AccountId => u64;															 					//PS申请虚拟电厂数量
 		Transaction_amount get(fn transaction_amount): map hasher(blake2_128_concat) (T::AccountId, u64) => BalanceOf<T>;			 //虚拟电厂交易额
+		Currentremainingbattery get(fn currentremainingbattery): map hasher(blake2_128_concat) T::AccountId => u64;																   //当前电表电量
 	}
 }
 
@@ -134,9 +135,9 @@ decl_module! {
 
 		   VppList::<T>::insert((sender.clone(), idx), new_vpp);
 
-			Vppcounts::<T>::insert(sender.clone(), next_id);
+		   Vppcounts::<T>::insert(sender.clone(), next_id);
 
-			Ok(())
+		   Ok(())
 		}
 
 		#[weight = 0]
@@ -191,13 +192,22 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn buyenergy(origin, buy_number: u8, amount_price: BalanceOf<T>) -> dispatch::DispatchResult{
+		pub fn buyenergy(origin, vpp_addr: T::AccountId, vpp_number: u64, buy_energy_number: u64, buy_energy_token_amount: u32) -> dispatch::DispatchResult{
+			let sender = ensure_signed(origin)?;
+			//调用typetransfer模块buytransfer函数付款(chenwei)
+			
+			//调用contract模块addcontract签订购买电能合同(chenwei)
+
+			Currentremainingbattery::<T>::insert(&sender, buy_energy_number);
 
 			Ok(())
 		}
 
 		#[weight = 0]
-		pub fn sellenergy(origin, sell_number: u8, amount_price: BalanceOf<T>) -> dispatch::DispatchResult{
+		pub fn sellenergy(origin, sell_number: u8, amount_token: u32) -> dispatch::DispatchResult{
+			//调用typetransfer模块selltransfer函数付款(chenwei)
+			
+			//调用contract模块addcontract签订出售电能合同(chenwei)
 
 			Ok(())
 		}
