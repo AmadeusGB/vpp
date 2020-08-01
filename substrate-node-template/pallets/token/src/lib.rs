@@ -3,7 +3,7 @@
 use frame_support::{
 	decl_module, decl_storage, decl_event, decl_error, dispatch, ensure,
 	traits::{Get},
-	traits::{Currency},
+	traits::{Currency, ExistenceRequirement},
 };
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
@@ -29,7 +29,9 @@ decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
 		Something get(fn something): Option<u32>;
 
-
+		pub BuyRate get(fn buyrate):  u32;
+		pub SellRate get(fn sellrate):  u32;
+		pub BalanceToken get(fn balancetoken):  map hasher(blake2_128_concat) T::AccountId => u32;
 	}
 }
 
@@ -57,17 +59,39 @@ decl_module! {
 		fn deposit_event() = default;
 
 		#[weight = 0]
-		pub fn buytoken(origin, price: BalanceOf<T>) -> dispatch::DispatchResult{
+		pub fn buytoken(origin, token: u32, treasure: T::AccountId, amount_price: BalanceOf<T>) -> dispatch::DispatchResult{
+			let sender = ensure_signed(origin)?;
+
+			BuyRate::put(112);
 
 			//let amount = <BalanceOf<T>>::from(10);
+			let amount = token * BuyRate::get() / 100;
+
+			if(<BalanceOf<T>>::from(amount) == amount_price) {
+				BalanceToken::<T>::insert(&sender, token);
+
+				T::Currency::transfer(&sender, &treasure, amount_price, ExistenceRequirement::KeepAlive)?;
+			}
 
 			Ok(())
 		}
-	}
-}
 
-impl<T: Trait> Module<T> {
-	fn buy(_sender: &T::AccountId, price: BalanceOf<T>)  {
-		
+		#[weight = 0]
+		pub fn selltoken(origin, token: u32, treasure: T::AccountId, amount_price: BalanceOf<T>) -> dispatch::DispatchResult{
+			let sender = ensure_signed(origin)?;
+
+			SellRate::put(98);
+
+			let amount = token * SellRate::get() / 100;
+
+			if(<BalanceOf<T>>::from(amount) == amount_price) {
+				let token_amount_now = <BalanceToken<T>>::get(&sender);
+				BalanceToken::<T>::insert(&sender, token_amount_now - token);
+				
+				T::Currency::transfer(&treasure, &sender, amount_price, ExistenceRequirement::KeepAlive)?;
+			}
+
+			Ok(())
+		}
 	}
 }
