@@ -40,6 +40,7 @@ pub struct PsVpp<T: Trait> {
 	pub pre_total_stock: u64,			//预售总额度
 	pub sold_total: u64,					  //已售总额度
 	pub electric_type: u8,  				//0直流 1交流
+	pub energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
 	pub buy_price: BalanceOf<T>,
 	pub sell_price: BalanceOf<T>,
 	pub post_code: Vec<u8>,
@@ -104,6 +105,7 @@ decl_module! {
 			pre_total_stock: u64,
 			sold_total: u64,					  //已售总额度
 			electric_type: u8,   				//0直流 1交流
+			energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
 			buy_price: BalanceOf<T>,
 			sell_price: BalanceOf<T>,
 			post_code: Vec<u8>,
@@ -125,6 +127,7 @@ decl_module! {
 				pre_total_stock,
 				sold_total,
 				electric_type,
+				energy_type,
 				buy_price,
 				sell_price,
 				post_code,
@@ -148,6 +151,7 @@ decl_module! {
 			pre_total_stock: u64,
 			// sold_total: u64,					  //已售总额度
 			electric_type: u8,   				//0直流 1交流
+			energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
 			buy_price: BalanceOf<T>,
 			sell_price: BalanceOf<T>,
 			// post_code: Vec<u8>,
@@ -165,6 +169,7 @@ decl_module! {
 				 pre_total_stock,
 				 // sold_total,
 				 electric_type,
+				 energy_type,
 				 buy_price,
 				 sell_price,
 				 // post_code,
