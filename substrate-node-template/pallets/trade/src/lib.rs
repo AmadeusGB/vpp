@@ -62,7 +62,7 @@ pub struct RoleInfo {
 decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
 		VppList get(fn vpplist): map hasher(blake2_128_concat) (T::AccountId, u64) => Option<PsVpp>;															//虚拟电厂申请列表
-		VppCounts get(fn vpp_counts): map hasher(blake2_128_concat) T::AccountId => u64;															 					//PS申请虚拟电厂数量
+		VppCounts get(fn vppcounts): map hasher(blake2_128_concat) T::AccountId => u64;															 					//PS申请虚拟电厂数量
 		TransactionAmount get(fn transactionamount): map hasher(blake2_128_concat) (T::AccountId, u64) => u32;			 						  //虚拟电厂交易额
 		CurrentRemainingBattery get(fn currentremainingbattery): map hasher(blake2_128_concat) T::AccountId => u64;							//当前电表电量
 	}
