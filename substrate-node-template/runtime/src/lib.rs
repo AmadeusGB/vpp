@@ -58,7 +58,7 @@ pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::Account
 pub type AccountIndex = u32;
 
 /// Balance of an account.
-pub type Balance = u128;
+pub type Balance = primitives::Balance;
 
 /// Index of a transaction in the chain.
 pub type Index = u32;
@@ -257,16 +257,46 @@ impl template::Trait for Runtime {
 	type Event = Event;
 }
 
+impl contract::Trait for Runtime {
+	type Event = Event;
+	type Vpp = trade::Module<Runtime>;
+	type Currency = Balances;
+}
+
+impl token::Trait for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+}
+
+impl trade::Trait for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type Role = IdentityModule;
+}
+
+parameter_types! {
+	pub const MaxMemberCount: usize = 10;
+}
+
+impl parliament::Trait for Runtime {
+	type Event = Event;
+	type Vpp = trade::Module<Runtime>;
+	type MaxMemberCount = MaxMemberCount;
+}
+
+impl typetransfer::Trait for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+}
+
 // 附加题答案
 parameter_types! {
 	pub const MaxClaimLength: u32 = 6;
 }
 
-impl poe::Trait for Runtime {
+impl identity::Trait for Runtime {
 	type Event = Event;
-	
-	// 附加题答案
-	type MaxClaimLength = MaxClaimLength;
+	type Currency = Balances;
 }
 
 construct_runtime!(
@@ -285,7 +315,12 @@ construct_runtime!(
 		Sudo: sudo::{Module, Call, Config<T>, Storage, Event<T>},
 		// Used for the module template in `./template.rs`
 		TemplateModule: template::{Module, Call, Storage, Event<T>},
-		PoeModule: poe::{Module, Call, Storage, Event<T>},
+		ContractModule: contract::{Module, Call, Storage, Event<T>},
+		IdentityModule: identity::{Module, Call, Storage, Event<T>},
+		TokenModule: token::{Module, Call, Storage, Event<T>},
+		TradeModule: trade::{Module, Call, Storage, Event<T>},
+		ParliamentModule: parliament::{Module, Call, Storage, Event<T>},
+		TypetransferModule: typetransfer::{Module, Call, Storage, Event<T>},
 	}
 );
 

@@ -1,83 +1,111 @@
 {
-  "name": "substrate-front-end-template",
-  "version": "0.1.1",
+  "name": "vpp-front-end",
+  "version": "0.0.1",
   "private": true,
-  "author": "Parity Technologies <admin@parity.io>",
-  "license": "Unlicense",
-  "dependencies": {
-    "@polkadot/api": "^1.14.1",
-    "@polkadot/extension-dapp": "^0.25.1",
-    "@polkadot/keyring": "^2.10.1",
-    "@polkadot/react-identicon": "^0.53.1",
-    "@polkadot/ui-keyring": "^0.53.1",
-    "@polkadot/util": "^2.10.1",
-    "@polkadot/util-crypto": "^2.10.1",
-    "big.js": "^5.2.2",
-    "prop-types": "^15.7.2",
-    "query-string": "^6.11.0",
-    "react": "^16.12.0",
-    "react-copy-to-clipboard": "^5.0.2",
-    "react-dom": "^16.12.0",
-    "react-scripts": "3.2.0",
-    "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^0.88.0",
-    "toformat": "^2.0.0"
-  },
-  "devDependencies": {
-    "eslint-config-standard": "^14.1.0",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-node": "^10.0.0",
-    "eslint-plugin-only-warn": "^1.0.1",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1",
-    "gh-pages": "^2.1.1"
-  },
+  "description": "An application",
   "scripts": {
-    "start": "PORT=8000 react-scripts start",
-    "build": "react-scripts build",
-    "test": "CI=true react-scripts test --env=jsdom",
-    "eject": "react-scripts eject",
-    "lint": "eslint src/**",
-    "lint:ci": "eslint src/** --max-warnings=0",
-    "lint:fix": "eslint --fix src/**",
-    "predeploy": "yarn build",
-    "deploy": "gh-pages -d build -m '[ci skip] Updates'"
+    "analyze": "cross-env ANALYZE=1 umi build",
+    "build": "umi build",
+    "deploy": "npm run site && npm run gh-pages",
+    "dev": "npm run start:dev",
+    "fetch:blocks": "pro fetch-blocks && npm run prettier",
+    "gh-pages": "gh-pages -d dist",
+    "i18n-remove": "pro i18n-remove --locale=zh-CN --write",
+    "postinstall": "umi g tmp",
+    "lint": "umi g tmp && npm run lint:js && npm run lint:style && npm run lint:prettier",
+    "lint-staged:js": "eslint --ext .js,.jsx,.ts,.tsx ",
+    "lint:fix": "eslint --fix --cache --ext .js,.jsx,.ts,.tsx --format=pretty ./src && npm run lint:style",
+    "lint:js": "eslint --cache --ext .js,.jsx,.ts,.tsx --format=pretty ./src",
+    "lint:prettier": "prettier --check \"**/*\" --end-of-line auto",
+    "lint:style": "stylelint --fix \"src/**/*.less\" --syntax less",
+    "precommit": "lint-staged",
+    "prettier": "prettier -c --write \"**/*\"",
+    "start": "umi dev",
+    "start:dev": "cross-env REACT_APP_ENV=dev MOCK=none umi dev",
+    "start:no-mock": "cross-env MOCK=none umi dev",
+    "start:no-ui": "cross-env UMI_UI=none umi dev",
+    "start:pre": "cross-env REACT_APP_ENV=pre umi dev",
+    "start:test": "cross-env REACT_APP_ENV=test MOCK=none umi dev",
+    "pretest": "node ./tests/beforeTest",
+    "test": "umi test",
+    "test:all": "node ./tests/run-tests.js",
+    "test:component": "umi test ./src/components",
+    "tsc": "tsc"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "standard"
-    ],
-    "plugins": [
-      "only-warn"
-    ],
-    "rules": {
-      "semi": [
-        1,
-        "always"
-      ],
-      "no-extra-semi": 1
-    }
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
+  "lint-staged": {
+    "**/*.less": "stylelint --syntax less",
+    "**/*.{js,jsx,ts,tsx}": "npm run lint-staged:js",
+    "**/*.{js,jsx,tsx,ts,less,md,json}": [
+      "prettier --write"
     ]
   },
-  "homepage": "https://substrate-developer-hub.github.io/substrate-front-end-template",
-  "bugs": {
-    "url": "https://github.com/substrate-developer-hub/substrate-front-end-template/issues"
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 10"
+  ],
+  "dependencies": {
+    "@ant-design/icons": "^4.0.0",
+    "@ant-design/pro-layout": "^6.2.5",
+    "@ant-design/pro-table": "^2.4.0",
+    "@polkadot/extension-dapp": "^0.31.1",
+    "antd": "^4.4.0",
+    "classnames": "^2.2.6",
+    "dva": "^2.4.0",
+    "lodash": "^4.17.11",
+    "moment": "^2.25.3",
+    "omit.js": "^2.0.2",
+    "path-to-regexp": "2.4.0",
+    "qs": "^6.9.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-helmet-async": "^1.0.4",
+    "umi": "^3.2.0",
+    "umi-request": "^1.0.8",
+    "use-merge-value": "^1.0.1"
   },
-  "keywords": [
-    "substrate",
-    "substrate-ui",
-    "polkadot-js"
+  "devDependencies": {
+    "@ant-design/pro-cli": "^1.0.18",
+    "@types/classnames": "^2.2.7",
+    "@types/express": "^4.17.0",
+    "@types/history": "^4.7.2",
+    "@types/jest": "^26.0.0",
+    "@types/lodash": "^4.14.144",
+    "@types/qs": "^6.5.3",
+    "@types/react": "^16.9.17",
+    "@types/react-dom": "^16.8.4",
+    "@types/react-helmet": "^5.0.13",
+    "@umijs/fabric": "^2.2.0",
+    "@umijs/plugin-blocks": "^2.0.5",
+    "@umijs/preset-ant-design-pro": "^1.2.0",
+    "@umijs/preset-react": "^1.4.8",
+    "@umijs/preset-ui": "^2.0.9",
+    "@umijs/yorkie": "^2.0.3",
+    "carlo": "^0.9.46",
+    "chalk": "^4.0.0",
+    "cross-env": "^7.0.0",
+    "cross-port-killer": "^1.1.1",
+    "detect-installer": "^1.0.1",
+    "enzyme": "^3.11.0",
+    "eslint": "^7.1.0",
+    "express": "^4.17.1",
+    "gh-pages": "^3.0.0",
+    "jsdom-global": "^3.0.2",
+    "lint-staged": "^10.0.0",
+    "mockjs": "^1.0.1-beta3",
+    "prettier": "^2.0.1",
+    "pro-download": "1.0.1",
+    "puppeteer-core": "^5.0.0",
+    "stylelint": "^13.0.0"
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "checkFiles": [
+    "src/**/*.js*",
+    "src/**/*.ts*",
+    "src/**/*.less",
+    "config/**/*.js*",
+    "scripts/**/*.js"
   ]
 }
