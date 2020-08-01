@@ -68,7 +68,7 @@ decl_module! {
 		pub fn buytoken(origin, buy_token: u32, treasure: T::AccountId, amount_price: BalanceOf<T>) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
-			BuyRate::put(112);
+			BuyRate::put(102);
 
 			let amount = buy_token * BuyRate::get() / 100;
 
@@ -92,7 +92,7 @@ decl_module! {
 		pub fn selltoken(origin, sell_token: u32, treasure: T::AccountId, amount_price: BalanceOf<T>) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
-			SellRate::put(98);
+			SellRate::put(99);
 
 			let amount = sell_token * SellRate::get() / 100;
 
