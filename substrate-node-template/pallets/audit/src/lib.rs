@@ -73,7 +73,7 @@ decl_module! {
 
 			if(apply_role == 2) {
 				//调用typetransfer模块staketransfer质押函数(chenwei)
-				T::TypeTransfer::staketransfer(&sender, 0)?;
+				T::TypeTransfer::staketransfer(&sender, 200)?;
 			}
 
 			let Proposal_number = ProposalCount::get();
