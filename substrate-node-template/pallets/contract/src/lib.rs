@@ -72,7 +72,7 @@ decl_module! {
 		#[weight = 0]
 		pub fn addcontract(
 			origin, 
-			ps_addr: T::AccountId,									   //合同PS地址(通过地址和ID取得VPP所有信息)
+			ps_addr: T::AccountId,									   //签订该合同的PS地址(通过地址和ID取得VPP所有信息)
 			vpp_number: u64,											//该地址下虚拟电厂ID
 			block_number: u64,										   //合同创建时区块号
 			contract_price: BalanceOf<T>,		  			 //合同总价

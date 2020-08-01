@@ -153,6 +153,12 @@ package = 'pallet-template'
 path = '../pallets/template'
 version = '2.0.0-rc2'
 
+[dependencies.audit]
+default-features = false
+package = 'pallet-audit'
+path = '../pallets/audit'
+version = '2.0.0-rc2'
+
 [dependencies.contract]
 default-features = false
 package = 'pallet-contract'
@@ -224,6 +230,8 @@ std = [
     'timestamp/std',
     'transaction-payment/std',
     'template/std',
+    'audit/std',
+    'contract/std',
     'identity/std',
     'token/std',
     'parliament/std',

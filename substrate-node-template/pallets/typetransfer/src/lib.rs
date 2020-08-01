@@ -56,25 +56,25 @@ decl_module! {
 		fn deposit_event() = default;
 
 		#[weight = 0]
-		pub fn buytransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_token: u64) -> dispatch::DispatchResult{
+		pub fn buytransfer(origin, vpp_addr: T::AccountId, vpp_number: u64, payment_addr: T::AccountId, payment_token: u32) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
 			//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
-			//校验PS交易行为是否存在异常
+			//校验PS交易行为是否存在异常（检查交易金额合法性）
 
-			T::Currency::transfer(&sender, &ps_addr, contract_price, ExistenceRequirement::KeepAlive)?;
+			//调用token模块transfertoken函数进行支付(chenwei)
 
 			Ok(())
 		}
 
 		#[weight = 0]
-		pub fn selltransfer(origin, ps_addr: T::AccountId, vpp_number: u64, contract_price: BalanceOf<T>, energy_token: u64) -> dispatch::DispatchResult{
+		pub fn selltransfer(origin, ps_addr: T::AccountId, vpp_number: u64, payment_addr: T::AccountId, payment_token: u32) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
 			//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
-			//校验PS交易行为是否存在异常
+			//校验PS交易行为是否存在异常（检查交易金额合法性）
 
-			T::Currency::transfer(&ps_addr, &sender, contract_price, ExistenceRequirement::KeepAlive)?;
+			//调用token模块transfertoken函数进行支付(chenwei)
 
 			Ok(())
 		}
