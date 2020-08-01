@@ -4,23 +4,148 @@ use crate::{Error, mock::*};
 use frame_support::{assert_ok, assert_noop};
 
 #[test]
-fn it_works_for_default_value() {
+fn contract_can_add() {
 	new_test_ext().execute_with(|| {
-		// Just a dummy test for the dummy function `do_something`
-		// calling the `do_something` function with a value 42
-		assert_ok!(TemplateModule::do_something(Origin::signed(1), 42));
-		// asserting that the stored value is equal to what we stored
-		assert_eq!(TemplateModule::something(), Some(42));
+		//first
+		assert_ok!(TemplateModule::addcontract(
+			Origin::signed(1),
+			2,
+			3u64,
+			9997u64,
+			1000u64,
+			2000,
+			true,
+			vec![1u8, 2, 3]
+		));
+
+		let expected_storage_item = ContractT {
+			ps_addr: 2,
+			vpp_number: 3u64,
+			block_number: 9997u64,
+			contract_price: 1000u64,
+			energy_amount: 2000,
+			execution_status: 1,
+			contract_type: true,
+			ammeter_id: vec![1u8, 2, 3],
+		};
+
+		assert_eq!(
+			TemplateModule::contracts(1, 0).unwrap(),
+			expected_storage_item
+		);
+		assert_eq!(
+			TemplateModule::searchcontracts(9997u64),
+			(1, 0)
+		);
+		assert_eq!( TemplateModule::contractcounts(1), 1);
+
+		//second
+		assert_ok!(TemplateModule::addcontract(
+			Origin::signed(1),
+			3,
+			4u64,
+			8888u64,
+			11000u64,
+			12000,
+			true,
+			vec![3u8, 2, 3]
+		));
+
+		let expected_storage_item = ContractT {
+			ps_addr: 3,
+			vpp_number: 4u64,
+			block_number: 8888u64,
+			contract_price: 11000u64,
+			energy_amount: 12000,
+			execution_status: 1,
+			contract_type: true,
+			ammeter_id: vec![3u8, 2, 3],
+		};
+
+		assert_eq!(
+			TemplateModule::contracts(1, 1).unwrap(),
+			expected_storage_item
+		);
+		assert_eq!(
+			TemplateModule::searchcontracts(8888),
+			(1, 1)
+		);
+
+		assert_eq!( TemplateModule::contractcounts(1), 2);
+
 	});
 }
 
 #[test]
-fn correct_error_for_none_value() {
+fn contract_can_stop() {
 	new_test_ext().execute_with(|| {
-		// Ensure the correct error is thrown on None value
-		assert_noop!(
-			TemplateModule::cause_error(Origin::signed(1)),
-			Error::<Test>::NoneValue
+
+		assert_ok!(TemplateModule::addcontract(
+			Origin::signed(1),
+			2,
+			3u64,
+			9997u64,
+			1000u64,
+			2000,
+			true,
+			vec![1u8, 2, 3]
+		));
+
+		let expected_storage_item = ContractT {
+			ps_addr: 2,
+			vpp_number: 3u64,
+			block_number: 9997u64,
+			contract_price: 1000u64,
+			energy_amount: 2000,
+			execution_status: 1,
+			contract_type: true,
+			ammeter_id: vec![1u8, 2, 3],
+		};
+
+		assert_eq!(
+			TemplateModule::contracts(1, 0).unwrap(),
+			expected_storage_item
 		);
+
+		assert_ok!(TemplateModule::stopcontract());
+		let contract = TemplateModule::contracts(1, 0).unwrap();
+		assert_eq!(contract.execution_status, 3);
+	});
+}
+
+#[test]
+fn contract_can_complete() {
+	new_test_ext().execute_with(|| {
+		assert_ok!(TemplateModule::addcontract(
+			Origin::signed(1),
+			2,
+			3u64,
+			9997u64,
+			1000u64,
+			2000,
+			true,
+			vec![1u8, 2, 3]
+		));
+
+		let expected_storage_item = ContractT {
+			ps_addr: 2,
+			vpp_number: 3u64,
+			block_number: 9997u64,
+			contract_price: 1000u64,
+			energy_amount: 2000,
+			execution_status: 1,
+			contract_type: true,
+			ammeter_id: vec![1u8, 2, 3],
+		};
+
+		assert_eq!(
+			TemplateModule::contracts(1, 0).unwrap(),
+			expected_storage_item
+		);
+
+		assert_ok!(TemplateModule::completecontract());
+		let contract = TemplateModule::contracts(1, 0).unwrap();
+		assert_eq!(contract.execution_status, 2);
+
 	});
 }
