@@ -1,8 +1,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use frame_support::{
-	decl_module, decl_storage, decl_event, decl_error, dispatch, ensure,
-	traits::{Get},
+	decl_module, decl_storage, decl_event, decl_error, dispatch, 
 	traits::{Currency},
 };
 use frame_system::{self as system, ensure_signed};
@@ -105,7 +104,7 @@ decl_module! {
 
 			let mut contract = <Contracts<T>>::get((sender.clone(), contract_number)).ok_or(Error::<T>::ContractNotExist)?;
 
-			if(contract.execution_status != 3) {
+			if contract.execution_status != 3 {
 				contract.execution_status = 3;					//合同执行状态（执行中：1，已完成：2，已终止：3）
 				Contracts::<T>::insert((sender.clone(), contract_number), contract);
 				Self::deposit_event(RawEvent::ContractExecutionStatusChanged(sender, contract_number, 3));
@@ -134,7 +133,7 @@ impl<T:Trait> Contract<T::AccountId> for Module<T>{
 	fn do_addcontract(sender: T::AccountId,		
 					  ps_addr: T::AccountId,									   //签订该合同的PS地址(通过地址和ID取得VPP所有信息)
 					  vpp_number: u64,											//该地址下虚拟电厂ID
-					  block_number: u64,										   //合同创建时区块号
+					  _block_number: u64,										   //合同创建时区块号
 					  contract_price: Balance,		  			 //合同总价
 					  energy_amount: u64,							  			 //购买电能度数
 					  contract_type:bool,								 			//合同分类（购买/出售）

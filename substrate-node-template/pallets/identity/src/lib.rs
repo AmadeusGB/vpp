@@ -2,7 +2,6 @@
 
 use frame_support::{
 	decl_module, decl_storage, decl_event, decl_error, dispatch,
-	traits::{Get},
 	traits::{Currency},
 };
 use frame_system::{self as system, ensure_signed};
@@ -84,7 +83,7 @@ decl_module! {
 
 		#[weight = 0]
 		pub fn apply(origin, owner: T::AccountId, apply_role: u8) -> dispatch::DispatchResult{
-			let sender = ensure_signed(origin)?;
+			let _sender = ensure_signed(origin)?;
 			Self::do_apply(owner, apply_role)?;
 			Ok(())
 		}

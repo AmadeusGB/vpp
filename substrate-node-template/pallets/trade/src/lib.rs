@@ -4,7 +4,6 @@
 
 use frame_support::{
 	decl_module, decl_storage, decl_event, decl_error, dispatch, ensure,
-	traits::{Get},
 	traits::{Currency},
 };
 use frame_system::{self as system, ensure_signed};
@@ -63,9 +62,9 @@ pub struct RoleInfo {
 decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
 		VppList get(fn vpplist): map hasher(blake2_128_concat) (T::AccountId, u64) => Option<PsVpp<T>>;														//虚拟电厂申请列表
-		Vppcounts get(fn vpp_counts): map hasher(blake2_128_concat) T::AccountId => u64;															 					//PS申请虚拟电厂数量
-		Transaction_amount get(fn transaction_amount): map hasher(blake2_128_concat) (T::AccountId, u64) => BalanceOf<T>;			 //虚拟电厂交易额
-		Currentremainingbattery get(fn currentremainingbattery): map hasher(blake2_128_concat) T::AccountId => u64;																   //当前电表电量
+		VppCounts get(fn vpp_counts): map hasher(blake2_128_concat) T::AccountId => u64;															 					//PS申请虚拟电厂数量
+		TransactionAmount get(fn transactionamount): map hasher(blake2_128_concat) (T::AccountId, u64) => BalanceOf<T>;			 //虚拟电厂交易额
+		CurrentRemainingBattery get(fn currentremainingbattery): map hasher(blake2_128_concat) T::AccountId => u64;																   //当前电表电量
 	}
 }
 
@@ -120,7 +119,7 @@ decl_module! {
 			//check address identity
 			ensure!(T::Role::has_role(&sender, 2), Error::<T>::OnlyPsAllowed);
 
-			let idx = <Vppcounts<T>>::get(sender.clone());
+			let idx = <VppCounts<T>>::get(sender.clone());
 			let next_id = idx.checked_add(1).ok_or(Error::<T>::Overflow)?;
 
 			let new_vpp = Self::vpp_structure (
@@ -140,7 +139,7 @@ decl_module! {
 
 		   VppList::<T>::insert((sender.clone(), idx), new_vpp);
 
-		   Vppcounts::<T>::insert(sender.clone(), next_id);
+		   VppCounts::<T>::insert(sender.clone(), next_id);
 
 		   Ok(())
 		}
@@ -207,7 +206,7 @@ decl_module! {
 			//调用contract模块addcontract签订购买电能合同
 			T::Contract::do_addcontract(sender.clone(),vpp_addr,vpp_number,0,0,0,true,0,vec![0,0])?;
 
-			Currentremainingbattery::<T>::insert(&sender, buy_energy_number);
+			CurrentRemainingBattery::<T>::insert(&sender, buy_energy_number);
 
 			Ok(())
 		}
@@ -239,8 +238,8 @@ impl<T> Vpp<T::AccountId> for Module<T> where T: Trait {
 		Ok(())
 	}
 
-	fn buy(who: &T::AccountId, vpp: &T::AccountId, vpp_number: u64, price: Balance, energy_amount: u64) -> DispatchResult {
-		let price: BalanceOf<T> = to_balance_of::<T>(price);
+	fn buy(_who: &T::AccountId, _vpp: &T::AccountId, _vpp_number: u64, price: Balance, _energy_amount: u64) -> DispatchResult {
+		let _price: BalanceOf<T> = to_balance_of::<T>(price);
 		// todo: update VppList
 		// e.g.: VppList::<T>::insert((vpp, vpp_number), ps_vpp);
 		Ok(())

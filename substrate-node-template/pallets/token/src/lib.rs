@@ -2,7 +2,6 @@
 
 use frame_support::{
 	decl_module, decl_storage, decl_event, decl_error, dispatch, ensure,
-	traits::{Get},
 	traits::{Currency, ExistenceRequirement},
 };
 use frame_system::{self as system, ensure_signed};
@@ -76,7 +75,7 @@ decl_module! {
 
 			let amount = buy_token * BuyRate::get() / 100;
 
-			if(<BalanceOf<T>>::from(amount) == amount_price) {
+			if <BalanceOf<T>>::from(amount) == amount_price {
 				let mut tokeninfo = <BalanceToken<T>>::get(&sender).unwrap_or_else(|| TokenInfo {
 					token_balance: 0,
 					token_stake: 0,
@@ -100,7 +99,7 @@ decl_module! {
 
 			let amount = sell_token * SellRate::get() / 100;
 
-			if(<BalanceOf<T>>::from(amount) == amount_price) {
+			if <BalanceOf<T>>::from(amount) == amount_price {
 				let mut tokeninfo = <BalanceToken<T>>::get(&sender).unwrap_or_else(|| TokenInfo {
 					token_balance: 0,
 					token_stake: 0,

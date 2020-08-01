@@ -1,14 +1,12 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use frame_support::{
-	decl_module, decl_storage, decl_event, decl_error, dispatch, ensure,
+	decl_module, decl_storage, decl_event, decl_error, dispatch, 
 	traits::{Get},
 	traits::{Currency, ExistenceRequirement},
 };
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
-use codec::{Encode, Decode};
-use pallet_token::{BuyRate, SellRate, BalanceToken};
 use primitives::{TypeTransfer, Token};
 use frame_support::dispatch::DispatchResult;
 use pallet_timestamp as timestamp;
@@ -33,7 +31,6 @@ pub trait Trait: system::Trait+ timestamp::Trait{
 // This pallet's storage items.
 decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
-		Something get(fn something): Option<u32>;
 		DustCheckData get(fn dust_check_data): map hasher(blake2_128_concat) T::AccountId => Option<T::Moment>;
 	}
 }
@@ -63,14 +60,14 @@ decl_module! {
 
 		#[weight = 0]
 		pub fn buytransfer(origin, vpp_addr: T::AccountId, vpp_number: u64, payment_addr: T::AccountId, payment_token: u32) -> dispatch::DispatchResult{
-			let sender = ensure_signed(origin)?;
+			let _sender = ensure_signed(origin)?;
 			Self::do_buytransfer(vpp_addr,vpp_number,payment_addr,payment_token)?;
 			Ok(())
 		}
 
 		#[weight = 0]
 		pub fn selltransfer(origin, ps_addr: T::AccountId, vpp_number: u64, payment_addr: T::AccountId, payment_token: u32) -> dispatch::DispatchResult{
-			let sender = ensure_signed(origin)?;
+			let _sender = ensure_signed(origin)?;
 			Self::do_selltransfer(ps_addr, vpp_number, payment_addr, payment_token)?;
 			Ok(())
 		}
@@ -111,7 +108,7 @@ decl_module! {
 }
 
 impl<T:Trait> TypeTransfer<T::AccountId> for Module<T> {
-	fn do_selltransfer(ps_addr: T::AccountId, vpp_number: u64, payment_addr: T::AccountId, payment_token: u32) -> DispatchResult {
+	fn do_selltransfer(ps_addr: T::AccountId, _vpp_number: u64, payment_addr: T::AccountId, payment_token: u32) -> DispatchResult {
 		//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
 		//校验PS交易行为是否存在异常（检查交易金额合法性）
 
@@ -123,11 +120,11 @@ impl<T:Trait> TypeTransfer<T::AccountId> for Module<T> {
 	fn staketransfer(who: &T::AccountId, energy_token: u64) -> DispatchResult {
 		//调用token模块的staketoken函数，以实现申请PS身份质押token功能
 		T::Token::do_staketoken(who.clone(), energy_token as u32)?;
-		
+
 		Ok(())
 	}
 
-	fn do_buytransfer(vpp_addr: T::AccountId, vpp_number: u64, payment_addr: T::AccountId, payment_token: u32) -> dispatch::DispatchResult {
+	fn do_buytransfer(vpp_addr: T::AccountId, _vpp_number: u64, payment_addr: T::AccountId, payment_token: u32) -> dispatch::DispatchResult {
 		//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
 		//校验PS交易行为是否存在异常（检查交易金额合法性）
 
@@ -140,7 +137,7 @@ impl<T:Trait> TypeTransfer<T::AccountId> for Module<T> {
 impl<T: Trait> Module<T> {
 
 	//(smith)
-	pub fn check_dust_attack(sender: T::AccountId, contract_price: BalanceOf<T>, moment: T::Moment) -> bool {
+	pub fn check_dust_attack(_sender: T::AccountId, _contract_price: BalanceOf<T>, _moment: T::Moment) -> bool {
 		//策略1 交易间隔小于x秒
 		//策略2  各个交易余额小于100
 		// if (contract_price < T::MinDustCheckBalance::get() ) {

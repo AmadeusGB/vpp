@@ -1,9 +1,8 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use frame_support::{
-	decl_module, decl_storage, decl_event, decl_error, dispatch, ensure,
-	traits::{Get},
-	traits::{Currency, ExistenceRequirement},
+	decl_module, decl_storage, decl_event, decl_error, dispatch, 
+	traits::{Currency},
 };
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
@@ -15,8 +14,6 @@ mod mock;
 
 #[cfg(test)]
 mod tests;
-
-type BalanceOf<T> = <<T as Trait>::Currency as Currency<<T as system::Trait>::AccountId>>::Balance;
 
 pub trait Trait: system::Trait {
 	type Event: From<Event<Self>> + Into<<Self as system::Trait>::Event>;
@@ -74,12 +71,12 @@ decl_module! {
 		pub fn applyproposalrole(origin, apply_role: u8, apply_annex: bool) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
-			if(apply_role == 2) {
+			if apply_role == 2 {
 				//调用typetransfer模块staketransfer质押函数
 				T::TypeTransfer::staketransfer(&sender, 200)?;
 			}
 
-			let Proposal_number = ProposalCount::get();
+			let proposal_number = ProposalCount::get();
 			let proposal_template = ProposalInfo::<T> {
 				apply_addr: sender.clone(),
 				apply_role: apply_role,
@@ -87,7 +84,7 @@ decl_module! {
 				apply_annex: apply_annex,
 			};
 
-			ProposalInformation::insert(Proposal_number, proposal_template);
+			ProposalInformation::insert(proposal_number, proposal_template);
 
 			Ok(())
 		}
@@ -98,10 +95,10 @@ decl_module! {
 
 			//检查当前sender是否为委员会成员
 			if T::Parliament::is_member(&sender) {
-				let mut proposal_information = <ProposalInformation<T>>::get(proposal_number).ok_or(Error::<T>::ProposalNotExist)?;;
+				let mut proposal_information = <ProposalInformation<T>>::get(proposal_number).ok_or(Error::<T>::ProposalNotExist)?;
 				proposal_information.apply_status = vote_result;
 	
-				if(vote_result == 1) {
+				if vote_result == 1 {
 					//调用identity模块apply函数，使申请者拥有该身份
 					//apply(proposal_information.apply_addr, proposal_information.apply_role);
 					T::Role::do_apply(proposal_information.apply_addr,proposal_information.apply_role)?;
