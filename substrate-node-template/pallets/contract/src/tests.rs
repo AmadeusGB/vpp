@@ -12,7 +12,7 @@ fn contract_can_add() {
 			2,
 			3u64,
 			9997u64,
-			1000u64,
+			1000u64.into(),
 			2000,
 			true,
 			vec![1u8, 2, 3]
@@ -45,7 +45,7 @@ fn contract_can_add() {
 			3,
 			4u64,
 			8888u64,
-			11000u64,
+			11000u64.into(),
 			12000,
 			true,
 			vec![3u8, 2, 3]
@@ -85,7 +85,7 @@ fn contract_can_stop() {
 			2,
 			3u64,
 			9997u64,
-			1000u64,
+			1000u64.into(),
 			2000,
 			true,
 			vec![1u8, 2, 3]
@@ -121,7 +121,7 @@ fn contract_can_complete() {
 			2,
 			3u64,
 			9997u64,
-			1000u64,
+			1000u64.into(),
 			2000,
 			true,
 			vec![1u8, 2, 3]

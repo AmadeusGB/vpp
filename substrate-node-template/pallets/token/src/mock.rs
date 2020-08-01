@@ -44,13 +44,30 @@ impl system::Trait for Test {
 	type AvailableBlockRatio = AvailableBlockRatio;
 	type Version = ();
 	type ModuleToIndex = ();
-	type AccountData = ();
 	type OnNewAccount = ();
 	type OnKilledAccount = ();
+	type AccountData = balances::AccountData<u64>;
+}
+
+parameter_types! {
+	pub const ExistentialDeposit: u64 = 1;
+}
+
+impl balances::Trait for Test {
+	type Balance = u64;
+	type Event = ();
+	type DustRemoval = ();
+	type ExistentialDeposit = ExistentialDeposit;
+	type AccountStore = System;
 }
 impl Trait for Test {
 	type Event = ();
+	type Currency = Balances;
+	type Role = IdentityModule;
 }
+
+type System = system::Module<Test>;
+type Balances = balances::Module<Test>;
 pub type TemplateModule = Module<Test>;
 
 // This function basically just builds a genesis storage key/value store according to
