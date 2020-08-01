@@ -24,14 +24,20 @@ pub trait Trait: system::Trait {
 	type Currency: Currency<Self::AccountId>;
 }
 
+#[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
+#[derive(Encode, Decode)]
+pub struct TokenInfo {
+	pub token_total: u32,
+	pub token_stake: u32,
+	pub token_vote: u32,
+}
+
 // This pallet's storage items.
 decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
-		Something get(fn something): Option<u32>;
-
 		pub BuyRate get(fn buyrate):  u32;
 		pub SellRate get(fn sellrate):  u32;
-		pub BalanceToken get(fn balancetoken):  map hasher(blake2_128_concat) T::AccountId => u32;
+		pub BalanceToken get(fn balancetoken):  map hasher(blake2_128_concat) T::AccountId => Option<TokenInfo>;
 	}
 }
 
@@ -68,7 +74,14 @@ decl_module! {
 			let amount = token * BuyRate::get() / 100;
 
 			if(<BalanceOf<T>>::from(amount) == amount_price) {
-				BalanceToken::<T>::insert(&sender, token);
+				let mut tokeninfo = <BalanceToken<T>>::get(&sender).unwrap_or_else(|| TokenInfo {
+					token_total: 0,
+					token_stake: 0,
+					token_vote: 0,
+				});
+				tokeninfo.token_total += token;
+
+				BalanceToken::<T>::insert(&sender, tokeninfo);
 
 				T::Currency::transfer(&sender, &treasure, amount_price, ExistenceRequirement::KeepAlive)?;
 			}
@@ -85,13 +98,19 @@ decl_module! {
 			let amount = token * SellRate::get() / 100;
 
 			if(<BalanceOf<T>>::from(amount) == amount_price) {
-				let token_amount_now = <BalanceToken<T>>::get(&sender);
-				BalanceToken::<T>::insert(&sender, token_amount_now - token);
+				let mut tokeninfo = <BalanceToken<T>>::get(&sender).unwrap_or_else(|| TokenInfo {
+					token_total: 0,
+					token_stake: 0,
+					token_vote: 0,
+				});
+				tokeninfo.token_total -= token;
+
+				BalanceToken::<T>::insert(&sender, tokeninfo);
 				
 				T::Currency::transfer(&treasure, &sender, amount_price, ExistenceRequirement::KeepAlive)?;
 			}
 
 			Ok(())
-		}
+		} 
 	}
 }
