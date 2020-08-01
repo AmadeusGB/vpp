@@ -129,15 +129,16 @@ decl_module! {
 
 
 impl<T:Trait> Contract<T::AccountId> for Module<T>{
-	fn do_addcontract(sender: T::AccountId,		
-					  ps_addr: T::AccountId,									   //签订该合同的PS地址(通过地址和ID取得VPP所有信息)
-					  vpp_number: u64,											//该地址下虚拟电厂IDs
-					  contract_price: u32,		  			 //合同总价
-					  energy_amount: u64,							  			 //购买电能度数
-					  contract_type:bool,								 			//合同分类（购买true/出售false）
-					  energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
-					  ammeter_id: Vec<u8> 									//电表编号
-					  ) -> dispatch::DispatchResult {
+	fn do_addcontract(
+					sender: T::AccountId,		
+					ps_addr: T::AccountId,									   //签订该合同的PS地址(通过地址和ID取得VPP所有信息)
+					vpp_number: u64,											//该地址下虚拟电厂IDs
+					contract_price: u32,		  			 					//合同总价
+					energy_amount: u64,							  			 //购买电能度数
+					contract_type:bool,								 			//合同分类（购买true/出售false）
+					energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
+					ammeter_id: Vec<u8> 									//电表编号
+					) -> dispatch::DispatchResult {
 		// update the vpp
 		//T::Vpp::buy(&sender, &ps_addr, vpp_number,contract_price ,energy_amount)?;
 
