@@ -23,6 +23,7 @@ pub trait Trait: system::Trait {
 
 	type Currency: Currency<Self::AccountId>;
 	type TypeTransfer: TypeTransfer<Self::AccountId>;
+	type Parliament: Parliament<Self::AccountId>;
 }
 
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
