@@ -10,7 +10,7 @@ use frame_support::{
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
-use primitives::{Vpp, ApprovalStatus, BusinessStatus, Role, Balance, TypeTransfer};
+use primitives::{Vpp, ApprovalStatus, BusinessStatus, Role, Balance, TypeTransfer, Contract};
 use frame_support::dispatch::DispatchResult;
 
 #[cfg(test)]
@@ -31,6 +31,7 @@ pub trait Trait: system::Trait {
 	type Currency: Currency<Self::AccountId>;
 	type Role: Role<Self::AccountId>;
 	type TypeTransfer: TypeTransfer<Self::AccountId>;
+	type Contract: Contract<Self::AccountId>;
 }
 
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
@@ -201,9 +202,10 @@ decl_module! {
 		pub fn buyenergy(origin, vpp_addr: T::AccountId, vpp_number: u64, buy_energy_number: u64, buy_energy_token_amount: u32) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 			//调用typetransfer模块buytransfer函数付款
-			T::TypeTransfer::do_buytransfer(vpp_addr, vpp_number, sender.clone(), buy_energy_token_amount)?;
+			T::TypeTransfer::do_buytransfer(vpp_addr.clone(), vpp_number, sender.clone(), buy_energy_token_amount)?;
 			
-			//调用contract模块addcontract签订购买电能合同(chenwei)
+			//调用contract模块addcontract签订购买电能合同
+			T::Contract::do_addcontract(sender.clone(),vpp_addr,vpp_number,0,0,0,true,0,vec![0,0])?;
 
 			Currentremainingbattery::<T>::insert(&sender, buy_energy_number);
 
@@ -212,10 +214,12 @@ decl_module! {
 
 		#[weight = 0]
 		pub fn sellenergy(origin, sell_number: u8, amount_token: u32) -> dispatch::DispatchResult{
+			let sender = ensure_signed(origin)?;
 			//调用typetransfer模块selltransfer函数付款
 			//T::TypeTransfer::do_selltransfer(vpp_addr, vpp_number, sender.clone(), buy_energy_token_amount)?;
 
-			//调用contract模块addcontract签订出售电能合同(chenwei)
+			//调用contract模块addcontract签订出售电能合同
+			T::Contract::do_addcontract(sender.clone(),sender.clone(),0,0,0,0,true,0,vec![0,0])?;
 
 			Ok(())
 		}

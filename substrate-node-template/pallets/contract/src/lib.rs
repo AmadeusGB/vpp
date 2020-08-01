@@ -8,7 +8,7 @@ use frame_support::{
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
-use primitives::{Vpp, Balance};
+use primitives::{Vpp, Balance, Contract};
 
 #[cfg(test)]
 mod mock;
@@ -83,30 +83,16 @@ decl_module! {
 			ammeter_id: Vec<u8> 									//电表编号
 		) -> dispatch::DispatchResult {
 			let sender = ensure_signed(origin)?;
-			
-			// update the vpp
-			T::Vpp::buy(&sender, &ps_addr, vpp_number, from_balance_of::<T>(contract_price),energy_amount)?;
-
-			let contract_number = <Contractcounts<T>>::get(sender.clone());
-			let block_number_now = system::Module::<T>::block_number();
-			let contract_template = ContractT::<T> {
-				ps_addr: ps_addr,
-				vpp_number: vpp_number,
-				block_number: block_number_now,
-				contract_price: contract_price,
-				energy_amount: energy_amount,
-				execution_status: 1,									//合同执行状态（执行中：1，已完成：2，已终止：3）
-				contract_type: contract_type,
-				energy_type: energy_type,
-				ammeter_id: ammeter_id
-			};
-
-			Contracts::<T>::insert((sender.clone(), contract_number), contract_template);
-			SearchContracts::<T>::insert(block_number_now, (sender.clone(), contract_number));
-			Contractcounts::<T>::insert(sender.clone(), contract_number+1);
-
-			Self::deposit_event(RawEvent::ContractCraeted(sender, contract_number, 1));
-
+			Self::do_addcontract(sender,
+				ps_addr,									   //签订该合同的PS地址(通过地址和ID取得VPP所有信息)
+				vpp_number,											//该地址下虚拟电厂ID
+				block_number,										   //合同创建时区块号
+				from_balance_of::<T>(contract_price),		  			 //合同总价
+				energy_amount,							  			 //购买电能度数
+				contract_type,								 			//合同分类（购买/出售）
+				energy_type,											  //能源类型（0：光电，1：风电，2：火电）
+				ammeter_id									//电表编号
+			)?;
 			Ok(())
 		}
 
@@ -143,4 +129,44 @@ decl_module! {
 	}
 }
 
+
+impl<T:Trait> Contract<T::AccountId> for Module<T>{
+	fn do_addcontract(sender: T::AccountId,		
+					  ps_addr: T::AccountId,									   //签订该合同的PS地址(通过地址和ID取得VPP所有信息)
+					  vpp_number: u64,											//该地址下虚拟电厂ID
+					  block_number: u64,										   //合同创建时区块号
+					  contract_price: Balance,		  			 //合同总价
+					  energy_amount: u64,							  			 //购买电能度数
+					  contract_type:bool,								 			//合同分类（购买/出售）
+					  energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
+					  ammeter_id: Vec<u8> 									//电表编号
+					  ) -> dispatch::DispatchResult {
+		// update the vpp
+		T::Vpp::buy(&sender, &ps_addr, vpp_number,contract_price ,energy_amount)?;
+
+		let contract_number = <Contractcounts<T>>::get(sender.clone());
+		let block_number_now = system::Module::<T>::block_number();
+		let contract_template = ContractT::<T> {
+			ps_addr: ps_addr,
+			vpp_number: vpp_number,
+			block_number: block_number_now,
+			contract_price: to_balance_of::<T>(contract_price),
+			energy_amount: energy_amount,
+			execution_status: 1,									//合同执行状态（执行中：1，已完成：2，已终止：3）
+			contract_type: contract_type,
+			energy_type: energy_type,
+			ammeter_id: ammeter_id
+		};
+
+		Contracts::<T>::insert((sender.clone(), contract_number), contract_template);
+		SearchContracts::<T>::insert(block_number_now, (sender.clone(), contract_number));
+		Contractcounts::<T>::insert(sender.clone(), contract_number+1);
+
+		Self::deposit_event(RawEvent::ContractCraeted(sender, contract_number, 1));
+		
+		Ok(())
+	}
+}
+
 fn from_balance_of<T:Trait>(b: BalanceOf<T>)->Balance{unsafe{*(&b as *const BalanceOf<T> as *const Balance)}}
+fn to_balance_of<T:Trait>(b: Balance)->BalanceOf<T>{unsafe{*(&b as *const Balance as *const BalanceOf<T>)}}

@@ -281,6 +281,7 @@ impl trade::Trait for Runtime {
 	type Currency = Balances;
 	type Role = IdentityModule;
 	type TypeTransfer = typetransfer::Module<Runtime>;
+	type Contract = contract::Module<Runtime>;
 }
 
 parameter_types! {
