@@ -11,7 +11,6 @@ version = '2.0.0-rc2'
 [dependencies]
 primitives = { default-features = false, path = '../../primitives' }
 pallet-trade = { default-features = false, path = '../../pallets/trade' }
-balances = { package = 'pallet-balances',tag = 'v2.0.0-rc2', version = "2.0.0-rc2", git = 'https://github.com/paritytech/substrate.git' }
 
 
 [dependencies.codec]

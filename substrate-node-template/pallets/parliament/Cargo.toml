@@ -10,7 +10,6 @@ version = '2.0.0-rc2'
 
 [dependencies]
 primitives = { default-features = false, path = '../../primitives' }
-sp-std = { default-features = false, git = 'https://github.com/paritytech/substrate.git', tag = 'v2.0.0-rc2', version = '2.0.0-rc2' }
 
 [dependencies.codec]
 default-features = false
@@ -31,6 +30,12 @@ tag = 'v2.0.0-rc2'
 version = '2.0.0-rc2'
 
 [dev-dependencies.sp-core]
+default-features = false
+git = 'https://github.com/paritytech/substrate.git'
+tag = 'v2.0.0-rc2'
+version = '2.0.0-rc2'
+
+[dependencies.sp-std]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
 tag = 'v2.0.0-rc2'
