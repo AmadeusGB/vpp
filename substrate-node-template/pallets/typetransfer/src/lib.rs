@@ -59,21 +59,39 @@ decl_module! {
 		fn deposit_event() = default;
 
 		#[weight = 0]
-		pub fn buytransfer(origin, vpp_addr: T::AccountId, vpp_number: u64, payment_addr: T::AccountId, payment_token: u32) -> dispatch::DispatchResult{
+		pub fn buytransfer(
+			origin, 
+			vpp_addr: T::AccountId, 
+			vpp_number: u64, 
+			payment_addr: T::AccountId, 
+			payment_token: u32
+		) -> dispatch::DispatchResult{
 			let _sender = ensure_signed(origin)?;
 			Self::do_buytransfer(vpp_addr,vpp_number,payment_addr,payment_token)?;
 			Ok(())
 		}
 
 		#[weight = 0]
-		pub fn selltransfer(origin, ps_addr: T::AccountId, vpp_number: u64, payment_addr: T::AccountId, payment_token: u32) -> dispatch::DispatchResult{
+		pub fn selltransfer(
+			origin, 
+			ps_addr: T::AccountId, 
+			vpp_number: u64, 
+			payment_addr: T::AccountId, 
+			payment_token: u32
+		) -> dispatch::DispatchResult{
 			let _sender = ensure_signed(origin)?;
 			Self::do_selltransfer(ps_addr, vpp_number, payment_addr, payment_token)?;
 			Ok(())
 		}
 
 		#[weight = 0]
-		pub fn algorithmtransfer(origin, ps_addr: T::AccountId, _vpp_number: u64, contract_price: BalanceOf<T>, _energy_token: u64) -> dispatch::DispatchResult{
+		pub fn algorithmtransfer(
+			origin, 
+			ps_addr: T::AccountId, 
+			_vpp_number: u64, 
+			contract_price: BalanceOf<T>, 
+			_energy_token: u64
+		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
 			//验证交易是否属于粉尘攻击（连续交易或交易金额过低）
@@ -85,14 +103,22 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn staketransfer(origin, energy_token: u64) -> dispatch::DispatchResult{
+		pub fn staketransfer(
+			origin, 
+			energy_token: u64
+		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 			<Self as TypeTransfer<T::AccountId>>::staketransfer(&sender, energy_token)?;
 			Ok(())
 		}
 
 		#[weight = 0]
-		pub fn incentivetransfer(_origin, incentive_addr: T::AccountId, incentive_status: bool, energy_token: u64) -> dispatch::DispatchResult{
+		pub fn incentivetransfer(
+			_origin, 
+			incentive_addr: T::AccountId, 
+			incentive_status: bool, 
+			energy_token: u64
+		) -> dispatch::DispatchResult{
 		
 			//调用token模块的incentivetoken函数，以实现奖惩激励功能
 			T::Token::do_incentivetoken(incentive_addr, incentive_status, energy_token as u32)?;
@@ -100,7 +126,13 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn dividendtransfer(_origin, _ps_addr: T::AccountId, _vpp_number: u64, _contract_price: BalanceOf<T>, _energy_token: u64) -> dispatch::DispatchResult{
+		pub fn dividendtransfer(
+			_origin, 
+			_ps_addr: T::AccountId, 
+			_vpp_number: u64, 
+			_contract_price: BalanceOf<T>, 
+			_energy_token: u64
+		) -> dispatch::DispatchResult{
 
 			Ok(())
 		}
