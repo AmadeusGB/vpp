@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useState, useCallback } from 'react';
 import { ApiPromise, WsProvider } from '@polkadot/api';
+import config from "@/config";
 
 const initialApi = {};
 const ENDPOINT = 'ws://127.0.0.1:9944';
@@ -20,7 +21,7 @@ export function ApiProvider(props) {
     try {
       (async () => {
         const wsProvider = new WsProvider(ENDPOINT);
-        const a = await ApiPromise.create({ provider: wsProvider });
+        const a = await ApiPromise.create({ provider: wsProvider, types: config.CUSTOM_TYPES });
         setApi(a);
       })();
     } catch (error) {

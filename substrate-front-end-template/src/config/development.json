@@ -1,7 +1,18 @@
 {
   "CUSTOM_TYPES": {
-    "Address": "AccountId",
-    "LookupSource": "AccountId"
+    "TokenInfo": {
+      "token_balance": "u32",
+      "token_stake": "u32",
+      "token_vote": "u32"
+    },
+    "MultiRole": {
+      "pu": "bool",
+      "pg": "bool",
+      "ps": "bool",
+      "sg": "bool",
+      "ass": "bool",
+      "pom": "bool"
+    }
   },
   "PROVIDER_SOCKET": "ws://127.0.0.1:9944"
 }
