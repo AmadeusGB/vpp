@@ -173,7 +173,7 @@ impl<T:Trait> Token<T::AccountId> for Module<T>{
 	fn do_incentivetoken(sender: T::AccountId,incentive_status: bool, incentive_token: u32) -> dispatch::DispatchResult {
 		let mut tokeninfo = <BalanceToken<T>>::get(&sender).ok_or(Error::<T>::TokenAcountNotExist)?;
 		match incentive_status {
-			true => tokeninfo.token_balance += incentive_token,			//正向激励
+			true => tokeninfo.token_balance += incentive_token,				//正向激励
 			false => tokeninfo.token_balance -= incentive_token,			//负向激励
 		}
 		BalanceToken::<T>::insert(&sender, tokeninfo);

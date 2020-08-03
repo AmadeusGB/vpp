@@ -27,17 +27,15 @@ pub trait Trait: system::Trait {
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
 #[derive(Encode, Decode)]
 pub struct ProposalInfo<T: Trait> {
-	pub apply_addr: T::AccountId,			  //申请者地址
-	pub apply_role: u8,							   //申请角色（0:pu, 1:pg，2:ps，3:sg，4:ass）
-	pub apply_status: u8,						//提案状态（0：待通过，1：已通过，2：已拒绝）
-	pub apply_annex: bool,					 //附件情况（0:无附件，1:有附件）
+	pub apply_addr: T::AccountId,			  	  //申请者地址
+	pub apply_role: u8,							   			//申请角色（0:pu, 1:pg，2:ps，3:sg，4:ass）
+	pub apply_status: u8,								 //提案状态（0：待通过，1：已通过，2：已拒绝）
+	pub apply_annex: bool,					 		  //附件情况（0：无附件，1：有附件）
 }
 
 // This pallet's storage items.
 decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
-		Something get(fn something): Option<u32>;
-
 		pub ProposalCount get(fn proposalcount):  u32;
 		pub ProposalInformation get(fn proposalinformation):  map hasher(blake2_128_concat) u32 => Option<ProposalInfo<T>>;
 	}
@@ -53,8 +51,6 @@ decl_event!(
 // The pallet's errors
 decl_error! {
 	pub enum Error for Module<T: Trait> {
-		NoneValue,
-		StorageOverflow,
 		ProposalNotExist,
 	}
 }

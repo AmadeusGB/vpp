@@ -60,10 +60,6 @@ decl_event!(
 // The pallet's errors
 decl_error! {
 	pub enum Error for Module<T: Trait> {
-		ProofAlreadyExist,
-		ClaimNotExist,
-		NotClaimOwner,
-		ProofTooLong,
 		IdentityAlreadyExist,
 	}
 }
