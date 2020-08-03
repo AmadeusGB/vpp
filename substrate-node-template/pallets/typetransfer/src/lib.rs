@@ -90,7 +90,7 @@ decl_module! {
 			ps_addr: T::AccountId, 
 			_vpp_number: u64, 
 			contract_price: BalanceOf<T>, 
-			_energy_token: u64
+			_energy_token: u32
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
@@ -105,7 +105,7 @@ decl_module! {
 		#[weight = 0]
 		pub fn staketransfer(
 			origin, 
-			energy_token: u64
+			energy_token: u32
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 			<Self as TypeTransfer<T::AccountId>>::staketransfer(&sender, energy_token)?;
@@ -117,11 +117,11 @@ decl_module! {
 			_origin, 
 			incentive_addr: T::AccountId, 
 			incentive_status: bool, 
-			energy_token: u64
+			energy_token: u32
 		) -> dispatch::DispatchResult{
 		
 			//调用token模块的incentivetoken函数，以实现奖惩激励功能
-			T::Token::do_incentivetoken(incentive_addr, incentive_status, energy_token as u32)?;
+			T::Token::do_incentivetoken(incentive_addr, incentive_status, energy_token)?;
 			Ok(())
 		}
 
@@ -131,7 +131,7 @@ decl_module! {
 			_ps_addr: T::AccountId, 
 			_vpp_number: u64, 
 			_contract_price: BalanceOf<T>, 
-			_energy_token: u64
+			_energy_token: u32
 		) -> dispatch::DispatchResult{
 
 			Ok(())
@@ -149,9 +149,9 @@ impl<T:Trait> TypeTransfer<T::AccountId> for Module<T> {
 		Ok(())
 	}
 	
-	fn staketransfer(who: &T::AccountId, energy_token: u64) -> DispatchResult {
+	fn staketransfer(who: &T::AccountId, energy_token: u32) -> DispatchResult {
 		//调用token模块的staketoken函数，以实现申请PS身份质押token功能
-		T::Token::do_staketoken(who.clone(), energy_token as u32)?;
+		T::Token::do_staketoken(who.clone(), energy_token)?;
 
 		Ok(())
 	}
