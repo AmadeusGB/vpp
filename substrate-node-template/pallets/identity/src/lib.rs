@@ -24,7 +24,7 @@ pub trait Trait: system::Trait {
 }
 
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
-#[derive(Encode, Decode)]
+#[derive(Encode,  Decode)]
 pub struct MultiRole {
 	pub pu: bool,
 	pub pg: bool,
@@ -32,6 +32,19 @@ pub struct MultiRole {
 	pub sg: bool,
 	pub ass: bool,
 	pub pom: bool,
+}
+
+impl Default for MultiRole {
+	fn default() -> Self {
+		MultiRole {
+			pu: true,
+			pg: false,
+			ps: false,
+			sg: false,
+			ass: false,
+			pom: false,
+		}
+	}
 }
 
 #[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
@@ -45,7 +58,7 @@ pub struct PuRole {
 // This pallet's storage items.
 decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
-		Roles get(fn roles): map hasher(blake2_128_concat) T::AccountId => Option<MultiRole>;											  		   //身份属性
+		Roles get(fn roles): map hasher(blake2_128_concat) T::AccountId => MultiRole;											  		   //身份属性
 	}
 }
 
@@ -60,10 +73,6 @@ decl_event!(
 // The pallet's errors
 decl_error! {
 	pub enum Error for Module<T: Trait> {
-		ProofAlreadyExist,
-		ClaimNotExist,
-		NotClaimOwner,
-		ProofTooLong,
 		IdentityAlreadyExist,
 	}
 }
@@ -89,17 +98,9 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn logout(origin, apply_role: u8) -> dispatch::DispatchResult{
+		pub fn logout(origin, apply_role: u8) -> dispatch::DispatchResult{			
 			let sender = ensure_signed(origin)?;
-
-			let mut ps_role = <Roles<T>>::get(sender.clone()).unwrap_or_else(|| MultiRole {
-				pu: true,
-				pg: false,
-				ps: false,
-				sg: false,
-				ass: false,
-				pom: false,
-			});
+			let mut ps_role = <Roles<T>>::get(sender.clone());
 
 			 match apply_role {
 				0 => ps_role.pu = false,
@@ -124,14 +125,7 @@ decl_module! {
 impl<T> Role<T::AccountId> for Module<T> where T: Trait {
 	//noinspection ALL
 	fn has_role(who: &T::AccountId, apply_role: u8) -> bool {
-		let ps_role = <Roles<T>>::get(who).unwrap_or_else(|| MultiRole {
-			pu: false,
-			pg: false,
-			ps: false,
-			sg: false,
-			ass: false,
-			pom: false,
-		});
+		let ps_role = <Roles<T>>::get(who.clone());
 		match apply_role {
 			0 => ps_role.pu,
 			1 => ps_role.pg,
@@ -144,14 +138,7 @@ impl<T> Role<T::AccountId> for Module<T> where T: Trait {
 	}
 
 	fn do_apply(owner: T::AccountId, apply_role: u8) -> DispatchResult {
-		let mut ps_role = <Roles<T>>::get(owner.clone()).unwrap_or_else(|| MultiRole {
-			pu: true,
-			pg: false,
-			ps: false,
-			sg: false,
-			ass: false,
-			pom: false,
-		});
+		let mut ps_role = <Roles<T>>::get(owner.clone());
 
 		match apply_role {
 			0 => ps_role.pu = true,

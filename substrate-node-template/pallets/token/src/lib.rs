@@ -32,12 +32,22 @@ pub struct TokenInfo {
 	pub token_vote: u32,						   //投票质押
 }
 
+impl Default for TokenInfo {
+	fn default() -> Self {
+		TokenInfo {
+			token_balance: 0,
+			token_stake: 0,
+			token_vote: 0,
+		}
+	}
+}
+
 // This pallet's storage items.
 decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
 		pub BuyRate get(fn buyrate):  u32;							 //购买通证汇率
 		pub SellRate get(fn sellrate):  u32;							//出售通证汇率
-		pub BalanceToken get(fn balancetoken):  map hasher(blake2_128_concat) T::AccountId => Option<TokenInfo>;		//某地址对应的通证数量
+		pub BalanceToken get(fn balancetoken):  map hasher(blake2_128_concat) T::AccountId => TokenInfo;		//某地址对应的通证数量
 	}
 }
 
@@ -78,11 +88,7 @@ decl_module! {
 			let amount = buy_token * BuyRate::get() / 100;
 
 			if <BalanceOf<T>>::from(amount) == amount_price {
-				let mut tokeninfo = <BalanceToken<T>>::get(&sender).unwrap_or_else(|| TokenInfo {
-					token_balance: 0,
-					token_stake: 0,
-					token_vote: 0,
-				});
+				let mut tokeninfo = <BalanceToken<T>>::get(&sender);
 				tokeninfo.token_balance += buy_token;
 
 				BalanceToken::<T>::insert(&sender, tokeninfo);
@@ -107,11 +113,7 @@ decl_module! {
 			let amount = sell_token * SellRate::get() / 100;
 
 			if <BalanceOf<T>>::from(amount) == amount_price {
-				let mut tokeninfo = <BalanceToken<T>>::get(&sender).unwrap_or_else(|| TokenInfo {
-					token_balance: 0,
-					token_stake: 0,
-					token_vote: 0,
-				});
+				let mut tokeninfo = <BalanceToken<T>>::get(&sender);
 				ensure!(tokeninfo.token_balance > sell_token, Error::<T>::BalanceNotEnough);
 
 				tokeninfo.token_balance -= sell_token;
@@ -171,9 +173,9 @@ decl_module! {
 
 impl<T:Trait> Token<T::AccountId> for Module<T>{
 	fn do_incentivetoken(sender: T::AccountId,incentive_status: bool, incentive_token: u32) -> dispatch::DispatchResult {
-		let mut tokeninfo = <BalanceToken<T>>::get(&sender).ok_or(Error::<T>::TokenAcountNotExist)?;
+		let mut tokeninfo = <BalanceToken<T>>::get(&sender);
 		match incentive_status {
-			true => tokeninfo.token_balance += incentive_token,			//正向激励
+			true => tokeninfo.token_balance += incentive_token,				//正向激励
 			false => tokeninfo.token_balance -= incentive_token,			//负向激励
 		}
 		BalanceToken::<T>::insert(&sender, tokeninfo);
@@ -181,7 +183,7 @@ impl<T:Trait> Token<T::AccountId> for Module<T>{
 	}
 	
 	fn do_staketoken(sender: T::AccountId,stake_token:u32) -> dispatch::DispatchResult {
-		let mut tokeninfo = <BalanceToken<T>>::get(&sender).ok_or(Error::<T>::TokenAcountNotExist)?;
+		let mut tokeninfo = <BalanceToken<T>>::get(&sender);
 		tokeninfo.token_balance -= stake_token;
 		tokeninfo.token_stake += stake_token;
 
@@ -190,7 +192,7 @@ impl<T:Trait> Token<T::AccountId> for Module<T>{
 	}
 	
 	fn do_votetoken(sender: T::AccountId,vote_token:u32) -> dispatch::DispatchResult {
-		let mut tokeninfo = <BalanceToken<T>>::get(&sender).ok_or(Error::<T>::TokenAcountNotExist)?;
+		let mut tokeninfo = <BalanceToken<T>>::get(&sender);
 		tokeninfo.token_balance -= vote_token;
 		tokeninfo.token_vote += vote_token;
 
@@ -200,8 +202,8 @@ impl<T:Trait> Token<T::AccountId> for Module<T>{
 	}
 	
 	fn do_transfertoken(from: T::AccountId, to: T::AccountId, token_amount: u32) -> DispatchResult {
-		let mut from_tokeninfo = <BalanceToken<T>>::get(&from).ok_or(Error::<T>::TokenAcountNotExist)?;
-		let mut to_tokeninfo = <BalanceToken<T>>::get(&to).ok_or(Error::<T>::TokenAcountNotExist)?;
+		let mut from_tokeninfo = <BalanceToken<T>>::get(&from);
+		let mut to_tokeninfo = <BalanceToken<T>>::get(&to);
 
 		ensure!(from_tokeninfo.token_balance > token_amount, Error::<T>::BalanceNotEnough);
 

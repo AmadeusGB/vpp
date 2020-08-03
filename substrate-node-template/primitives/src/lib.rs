@@ -19,7 +19,7 @@ pub trait Role<AccountId> {
 }
 
 pub trait TypeTransfer<AccountId> {
-    fn staketransfer(who: &AccountId, energy_token: u64) -> dispatch::DispatchResult;
+    fn staketransfer(who: &AccountId, energy_token: u32) -> dispatch::DispatchResult;
     fn do_buytransfer(vpp_addr: AccountId, vpp_number: u64, payment_addr: AccountId, payment_token: u32) -> dispatch::DispatchResult;
     fn do_selltransfer(ps_addr: AccountId, vpp_number: u64, payment_addr: AccountId, payment_token: u32) -> dispatch::DispatchResult;
 }
@@ -38,9 +38,9 @@ pub trait Token<AccountId> {
 pub trait Contract<AccountId> {
     fn do_addcontract(
                     sender: AccountId,		
-                    ps_addr: AccountId,									   //签订该合同的PS地址(通过地址和ID取得VPP所有信息)
+                    ps_addr: AccountId,									        //签订该合同的PS地址(通过地址和ID取得VPP所有信息)
                     vpp_number: u64,											//该地址下虚拟电厂ID
-                    contract_price: u32,		  			 //合同总价
+                    contract_price: u32,		  			                     //合同总价
                     energy_amount: u64,							  			 //购买/出售电能度数
                     contract_type:bool,								 			//合同分类（购买/出售）
                     energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）

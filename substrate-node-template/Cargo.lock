@@ -2650,7 +2650,6 @@ dependencies = [
  "pallet-parliament",
  "pallet-randomness-collective-flip",
  "pallet-sudo",
- "pallet-template",
  "pallet-timestamp",
  "pallet-token",
  "pallet-trade",
