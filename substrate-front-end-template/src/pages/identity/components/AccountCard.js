@@ -10,20 +10,15 @@ const AccountCard = () => {
   const {api} = useContext(ApiContext);
   const [balances, setBalances] = useState({[account]: 0});
 
-  useEffect(() => {
+  useEffect( () => {
     if (Object.keys(api).length === 0) return;
-    let unsubscribeAll = null;
-    const addresses = [account];
-    api.query.system.account
-      .multi(addresses, balances => {
-        console.log(JSON.stringify(balances));
-        const balancesMap = addresses.reduce((acc, address, index) => ({
-          ...acc, [address]: balances[index].data.free.toHuman()
-        }), {});
-        setBalances(balancesMap);
-      }).then(unsub => {
-      unsubscribeAll = unsub;
-    }).catch(console.error);
+
+    api.query.tokenModule.balanceToken(account, (result) => {
+      if (!result.isNone) {
+        console.log(result.toString());
+      }
+    })
+
   },[api]);
 
   return (
