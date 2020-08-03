@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { Modal, Result, Button, Form, DatePicker, Input } from 'antd';
+import { Modal, Result, Button, Form, Select, Input } from 'antd';
 import styles from '../style.less';
 
-const { TextArea } = Input;
+const { Option } = Select;
 const formLayout = {
   labelCol: {
     span: 7,
@@ -32,14 +32,27 @@ const OperationModal = props => {
     }
   };
 
+  const onGenderChange = value => {
+    switch (value) {
+      case "male":
+        form.setFieldsValue({ note: "Hi, man!" });
+        break;
+      case "female":
+        form.setFieldsValue({ note: "Hi, lady!" });
+        break;
+      default:
+        break;
+    }
+  };
+
   const modalFooter = done
     ? {
-        okText: '提交',
+        okText: '确认',
         onOk: handleSubmit,
         onCancel,
       }
     : {
-        okText: '提交',
+        okText: '确认',
         onOk: handleSubmit,
         onCancel,
       };
@@ -64,48 +77,55 @@ const OperationModal = props => {
     return (
       <Form {...formLayout} form={form} onFinish={handleFinish}>
         <Form.Item
-          name="title"
-          label="购买数量"
+          name="num"
+          label= {operation === 1 ? "购买数量" : "出售数量"}
           rules={[
             {
               required: true,
-              message: '请输入购买数量',
+              message: "请输入",
             },
           ]}
         >
-          <Input placeholder="请输入" />
+          <Input placeholder="请输入数量（度）" />
         </Form.Item>
         <Form.Item
-          name="createdAt"
-          label="开始时间"
+          name="loss"
+          label="线损率"
           rules={[
             {
               required: true,
-              message: '请选择开始时间',
+              message: '请输入线损率',
             },
           ]}
         >
-          <DatePicker
-            showTime
-            placeholder="请选择"
-            format="YYYY-MM-DD HH:mm:ss"
-            style={{
-              width: '100%',
-            }}
-          />
+          <Input placeholder="请输入线损率（%）" />
         </Form.Item>
-        <Form.Item
-          name="subDescription"
-          label="备注"
-          rules={[
-            {
-              message: '请输入备注！',
-              min: 5,
-            },
-          ]}
-        >
-          <TextArea rows={4} placeholder="请输入至少五个字符" />
+        <Form.Item name="type" label="电能类型" rules={[{ required: true }]}>
+          <Select
+            placeholder="请选择电能类型"
+            onChange={onGenderChange}
+            allowClear
+          >
+            <Option value="type1">交流</Option>
+            <Option value="type2">直流</Option>
+          </Select>
         </Form.Item>
+        <Form.Item name="types" label="电压类型" rules={[{ required: true }]}>
+          <Select
+            placeholder="请选择电压类型"
+            onChange={onGenderChange}
+            allowClear
+          >
+            <Option value="220">220V</Option>
+            <Option value="110">110V</Option>
+            <Option value="36">36V</Option>
+            <Option value="12">12V</Option>
+            <Option value="5">5V</Option>
+          </Select>
+        </Form.Item>
+        <div style={{marginLeft: '24px'}}>
+          <p>{operation === 1 ? '需支付金额：¥' : '预计收益金额：¥'}</p>
+        </div>
       </Form>
     );
   };

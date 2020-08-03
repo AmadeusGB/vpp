@@ -1,4 +1,4 @@
-import { Divider } from 'antd';
+import {Divider, Modal} from 'antd';
 import React, { useState, useRef } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
@@ -85,23 +85,19 @@ const columns = [
     dataIndex: 'option',
     valueType: 'option',
     render: (_, record) => (
-      <>
         <a
           onClick={() => {
-            window.console.log(record)
-          }}
-        >
-          详情
-        </a>
-        <Divider type="vertical" />
-        <a
-          onClick={() => {
-            window.console.log(record)
+            Modal.confirm({
+              title: '操作提示',
+              content: '是否确定终止合同？',
+              okText: '确认',
+              cancelText: '取消',
+              onOk: () => {window.console.log(record)},
+            });
           }}
         >
           终止
         </a>
-      </>
     ),
   },
 ];

@@ -14,26 +14,25 @@ const topColResponsiveProps = {
   },
 };
 
-const InfoCard = ({num, title, icon, start, end}) => (
+const InfoCard = ({ num, title, icon, start, end }) => (
   <div>
-    <div/>
+    <div />
   </div>
-)
-
+);
 
 const CardRow = ({ loading, visitData }) => (
   <Row gutter={24} type="flex">
     <Col {...topColResponsiveProps}>
-      <InfoCard/>
+      <InfoCard />
     </Col>
     <Col {...topColResponsiveProps}>
-      <InfoCard/>
+      <InfoCard />
     </Col>
     <Col {...topColResponsiveProps}>
-      <InfoCard/>
+      <InfoCard />
     </Col>
     <Col {...topColResponsiveProps}>
-      <InfoCard/>
+      <InfoCard />
     </Col>
   </Row>
 );
