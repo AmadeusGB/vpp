@@ -29,7 +29,7 @@ pub struct ContractT<T: Trait> {
 	pub ps_addr: T::AccountId,										//合同PS地址(通过地址和ID取得VPP所有信息)
 	pub vpp_number: u64,											 //该地址下虚拟电厂ID
 	pub block_number: T::BlockNumber,				   //合同创建时区块号
-	pub contract_price: u32,		  			 //合同总价
+	pub contract_price: u32,		  			 					 //合同总价
 	pub energy_amount: u64,							  			 //购买电能度数
 	pub execution_status:u8,									  //合同执行状态（执行中：1，已完成：2，已终止：3）
 	pub contract_type:bool,								 		   //合同分类（购买true/出售false）
@@ -40,9 +40,9 @@ pub struct ContractT<T: Trait> {
 // This pallet's storage items.
 decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
-		Contracts get(fn contracts): map hasher(blake2_128_concat) (T::AccountId, u64) => Option<ContractT<T>>;
-		SearchContracts get(fn searchcontracts): map hasher(blake2_128_concat) T::BlockNumber => (T::AccountId, u64);
-		Contractcounts get(fn contractcounts): map hasher(blake2_128_concat) T::AccountId => u64;
+		Contracts get(fn contracts): map hasher(blake2_128_concat) (T::AccountId, u64) => Option<ContractT<T>>;						//PU某个合同详情
+		SearchContracts get(fn searchcontracts): map hasher(blake2_128_concat) T::BlockNumber => (T::AccountId, u64);		  //通过区块号搜索对应合同
+		Contractcounts get(fn contractcounts): map hasher(blake2_128_concat) T::AccountId => u64;												 //PU地址合同计数器
 	}
 }
 
@@ -74,7 +74,7 @@ decl_module! {
 			origin, 
 			ps_addr: T::AccountId,									   //签订该合同的PS地址(通过地址和ID取得VPP所有信息)
 			vpp_number: u64,											//该地址下虚拟电厂ID
-			contract_price: u32,		  			 //合同总价
+			contract_price: u32,		  			 					//合同总价
 			energy_amount: u64,							  			 //购买电能度数
 			contract_type:bool,								 			//合同分类（购买/出售）
 			energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
@@ -83,13 +83,13 @@ decl_module! {
 			let sender = ensure_signed(origin)?;
 			Self::do_addcontract(
 				sender,
-				ps_addr,									   //签订该合同的PS地址(通过地址和ID取得VPP所有信息)
-				vpp_number,											//该地址下虚拟电厂ID
-				contract_price,		  			 //合同总价
+				ps_addr,									   				  //签订该合同的PS地址(通过地址和ID取得VPP所有信息)
+				vpp_number,												//该地址下虚拟电厂ID
+				contract_price,		  			 						//合同总价
 				energy_amount,							  			 //购买电能度数
 				contract_type,								 			//合同分类（购买/出售）
-				energy_type,											  //能源类型（0：光电，1：风电，2：火电）
-				ammeter_id									//电表编号
+				energy_type,											 //能源类型（0：光电，1：风电，2：火电）
+				ammeter_id												//电表编号
 			)?;
 			Ok(())
 		}

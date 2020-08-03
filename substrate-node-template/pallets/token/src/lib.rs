@@ -65,7 +65,12 @@ decl_module! {
 		fn deposit_event() = default;
 
 		#[weight = 0]
-		pub fn buytoken(origin, buy_token: u32, treasure: T::AccountId, amount_price: BalanceOf<T>) -> dispatch::DispatchResult{
+		pub fn buytoken(
+			origin, 
+			buy_token: u32, 
+			treasure: T::AccountId, 
+			amount_price: BalanceOf<T>
+		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
 			BuyRate::put(102);
@@ -89,7 +94,12 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn selltoken(origin, sell_token: u32, treasure: T::AccountId, amount_price: BalanceOf<T>) -> dispatch::DispatchResult{
+		pub fn selltoken(
+			origin, 
+			sell_token: u32, 
+			treasure: T::AccountId, 
+			amount_price: BalanceOf<T>
+		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
 			SellRate::put(99);
@@ -115,27 +125,42 @@ decl_module! {
 		} 
 
 		#[weight = 0]
-		pub fn transfertoken(_origin, from: T::AccountId, to: T::AccountId, token_amount: u32) -> dispatch::DispatchResult{
+		pub fn transfertoken(
+			_origin, 
+			from: T::AccountId, 
+			to: T::AccountId, 
+			token_amount: u32
+		) -> dispatch::DispatchResult{
 			Self::do_transfertoken(from, to, token_amount)?;
 			Ok(())
 		}
 
 		#[weight = 0]
-		pub fn incentivetoken(origin, incentive_status: bool, incentive_token: u32) -> dispatch::DispatchResult{
+		pub fn incentivetoken(
+			origin, 
+			incentive_status: bool, 
+			incentive_token: u32
+		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 			Self::do_incentivetoken(sender, incentive_status, incentive_token)?;
 			Ok(())
 		}
 
 		#[weight = 0]
-		pub fn staketoken(origin, stake_token: u32) -> dispatch::DispatchResult{
+		pub fn staketoken(
+			origin, 
+			stake_token: u32
+		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 			Self::do_staketoken(sender, stake_token)?;
 			Ok(())
 		}
 
 		#[weight = 0]
-		pub fn votetoken(origin, vote_token: u32) -> dispatch::DispatchResult{
+		pub fn votetoken(
+			origin, 
+			vote_token: u32
+		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 			Self::do_votetoken(sender, vote_token)?;
 			Ok(())

@@ -68,7 +68,11 @@ decl_module! {
 		fn deposit_event() = default;
 
 		#[weight = 0]
-		pub fn applyproposalrole(origin, apply_role: u8, apply_annex: bool) -> dispatch::DispatchResult{
+		pub fn applyproposalrole(
+			origin, 
+			apply_role: u8, 
+			apply_annex: bool
+		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
 			if apply_role == 2 {
@@ -90,7 +94,11 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn setproposalrole(origin, proposal_number: u32, vote_result: u8) -> dispatch::DispatchResult{
+		pub fn setproposalrole(
+			origin, 
+			proposal_number: u32, 
+			vote_result: u8
+		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
 			//检查当前sender是否为委员会成员

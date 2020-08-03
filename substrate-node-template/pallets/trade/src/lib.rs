@@ -62,7 +62,7 @@ pub struct RoleInfo {
 decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
 		VppList get(fn vpplist): map hasher(blake2_128_concat) (T::AccountId, u64) => Option<PsVpp>;															//虚拟电厂申请列表
-		VppCounts get(fn vpp_counts): map hasher(blake2_128_concat) T::AccountId => u64;															 					//PS申请虚拟电厂数量
+		VppCounts get(fn vppcounts): map hasher(blake2_128_concat) T::AccountId => u64;															 					//PS申请虚拟电厂数量
 		TransactionAmount get(fn transactionamount): map hasher(blake2_128_concat) (T::AccountId, u64) => u32;			 						  //虚拟电厂交易额
 		CurrentRemainingBattery get(fn currentremainingbattery): map hasher(blake2_128_concat) T::AccountId => u64;							//当前电表电量
 	}
@@ -186,7 +186,11 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn setvppstatus(origin, #[compact] vpp_number: u64, status: BusinessStatus) -> dispatch::DispatchResult{		
+		pub fn setvppstatus(
+			origin, 
+			#[compact] vpp_number: u64, 
+			status: BusinessStatus
+		) -> dispatch::DispatchResult{		
 			let sender = ensure_signed(origin)?;
 			let mut vpp = <VppList<T>>::get((&sender, vpp_number)).ok_or(Error::<T>::VppNotExist)?;
 			if vpp.business_status != status {
@@ -198,7 +202,14 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn buyenergy(origin, ps_addr: T::AccountId, vpp_number: u64, buy_energy_number: u64, buy_energy_token_amount: u32, pu_ammeter_id: Vec<u8>) -> dispatch::DispatchResult{
+		pub fn buyenergy(
+			origin, 
+			ps_addr: T::AccountId, 
+			vpp_number: u64, 
+			buy_energy_number: u64, 
+			buy_energy_token_amount: u32, 
+			pu_ammeter_id: Vec<u8>
+		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 			//调用typetransfer模块buytransfer函数付款
 			T::TypeTransfer::do_buytransfer(ps_addr.clone(), vpp_number, sender.clone(), buy_energy_token_amount)?;
@@ -215,7 +226,14 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn sellenergy(origin, ps_addr: T::AccountId, vpp_number: u64, sell_energy_number: u64, sell_energy_token_amount: u32, pg_ammeter_id: Vec<u8>) -> dispatch::DispatchResult{
+		pub fn sellenergy(
+			origin, 
+			ps_addr: T::AccountId, 
+			vpp_number: u64, 
+			sell_energy_number: u64, 
+			sell_energy_token_amount: u32, 
+			pg_ammeter_id: Vec<u8>
+		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 			//调用typetransfer模块selltransfer函数付款
 			T::TypeTransfer::do_selltransfer(ps_addr.clone(), vpp_number, sender.clone(), sell_energy_token_amount)?;

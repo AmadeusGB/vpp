@@ -12,6 +12,7 @@ version = '2.0.0-rc2'
 primitives = { default-features = false, path = '../../primitives' }
 pallet-trade = { default-features = false, path = '../../pallets/trade' }
 
+
 [dependencies.codec]
 default-features = false
 features = ['derive']

@@ -54,7 +54,11 @@ decl_module! {
 		fn deposit_event() = default;
 
 		#[weight = 0]
-		pub fn accept_vpp(origin, who: T::AccountId, idx: u64) -> dispatch::DispatchResult {
+		pub fn accept_vpp(
+			origin, 
+			who: T::AccountId, 
+			idx: u64
+		) -> dispatch::DispatchResult {
 			let sender = ensure_signed(origin)?;
 			let members = Self::get_members();
 			ensure!(members.contains(&sender), Error::<T>::NotMember);
@@ -63,7 +67,11 @@ decl_module! {
 		}
 	
 		#[weight = 0]
-		pub fn deny_vpp(origin, who: T::AccountId, idx: u64) -> dispatch::DispatchResult {
+		pub fn deny_vpp(
+			origin, 
+			who: T::AccountId, 
+			idx: u64
+		) -> dispatch::DispatchResult {
 			let sender = ensure_signed(origin)?;
 			let members = Self::get_members();
 			ensure!(members.contains(&sender), Error::<T>::NotMember);
@@ -72,7 +80,10 @@ decl_module! {
 		}
 	
 		#[weight = 0]
-		pub fn force_add_member(origin, new_member: T::AccountId) -> dispatch::DispatchResult {
+		pub fn force_add_member(
+			origin, 
+			new_member: T::AccountId
+		) -> dispatch::DispatchResult {
 			ensure_root(origin)?;
 			let members = Self::get_members();
 			ensure!(members.len() < T::MaxMemberCount::get(), Error::<T>::TooManyMembers);
@@ -83,7 +94,10 @@ decl_module! {
 		}
 
 		#[weight = 0]
-		pub fn force_remove_member(origin, old_member: T::AccountId) -> dispatch::DispatchResult {
+		pub fn force_remove_member(
+			origin, 
+			old_member: T::AccountId
+		) -> dispatch::DispatchResult {
 			ensure_root(origin)?;
 			ensure!(Self::get_members().contains(&old_member), Error::<T>::NotMember);
 			<Members<T>>::mutate(|mem| mem.retain(|m| m != &old_member));
