@@ -17,7 +17,6 @@ mod tests;
 
 pub trait Trait: system::Trait {
 	type Event: From<Event<Self>> + Into<<Self as system::Trait>::Event>;
-
 	type Currency: Currency<Self::AccountId>;
 	type TypeTransfer: TypeTransfer<Self::AccountId>;
 	type Parliament: Parliament<Self::AccountId>;
@@ -71,9 +70,9 @@ decl_module! {
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
 
-			if apply_role == 2 {
-				//调用typetransfer模块staketransfer质押函数
-				T::TypeTransfer::staketransfer(&sender, 200)?;
+			match apply_role {
+				2 => T::TypeTransfer::staketransfer(&sender, 200)?,
+				_ => (),
 			}
 
 			let proposal_number = ProposalCount::get();
