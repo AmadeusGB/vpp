@@ -153,6 +153,7 @@ export const TradeList = props => {
 
       <AddEditModal
         visible={visibleModal}
+        operation={1}
         onCancel={handleCancel}
         onSubmit={handleSubmit}
       />
