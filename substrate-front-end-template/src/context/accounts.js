@@ -1,17 +1,22 @@
 import React, { createContext, useCallback, useEffect, useState } from 'react';
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
+import Keyring from '@polkadot/ui-keyring';
+import config from "@/config";
 
 const initialAccount = '';
 
 const AccountsContext = createContext({
   account: initialAccount,
+  keyring: null,
 });
 
 export function AccountsProvider(props) {
   const [account, setAccount] = useState(initialAccount);
+  const [keyring, setKeyring] = useState(null);
 
+  // load all account
   const loadAccounts = useCallback(async () => {
-    const injected = await web3Enable('Vpp-Frontend');
+    const injected = await web3Enable(config.APP_NAME);
     if (!injected.length) {
       throw new Error('NO_EXTENSIONS');
     }
@@ -38,8 +43,26 @@ export function AccountsProvider(props) {
       .catch((e) => console.log(e));
   }, []);
 
+  // load keyring
+  const loadKeyring = useCallback(async () => {
+    try {
+      let allAccounts = await web3Accounts();
+      allAccounts = allAccounts.map(({ address, meta }) =>
+        ({ address, meta: { ...meta, name: `${meta.name} (${meta.source})` } }));
+      Keyring.loadAll({ isDevelopment: true }, allAccounts);
+      setKeyring(Keyring);
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadKeyring();
+  },[]);
+
   const contextValue = {
     account,
+    keyring
   };
 
   return <AccountsContext.Provider value={contextValue}>{props.children}</AccountsContext.Provider>;
