@@ -83,7 +83,7 @@ decl_module! {
 				apply_annex: apply_annex,
 			};
 
-			ProposalInformation::insert(proposal_number, proposal_template);
+			ProposalInformation::insert(proposal_number + 1, proposal_template);
 
 			Ok(())
 		}
