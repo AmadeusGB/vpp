@@ -1,8 +1,9 @@
 import React, { createContext, useEffect, useState, useCallback } from 'react';
 import { ApiPromise, WsProvider } from '@polkadot/api';
+import jsonrpc from '@polkadot/types/interfaces/jsonrpc';
 import config from "@/config";
 
-const initialApi = {};
+const initialApi = null;
 const ENDPOINT = 'ws://127.0.0.1:9944';
 
 const ApiContext = createContext({
@@ -21,7 +22,7 @@ export function ApiProvider(props) {
     try {
       (async () => {
         const wsProvider = new WsProvider(ENDPOINT);
-        const a = await ApiPromise.create({ provider: wsProvider, types: config.CUSTOM_TYPES });
+        const a = await ApiPromise.create({ provider: wsProvider, types: config.CUSTOM_TYPES, rpc: jsonrpc });
         setApi(a);
       })();
     } catch (error) {
@@ -30,22 +31,10 @@ export function ApiProvider(props) {
   }, []);
 
   const connect = useCallback(async () => {
-    if (Object.keys(api).length === 0) {
+    if (!api) {
       setApiState('CONNECTING');
       return;
     }
-
-    // We want to listen to event for disconnection and reconnection.
-    // That's why we set for listeners.
-    // api.on('connected', () => {
-    //   setApiState('CONNECT');
-    //   // `ready` event is not emitted upon reconnection. So we check explicitly here.
-    //   api.isReady.then(() => {
-    //     setApiState('CONNECT_SUCCESS')
-    //   });
-    // });
-    // api.on('ready', () => setApiState('CONNECT_SUCCESS'));
-    // api.on('error', () => setApiState('CONNECT_ERROR'));
     await api.isReady;
     setApiState('CONNECT_SUCCESS');
   }, [api]);

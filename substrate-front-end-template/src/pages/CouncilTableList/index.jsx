@@ -1,86 +1,82 @@
 import { Divider } from 'antd';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
+import {ApiContext} from "@/context/api";
 
 const columns = [
   {
     title: '提案名称',
     dataIndex: 'name',
+    sorter: false,
     valueEnum: {
       0: {
-        text: '申请AS角色',
+        text: '申请PU角色',
         status: '0',
       },
       1: {
-        text: '申请PS角色',
+        text: '申请PG角色',
         status: '1',
       },
       2: {
-        text: '申请SG角色',
+        text: '申请PS角色',
         status: '2',
       },
-    },
+      3: {
+        text: '申请SG角色',
+        status: '3',
+      },
+      4: {
+        text: '申请ASS角色',
+        status: '4',
+      }
+    }
   },
   {
     title: '提案功能',
-    dataIndex: 'councilSort',
+    dataIndex: 'purpose',
     sorter: false,
-    hideInForm: false,
     valueEnum: {
       0: {
-        text: '增加调度功能',
-        status: 'buy',
-      },
-      1: {
         text: '开通角色权限',
-        status: 'sell',
-      },
-    },
+        status: '0',
+      }
+    }
   },
   {
-    title: '提案角色',
-    dataIndex: 'councilId',
+    title: '申请角色',
+    dataIndex: 'role',
     sorter: false,
-    hideInForm: false,
     valueEnum: {
       0: {
-        text: 'AS',
-        status: 'AS',
-      },
-      1: {
-        text: 'PG',
-        status: 'PG',
-      },
-      2: {
         text: 'PU',
-        status: 'PU',
-      },
-    },
+        status: '0',
+      }
+    }
   },
   {
     title: '提案状态',
-    dataIndex: 'councilStatus',
+    dataIndex: 'status',
     sorter: false,
     hideInForm: false,
     valueEnum: {
       0: {
         text: '待通过',
-        status: 'AS',
+        status: '0',
       },
       1: {
         text: '已通过',
-        status: 'PG',
+        status: '1',
       },
       2: {
         text: '已拒绝',
-        status: 'PU',
-      },
-    },
+        status: '2',
+      }
+    }
   },
   {
     title: '附件情况',
-    dataIndex: 'energyStatus',
+    dataIndex: 'annex',
     hideInForm: false,
     valueEnum: {
       0: {
@@ -90,8 +86,8 @@ const columns = [
       1: {
         text: '无',
         status: '1',
-      },
-    },
+      }
+    }
   },
   {
     title: '操作',
@@ -101,7 +97,7 @@ const columns = [
       <>
         <a
           onClick={() => {
-            window.console.log(record)
+            optionClick(1,record)
           }}
         >
           同意
@@ -109,7 +105,7 @@ const columns = [
         <Divider type="vertical" />
         <a
           onClick={() => {
-            window.console.log(record)
+            optionClick(2,record)
           }}
         >
           拒绝
@@ -119,20 +115,52 @@ const columns = [
   },
 ];
 
-const dataSource = [];
-for (let i = 0; i < 20; i += 1) {
-  dataSource.push({
-    key: i,
-    name: Math.floor(Math.random() * 10) % 3,
-    councilSort: Math.floor(Math.random() * 10) % 2,
-    councilId: Math.floor(Math.random() * 10) % 3,
-    councilStatus: Math.floor(Math.random() * 10) % 3,
-    energyStatus: Math.floor(Math.random() * 10) % 2
-  });
+function optionClick(type,record) {
+  let api = record.apiHook;
+  if (!api) return;
 }
 
 const TableList = () => {
+  const [count, setCount] = useState(0);
+  const [dataSource, setDataSource] = useState([]);
   const actionRef = useRef();
+  const {api} = useContext(ApiContext);
+  console.log(`Api: ${api}`);
+
+  useEffect(() => {
+    if (!api) return;
+
+    api.query.auditModule.proposalCount((result) => {
+      if (!result.isNone) {
+        setCount(result.toNumber());
+      }
+    });
+  },[api]);
+
+  // get data
+  // "apply_addr":"5GgmNnKVdSRJqHmKttZrxWGdy5j1a6nU8oWWNKf7DffR6ssi","apply_role":2,"apply_status":0,"apply_annex":true
+  useEffect(() => {
+    if (!api || !count) return;
+    let source = [];
+    for (let i=0; i<count; i++ ) {
+      api.query.auditModule.proposalInformation(i, (result) => {
+        if (!result.isNone) {
+          const data = result.toJSON();
+          source.push({
+            key: i,
+            name: '申请PS角色',
+            purpose: 0,
+            role: 0,
+            status: data.apply_status,
+            annex: data.apply_annex ? 0 : 1,
+            apiHook: api
+          });
+        }
+        setDataSource(source);
+      });
+    }
+
+  }, [count, api]);
 
   return (
     <div>
