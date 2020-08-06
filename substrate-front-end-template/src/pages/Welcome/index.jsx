@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Spin } from 'antd';
 import { AccountsContext } from '@/context/accounts';
 import { ApiContext } from '@/context/api';
+import {useSubstrate} from "@/lib/lib";
 
 function Welcome() {
-  const { account } = React.useContext(AccountsContext); // 拿address
-  const { api, apiState } = React.useContext(ApiContext); // 拿api
+  const lib = useSubstrate();
+  const { api, apiState } = React.useContext(ApiContext);
+  const { address } = React.useContext(AccountsContext);
   const [nodeInfo, setNodeInfo] = useState({ chain: '', nodeName: '', nodeVersion: '' });
+  const [addr, setAddr] = useState('');
 
   useEffect(() => {
     const getInfo = async () => {
@@ -26,6 +29,24 @@ function Welcome() {
     }
   }, [api]);
 
+  // GET ADDRESS
+  useEffect(() => {
+    (async () => {
+      if (api) {
+        const add = await lib.address();
+        setAddr(add)
+      }
+    })();
+  },[api]);
+
+  useEffect(() => {
+    (async () => {
+      if (address) {
+        await lib.keyring();
+      }
+    })();
+  },[address]);
+
   const Main = () => {
     return (
       <div
@@ -33,7 +54,7 @@ function Welcome() {
       >
         {`${nodeInfo.chain  } | ${  nodeInfo.nodeName  } | ${  nodeInfo.nodeVersion}`}
         <br/>
-        {account}
+        {addr}
       </div>
     );
   };

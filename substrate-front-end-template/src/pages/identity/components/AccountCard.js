@@ -6,28 +6,28 @@ import styles from "../index.less";
 import GroupSvg from "../assets/group.svg";
 
 const AccountCard = () => {
-  const {account} = useContext(AccountsContext);
+  const {address} = useContext(AccountsContext);
   const {api} = useContext(ApiContext);
   const [balances, setBalances] = useState({token_balance: 0, token_stake: 0, token_vote: 0});
 
   useEffect( () => {
-    if (!api) return;
+    if (!api || !address) return;
 
-    api.query.tokenModule.balanceToken(account, (result) => {
+    api.query.tokenModule.balanceToken(address, (result) => {
       if (!result.isNone) {
         console.log(`Balance: ${result}`);
         setBalances(result.toJSON())
       }
     });
 
-  },[api]);
+  },[api, address]);
 
   return (
     <div className={styles.accountCard}>
       <img alt="logo" className={styles.logo} src={GroupSvg} />
       <div className={styles.accountAddress}>
         <p>账户地址</p>
-        <p>{account !== undefined ? account : '15d4X7aZVDgnGpmqrXcs6f6nphifGQLcDJEzXceTmkgwH8oU'}</p>
+        <p>{address !== undefined ? address : '15d4X7aZVDgnGpmqrXcs6f6nphifGQLcDJEzXceTmkgwH8oU'}</p>
       </div>
       <div className={styles.accountBalance}>
         <p>可用余额</p>

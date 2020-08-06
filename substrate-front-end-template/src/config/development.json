@@ -33,6 +33,23 @@
       "meter_code": "u8",
       "meter_number": "u8",
       "post_code": "u8"
+    },
+    "ProposalInfo": {
+      "apply_addr": "AccountId",
+      "apply_role": "u8",
+      "apply_status": "u8",
+      "apply_annex": "bool"
+    },
+    "ContractT": {
+      "ps_addr": "AccountId",
+      "vpp_number": "u64",
+      "block_number": "BlockNumber",
+      "contract_price": "u32",
+      "energy_amount": "u64",
+      "execution_status": "u8",
+      "contract_type": "bool",
+      "energy_type": "u8",
+      "ammeter_id": "u8"
     }
   },
   "PROVIDER_SOCKET": "ws://127.0.0.1:9944"

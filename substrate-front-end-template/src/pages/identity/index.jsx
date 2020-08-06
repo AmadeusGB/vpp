@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {Col, Row, Button, Typography} from 'antd';
+import {Col, Row, Typography} from 'antd';
 import {PageContainer} from "@ant-design/pro-layout";
 import {TxButton} from "@/components/TxButton/TxButton";
 import {AccountsContext} from "@/context/accounts";
@@ -45,7 +45,7 @@ const roleNumber = (type) => {
   }
 };
 
-const IdCard = ({type, currentType, account, accountPair}) => {
+const IdCard = ({type, currentType, accountPair}) => {
   const [status, setStatus] = useState(null);
 
   return (
@@ -64,9 +64,9 @@ const IdCard = ({type, currentType, account, accountPair}) => {
                 type='SIGNED-TX'
                 setStatus={setStatus}
                 attrs={{
-                  palletRpc: 'identityModule',
-                  callable: _.indexOf(currentType,type) < 0 ? 'apply' : 'logout',
-                  inputParams: _.indexOf(currentType,type) < 0 ? [account, roleNumber(type)] : [roleNumber(type)],
+                  palletRpc: _.indexOf(currentType,type) < 0 ? 'auditModule' : 'identityModule',
+                  callable: _.indexOf(currentType,type) < 0 ? 'applyproposalrole' : 'logout',
+                  inputParams: _.indexOf(currentType,type) < 0 ? [roleNumber(type), true] : [roleNumber(type)],
                   paramFields: _.indexOf(currentType,type) < 0 ? [true, true] : [true]
                 }}
       />
@@ -77,19 +77,18 @@ const IdCard = ({type, currentType, account, accountPair}) => {
 export default () => {
   const [roles, setRoles] = useState([]);
   const {api} = useContext(ApiContext);
-  const {account} = useContext(AccountsContext);
+  const {address} = useContext(AccountsContext);
   const {keyring} = useContext(AccountsContext);
   const [accountPair, setAccountPair] = useState(null);
 
   useEffect(() => {
     if (!keyring) return;
-    setAccountPair(keyring.getPair(account));
-    console.log(`accountPair: ${keyring.getPair(account)}`);
+    setAccountPair(keyring.getPair(address));
   },[keyring]);
 
   useEffect(() => {
-    if (!api) return;
-    api.query.identityModule.roles(account, (result) => {
+    if (!api || !address) return;
+    api.query.identityModule.roles(address, (result) => {
       if (!result.isNone) {
         console.log(`Roles: ${result}`);
         const val = result.toJSON();
@@ -102,7 +101,7 @@ export default () => {
         setRoles(arr);
       }
     });
-  }, [api]);
+  }, [api, address]);
 
   return (
     <PageContainer>
@@ -119,35 +118,30 @@ export default () => {
         <Col span={4}>
           <IdCard type='pu'
                   currentType={roles}
-                  account={account}
                   accountPair={accountPair}
           />
         </Col>
         <Col span={4} offset={1}>
           <IdCard type='pg'
                   currentType={roles}
-                  account={account}
                   accountPair={accountPair}
           />
         </Col>
         <Col span={4} offset={1}>
           <IdCard type='ps'
                   currentType={roles}
-                  account={account}
                   accountPair={accountPair}
           />
         </Col>
         <Col span={4} offset={1}>
           <IdCard type='sg'
                   currentType={roles}
-                  account={account}
                   accountPair={accountPair}
           />
         </Col>
         <Col span={4} offset={1}>
           <IdCard type='ass'
                   currentType={roles}
-                  account={account}
                   accountPair={accountPair}
           />
         </Col>
