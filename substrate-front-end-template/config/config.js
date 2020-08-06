@@ -73,7 +73,7 @@ export default defineConfig({
                   name: 'identity',
                   icon: 'smile',
                   path: '/identity',
-                  component: './identity',
+                  component: './Identity',
                 },
                 {
                   name: 'council',
