@@ -25,7 +25,7 @@ function Welcome() {
       }
     };
     if (api) {
-      getInfo().then((r) => console.error(r));
+      getInfo();
     }
   }, [api]);
 

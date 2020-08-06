@@ -124,7 +124,7 @@ const TableList = () => {
   const {api} = useContext(ApiContext);
 
   useEffect(() => {
-    if (!api) return;
+    if (!api || !address) return;
 
     api.query.contractModule.contractcounts(address, (result) => {
       console.log(result.toNumber());

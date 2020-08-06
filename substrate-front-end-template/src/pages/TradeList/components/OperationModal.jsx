@@ -9,7 +9,7 @@ const formLayout = {
   },
   wrapperCol: {
     span: 13,
-  },
+  }
 };
 
 const OperationModal = props => {

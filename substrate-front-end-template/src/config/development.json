@@ -15,6 +15,19 @@
       "ass": "bool",
       "pom": "bool"
     },
+    "ApprovalStatus": {
+      "_enum": [
+        "Denied",
+        "Passed",
+        "Pending"
+      ]
+    },
+    "BusinessStatus": {
+      "_enum": [
+        "Opened",
+        "Closed"
+      ]
+    },
     "PsVpp": {
       "vpp_name": "u8",
       "pre_total_stock": "u64",
