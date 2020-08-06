@@ -51,6 +51,7 @@ decl_event!(
 decl_error! {
 	pub enum Error for Module<T: Trait> {
 		ProposalNotExist,
+		Overflow,
 	}
 }
 
@@ -82,6 +83,9 @@ decl_module! {
 				apply_status: 0,
 				apply_annex: apply_annex,
 			};
+
+			let proposal_number_next = proposal_number.checked_add(1).ok_or(Error::<T>::Overflow)?;
+			ProposalCount::put(proposal_number_next);			
 
 			ProposalInformation::insert(proposal_number, proposal_template);
 
