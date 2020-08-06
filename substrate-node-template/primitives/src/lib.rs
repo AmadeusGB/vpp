@@ -7,6 +7,9 @@ use sp_runtime::RuntimeDebug;
 
 pub type Balance = u128;
 
+pub const PTO: u32 = 10000000;
+pub const DOT: u32 = 10000000;
+
 pub trait Vpp<AccountId> {
     fn update_status(vpp: &AccountId, vpp_number: u64, approval_status: ApprovalStatus) -> dispatch::DispatchResult;
     fn buy(who: &AccountId, vpp: &AccountId, vpp_number: u64, price: Balance, energy_amount: u64) -> dispatch::DispatchResult;

@@ -104,7 +104,6 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 };
 
 pub const MILLISECS_PER_BLOCK: u64 = 6000;
-
 pub const SLOT_DURATION: u64 = MILLISECS_PER_BLOCK;
 
 // These time units are defined in number of blocks.

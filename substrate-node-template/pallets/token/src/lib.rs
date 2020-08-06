@@ -8,7 +8,7 @@ use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 //use sp_runtime::traits::StaticLookup;
 use codec::{Encode, Decode};
-use primitives::Token;
+use primitives::{Token, PTO, DOT};
 use frame_support::dispatch::DispatchResult;
 
 #[cfg(test)]
@@ -42,11 +42,26 @@ impl Default for TokenInfo {
 	}
 }
 
+#[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
+#[derive(Encode, Decode)]
+pub struct RateInfo {
+	pub buy_rate: u32,						//可用余额
+	pub sell_rate: u32,						  //交易质押
+}
+
+impl Default for RateInfo {
+	fn default() -> Self {
+		RateInfo {
+			buy_rate: 1,
+			sell_rate: 1,
+		}
+	}
+}
+
 // This pallet's storage items.
 decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
-		pub BuyRate get(fn buyrate):  u32;							 //购买通证汇率
-		pub SellRate get(fn sellrate):  u32;							//出售通证汇率
+		pub SelfRate get(fn selfrate): map hasher(blake2_128_concat) T::AccountId => RateInfo;									//地址对应汇率
 		pub BalanceToken get(fn balancetoken):  map hasher(blake2_128_concat) T::AccountId => TokenInfo;		//某地址对应的通证数量
 	}
 }
@@ -54,7 +69,8 @@ decl_storage! {
 // The pallet's events
 decl_event!(
 	pub enum Event<T> where AccountId = <T as system::Trait>::AccountId {
-		SomethingStored(u32, AccountId),
+		BuyToken(AccountId, u32, u32),
+		SellToken(AccountId, u32, u32),
 	}
 );
 
@@ -82,19 +98,14 @@ decl_module! {
 			amount_price: BalanceOf<T>
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
+			let rate = <SelfRate<T>>::get(&sender);
+			let mut tokeninfo = <BalanceToken<T>>::get(&sender);
+			tokeninfo.token_balance += buy_token;
 
-			BuyRate::put(102);
+			BalanceToken::<T>::insert(&sender, tokeninfo);
+			T::Currency::transfer(&sender, &treasure, amount_price, ExistenceRequirement::KeepAlive)?;
 
-			let amount = buy_token * BuyRate::get() / 100;
-
-			if <BalanceOf<T>>::from(amount) == amount_price {
-				let mut tokeninfo = <BalanceToken<T>>::get(&sender);
-				tokeninfo.token_balance += buy_token;
-
-				BalanceToken::<T>::insert(&sender, tokeninfo);
-
-				T::Currency::transfer(&sender, &treasure, amount_price, ExistenceRequirement::KeepAlive)?;
-			}
+			Self::deposit_event(RawEvent::BuyToken(sender, buy_token, rate.buy_rate));
 
 			Ok(())
 		}
@@ -107,32 +118,28 @@ decl_module! {
 			amount_price: BalanceOf<T>
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
+			let rate = <SelfRate<T>>::get(&sender);
+			let mut tokeninfo = <BalanceToken<T>>::get(&sender);
+			ensure!(tokeninfo.token_balance > sell_token, Error::<T>::BalanceNotEnough);
 
-			SellRate::put(99);
+			tokeninfo.token_balance -= sell_token;
 
-			let amount = sell_token * SellRate::get() / 100;
+			BalanceToken::<T>::insert(&sender, tokeninfo);			
+			T::Currency::transfer(&treasure, &sender, amount_price, ExistenceRequirement::KeepAlive)?;
 
-			if <BalanceOf<T>>::from(amount) == amount_price {
-				let mut tokeninfo = <BalanceToken<T>>::get(&sender);
-				ensure!(tokeninfo.token_balance > sell_token, Error::<T>::BalanceNotEnough);
-
-				tokeninfo.token_balance -= sell_token;
-
-				BalanceToken::<T>::insert(&sender, tokeninfo);
-				
-				T::Currency::transfer(&treasure, &sender, amount_price, ExistenceRequirement::KeepAlive)?;
-			}
+			Self::deposit_event(RawEvent::BuyToken(sender, sell_token, rate.sell_rate));
 
 			Ok(())
 		} 
 
 		#[weight = 0]
 		pub fn transfertoken(
-			_origin, 
+			origin, 
 			from: T::AccountId, 
 			to: T::AccountId, 
 			token_amount: u32
 		) -> dispatch::DispatchResult{
+			ensure_signed(origin)?;
 			Self::do_transfertoken(from, to, token_amount)?;
 			Ok(())
 		}
