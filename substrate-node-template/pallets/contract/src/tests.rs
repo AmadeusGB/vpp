@@ -18,7 +18,7 @@ fn contract_can_add() {
 			vec![1u8, 2, 3]
 		));
 
-		let expected_storage_item = ContractT {
+		let expected_storage_item = TemplateModule::ContractT {
 			ps_addr: 2,
 			vpp_number: 3u64,
 			block_number: 9997u64,
@@ -51,7 +51,7 @@ fn contract_can_add() {
 			vec![3u8, 2, 3]
 		));
 
-		let expected_storage_item = ContractT {
+		let expected_storage_item = TemplateModule::ContractT {
 			ps_addr: 3,
 			vpp_number: 4u64,
 			block_number: 8888u64,
@@ -91,7 +91,7 @@ fn contract_can_stop() {
 			vec![1u8, 2, 3]
 		));
 
-		let expected_storage_item = ContractT {
+		let expected_storage_item = TemplateModule::ContractT {
 			ps_addr: 2,
 			vpp_number: 3u64,
 			block_number: 9997u64,
@@ -127,7 +127,7 @@ fn contract_can_complete() {
 			vec![1u8, 2, 3]
 		));
 
-		let expected_storage_item = ContractT {
+		let expected_storage_item = TemplateModule::ContractT {
 			ps_addr: 2,
 			vpp_number: 3u64,
 			block_number: 9997u64,

@@ -121,7 +121,7 @@ decl_module! {
 }
 
 //noinspection RsUnresolvedReference
-impl<T> Role<T::AccountId> for Module<T> where T: Trait {
+impl<T: Trait> Module<T> {
 	//noinspection ALL
 	fn has_role(who: &T::AccountId, apply_role: u8) -> bool {
 		let ps_role = <Roles<T>>::get(who).unwrap_or_else(|| MultiRole {

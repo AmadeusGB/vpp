@@ -7,6 +7,7 @@ use sp_runtime::{
 	traits::{BlakeTwo256, IdentityLookup}, testing::Header, Perbill,
 };
 use frame_system as system;
+use primitives::{Vpp};
 
 impl_outer_origin! {
 	pub enum Origin for Test {}
@@ -55,6 +56,55 @@ parameter_types! {
 impl Trait for Test {
 	type Event = ();
 	type MaxMemberCount = MaxMemberCount;
+}
+
+impl identity::Trait for Test {
+	type Event = Event;
+	type Currency = Balances;
+}
+
+impl audit::Trait for Test {
+	type Event = Event;
+	type Currency = Balances;
+}
+
+impl contract::Trait for Test {
+	type Event = Event;
+	type Vpp = trade::Module<Test>;
+	type Currency = Balances;
+}
+
+impl token::Trait for Test {
+	type Event = Event;
+	type Currency = Balances;
+}
+
+impl trade::Trait for Test {
+	type Event = Event;
+	type Currency = Balances;
+	type Role = identity::Module<Test>;
+	type TypeTransfer = typetransfer::Module<Test>;
+	type Contract = contract::Module<Test>;
+}
+
+impl parliament::Trait for Test {
+	type Event = Event;
+	type Vpp = trade::Module<Test>;
+	type MaxMemberCount = MaxMemberCount;
+}
+
+impl typetransfer::Trait for Test {
+	type Event = Event;
+	type Currency = Balances;
+	type Token = token::Module<Test>;
+	type MinDustCheckBalance = MinDustCheckBalance;
+	type MinDustCheckSeconds = MinDustCheckSeconds;
+}
+
+parameter_types! {
+	pub const MaxClaimLength: u32 = 6;
+	pub const MinDustCheckBalance:u32 = 100;
+	pub const MinDustCheckSeconds:u32 = 5;
 }
 
 pub type TemplateModule = Module<Test>;

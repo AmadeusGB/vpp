@@ -53,6 +53,9 @@ git = 'https://github.com/paritytech/substrate.git'
 tag = 'v2.0.0-rc2'
 version = '2.0.0-rc2'
 
+[dev-dependencies]
+pallet-balances = { version = "2.0.0-rc2", git = 'https://github.com/paritytech/substrate.git', tag = 'v2.0.0-rc2' }
+
 [features]
 default = ['std']
 std = [

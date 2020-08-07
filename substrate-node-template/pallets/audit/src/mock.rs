@@ -63,7 +63,6 @@ impl balances::Trait for Test {
 impl Trait for Test {
 	type Event = ();
 	type Currency = Balances;
-	type TypeTransfer = typetransfer::Module<Runtime>;
 }
 
 type System = system::Module<Test>;

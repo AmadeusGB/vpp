@@ -257,6 +257,11 @@ impl template::Trait for Runtime {
 	type Event = Event;
 }
 
+impl identity::Trait for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+}
+
 impl audit::Trait for Runtime {
 	type Event = Event;
 	type Currency = Balances;
@@ -279,7 +284,7 @@ impl token::Trait for Runtime {
 impl trade::Trait for Runtime {
 	type Event = Event;
 	type Currency = Balances;
-	type Role = IdentityModule;
+	type Role = identity::Module<Runtime>;
 	type TypeTransfer = typetransfer::Module<Runtime>;
 	type Contract = contract::Module<Runtime>;
 }
@@ -306,11 +311,6 @@ parameter_types! {
 	pub const MaxClaimLength: u32 = 6;
 	pub const MinDustCheckBalance:u32 = 100;
 	pub const MinDustCheckSeconds:u32 = 5;
-}
-
-impl identity::Trait for Runtime {
-	type Event = Event;
-	type Currency = Balances;
 }
 
 construct_runtime!(
