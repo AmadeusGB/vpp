@@ -1,8 +1,9 @@
 import {Divider, Modal} from 'antd';
-import React, { useState, useRef } from 'react';
+import React, {useState, useRef, useContext, useEffect} from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
-
+import {ApiContext} from "@/context/api";
+import {AccountsContext} from "@/context/accounts";
 
 const columns = [
   {
@@ -118,6 +119,20 @@ for (let i = 0; i < 20; i += 1) {
 
 const TableList = () => {
   const actionRef = useRef();
+  const [count, setCount] = useState(0);
+  const {address} = useContext(AccountsContext);
+  const {api} = useContext(ApiContext);
+
+  useEffect(() => {
+    if (!api) return;
+
+    api.query.contractModule.contractcounts(address, (result) => {
+      console.log(result.toNumber());
+      if (!result.isNone) {
+        setCount(result);
+      }
+    });
+  },[api]);
 
   return (
     <div>

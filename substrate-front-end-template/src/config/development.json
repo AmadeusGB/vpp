@@ -1,5 +1,7 @@
 {
   "CUSTOM_TYPES": {
+    "Address": "AccountId",
+    "LookupSource": "AccountId",
     "TokenInfo": {
       "token_balance": "u32",
       "token_stake": "u32",
@@ -12,6 +14,42 @@
       "sg": "bool",
       "ass": "bool",
       "pom": "bool"
+    },
+    "PsVpp": {
+      "vpp_name": "u8",
+      "pre_total_stock": "u64",
+      "sold_total": "u64",
+      "electric_type": "bool",
+      "energy_type": "u8",
+      "buy_price": "u32",
+      "sell_price": "u32",
+      "post_code": "u8",
+      "transport_lose": "u32",
+      "business_status": "BusinessStatus",
+      "approval_status": "ApprovalStatus",
+      "device_id": "u64"
+    },
+    "RoleInfo": {
+      "meter_code": "u8",
+      "meter_number": "u8",
+      "post_code": "u8"
+    },
+    "ProposalInfo": {
+      "apply_addr": "AccountId",
+      "apply_role": "u8",
+      "apply_status": "u8",
+      "apply_annex": "bool"
+    },
+    "ContractT": {
+      "ps_addr": "AccountId",
+      "vpp_number": "u64",
+      "block_number": "BlockNumber",
+      "contract_price": "u32",
+      "energy_amount": "u64",
+      "execution_status": "u8",
+      "contract_type": "bool",
+      "energy_type": "u8",
+      "ammeter_id": "u8"
     }
   },
   "PROVIDER_SOCKET": "ws://127.0.0.1:9944"
