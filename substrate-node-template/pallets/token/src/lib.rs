@@ -98,11 +98,13 @@ decl_module! {
 			amount_price: BalanceOf<T>
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
-			let rate = <SelfRate<T>>::get(&sender);
+			let mut rate = <SelfRate<T>>::get(&sender);
 			let mut tokeninfo = <BalanceToken<T>>::get(&sender);
 			tokeninfo.token_balance += buy_token;
+			rate.buy_rate *= PTO / DOT;
 
 			BalanceToken::<T>::insert(&sender, tokeninfo);
+			SelfRate::<T>::insert(&sender, &rate);
 			T::Currency::transfer(&sender, &treasure, amount_price, ExistenceRequirement::KeepAlive)?;
 
 			Self::deposit_event(RawEvent::BuyToken(sender, buy_token, rate.buy_rate));
@@ -118,13 +120,15 @@ decl_module! {
 			amount_price: BalanceOf<T>
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
-			let rate = <SelfRate<T>>::get(&sender);
+			let mut rate = <SelfRate<T>>::get(&sender);
 			let mut tokeninfo = <BalanceToken<T>>::get(&sender);
 			ensure!(tokeninfo.token_balance > sell_token, Error::<T>::BalanceNotEnough);
 
 			tokeninfo.token_balance -= sell_token;
+			rate.buy_rate *= PTO / DOT;
 
-			BalanceToken::<T>::insert(&sender, tokeninfo);			
+			BalanceToken::<T>::insert(&sender, tokeninfo);
+			SelfRate::<T>::insert(&sender, &rate);
 			T::Currency::transfer(&treasure, &sender, amount_price, ExistenceRequirement::KeepAlive)?;
 
 			Self::deposit_event(RawEvent::BuyToken(sender, sell_token, rate.sell_rate));

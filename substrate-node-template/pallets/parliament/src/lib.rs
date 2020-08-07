@@ -23,6 +23,7 @@ pub trait Trait: system::Trait {
 decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
 		Members get(fn get_members): Vec<T::AccountId>;
+		SuperOwner get(fn get_superowner): T::AccountId;
 	}
 }
 
@@ -52,6 +53,17 @@ decl_module! {
 
 		// Initializing events
 		fn deposit_event() = default;
+/*
+		#[weight = 0]
+		pub fn init_superowner(
+			origin
+		) -> dispatch:: DispatchResult {
+			let sender = ensure_signed(origin)?;
+			SuperOwner::<T>::put(sender);
+
+			Ok(())
+		}
+*/
 
 		#[weight = 0]
 		pub fn accept_vpp(
@@ -84,7 +96,7 @@ decl_module! {
 			origin, 
 			new_member: T::AccountId
 		) -> dispatch::DispatchResult {
-			ensure_root(origin)?;
+			ensure_signed(origin)?;
 			let members = Self::get_members();
 			ensure!(members.len() < T::MaxMemberCount::get(), Error::<T>::TooManyMembers);
 			ensure!(!members.contains(&new_member), Error::<T>::AlreadyMember);
@@ -98,7 +110,7 @@ decl_module! {
 			origin, 
 			old_member: T::AccountId
 		) -> dispatch::DispatchResult {
-			ensure_root(origin)?;
+			ensure_signed(origin)?;
 			ensure!(Self::get_members().contains(&old_member), Error::<T>::NotMember);
 			<Members<T>>::mutate(|mem| mem.retain(|m| m != &old_member));
 			Self::deposit_event(RawEvent::ForceToRemoveMember(old_member));
