@@ -100,7 +100,7 @@ decl_module! {
 			let members = Self::get_members();
 			ensure!(members.len() < T::MaxMemberCount::get(), Error::<T>::TooManyMembers);
 			ensure!(!members.contains(&new_member), Error::<T>::AlreadyMember);
-			Members::<T>::append(&new_member);
+			Members::<T>::append(&new_member); 
 			Self::deposit_event(RawEvent::ForceToAddMember(new_member));
 			Ok(())
 		}
