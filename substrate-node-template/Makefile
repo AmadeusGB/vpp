@@ -2,10 +2,10 @@ restart: build purge run
 rerun: purge run
 
 run:
-	RUST_LOG=warn;babe=debug target/debug/node-template --dev -d target/substrate --execution=Both --ws-external -lruntime=debug
+	RUST_LOG=warn;babe=debug target/debug/node-template --dev -d target/node-template --execution=Both --ws-external -lruntime=debug
 
 run-wasm:
-	target/debug/node-template --dev -d target/substrate --execution=Wasm --ws-external -lruntime=debug
+	target/debug/node-template --dev -d target/node-template --execution=Wasm --ws-external -lruntime=debug
 
 purge:
 	-target/debug/node-template purge-chain --dev -y -d target/substrate
@@ -17,22 +17,34 @@ build:
 
 alice: purge
 	RUST_LOG=warn;babe=debug target/debug/node-template -d target/alice \
+		--node-key 0000000000000000000000000000000000000000000000000000000000000001 \
+		--prometheus-port 9615 \
+		--rpc-cors=all \
+		--rpc-methods=Unsafe \
+		--unsafe-ws-external \
 		--chain local \
 		--alice \
 		--port 30333 \
 		--ws-port 9944 \
 		--rpc-port 9933 \
-		--validator
+		--telemetry-url 'ws://telemetry.polkadot.io:1024 0' \
+		--validator --name vpp-test-node01
 
 bob:
 	RUST_LOG=warn;babe=debug target/debug/node-template -d target/bob \
+		--node-key 0000000000000000000000000000000000000000000000000000000000000002 \
+		--prometheus-port 9616 \
+		--rpc-cors=all \
+		--rpc-methods=Unsafe \
+		--unsafe-ws-external \
 		--chain local \
 		--bob \
 		--port 30334 \
 		--ws-port 9945 \
 		--rpc-port 9934 \
-		--validator \
-		--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWQeYDidtBt2f7j5F8ASVcw8EgvRowzcEAQwXe2rkr7Rt4
+		--telemetry-url 'ws://telemetry.polkadot.io:1024 0' \
+		--validator  --name vpp-test-node02 \
+		--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWEyoppNCUx8Yx66oV9fJnriXwCcXwDDUA2kj6vnc6iDEp
 
 check:
 	SKIP_WASM_BUILD= cargo check
