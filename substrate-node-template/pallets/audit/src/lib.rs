@@ -98,17 +98,30 @@ decl_module! {
 			proposal_number: u32, 
 			vote_result: u8
 		) -> dispatch::DispatchResult{
-			let sender = ensure_signed(origin)?;
+			ensure_signed(origin)?;
 
 			//检查当前sender是否为委员会成员
 			// if T::Parliament::is_member(&sender) {
 			let mut proposal_information = <ProposalInformation<T>>::get(proposal_number).ok_or(Error::<T>::ProposalNotExist)?;
+			let sender = proposal_information.apply_addr;
+			let role = proposal_information.apply_role;
+			let annex = proposal_information.apply_annex;
+
 			proposal_information.apply_status = vote_result;
+
+			let proposal_template = ProposalInfo::<T> {
+				apply_addr: sender.clone(),
+				apply_role: role.clone(),
+				apply_status: vote_result,
+				apply_annex: annex,
+			};
+
+			ProposalInformation::insert(proposal_number, proposal_template);
 
 			if vote_result == 1 {
 				//调用identity模块apply函数，使申请者拥有该身份
 				//apply(proposal_information.apply_addr, proposal_information.apply_role);
-				T::Role::do_apply(proposal_information.apply_addr,proposal_information.apply_role)?;
+				T::Role::do_apply(sender, role)?;
 			}
 			// }
 			Ok(())
