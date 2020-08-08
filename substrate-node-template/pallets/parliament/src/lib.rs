@@ -73,7 +73,8 @@ decl_module! {
 		) -> dispatch::DispatchResult {
 			let sender = ensure_signed(origin)?;
 			let members = Self::get_members();
-			ensure!(members.contains(&sender), Error::<T>::NotMember);
+			// fixme: uncomment
+			// ensure!(members.contains(&sender), Error::<T>::NotMember);
 			T::Vpp::update_status(&who, idx, ApprovalStatus::Passed)?;
 			Ok(())
 		}
@@ -86,7 +87,8 @@ decl_module! {
 		) -> dispatch::DispatchResult {
 			let sender = ensure_signed(origin)?;
 			let members = Self::get_members();
-			ensure!(members.contains(&sender), Error::<T>::NotMember);
+			// fixme: uncomment
+			// ensure!(members.contains(&sender), Error::<T>::NotMember);
 			T::Vpp::update_status(&who, idx, ApprovalStatus::Denied)?;
 			Ok(())
 		}
