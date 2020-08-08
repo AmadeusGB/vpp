@@ -124,23 +124,24 @@ decl_module! {
 			//OCW按周期查询该电表度数；=>当前用区块号模拟电表度数
 			//当电表度数>=电表度数（合同开始时刻）+购买电能度数，自动将合同标记为已完成
 
+			let sender = ensure_signed(_origin)?;
 
 			let block_number_now = system::Module::<T>::block_number();//用区块号模拟度数
 			let block_number_now = TryInto::<u64>::try_into(block_number_now).ok().unwrap();
 
-			let mut vecModifyKey = Vec::new();
+			let mut vec_modify_key = Vec::new();
 
 			for item in Contracts::<T>::iter() {
 				if (block_number_now >= item.1.energy_amount && 3 != item.1.execution_status) {
-					vecModifyKey.push((item.1.ps_addr, item.1.vpp_number));
+					vec_modify_key.push((item.1.ps_addr, item.1.vpp_number));
 				}
 			}
 
-			for item in &vecModifyKey {
-				let mut contractHaveDone = <Contracts<T>>::get( (&item.0, &item.1) ).unwrap();
-				contractHaveDone.execution_status = 3;
-				Contracts::<T>::insert((&item.0, &item.1), contractHaveDone);
-				Self::deposit_event(RawEvent::ContractExecutionStatusChanged(sender, contract_number, 3));
+			for item in &vec_modify_key {
+				let mut contract_have_done = <Contracts<T>>::get( (&item.0, &item.1) ).unwrap();
+				contract_have_done.execution_status = 3;
+				Self::deposit_event(RawEvent::ContractExecutionStatusChanged(sender.clone(), TryInto::<u64>::try_into(contract_have_done.block_number).ok().unwrap(), 3));
+				Contracts::<T>::insert((&item.0, &item.1), contract_have_done);
 			}
 
 			Ok(())
