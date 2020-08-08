@@ -1,5 +1,6 @@
 import React, {useContext, useEffect, useState} from "react";
 import {Button, Divider} from 'antd';
+import {TxButton} from "@/components/TxButton/TxButton";
 import {AccountsContext} from "@/context/accounts";
 import {ApiContext} from "@/context/api";
 import styles from "../index.less";
@@ -7,9 +8,20 @@ import GroupSvg from "../assets/group.svg";
 
 const AccountCard = () => {
   const {address} = useContext(AccountsContext);
+  const {keyring} = useContext(AccountsContext);
   const {api} = useContext(ApiContext);
   const [balances, setBalances] = useState({token_balance: 0, token_stake: 0, token_vote: 0});
   const [total, setTotal] = useState(0);
+  const [accountId, setAccountId] = useState('5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty');//bob
+  const [amount_price, setAmountPrice] = useState(100);//alice
+
+  const [accountPair, setAccountPair] = useState(null);
+  const [status, setStatus] = useState(null);
+
+  useEffect(() => {
+    if (!keyring) return;
+    setAccountPair(keyring.getPair(address));
+  },[keyring]);
 
   useEffect( () => {
     if (!api || !address) return;
@@ -53,9 +65,34 @@ const AccountCard = () => {
         <p>{balances.token_balance}</p>
       </div>
       <div className={styles.accountButtons}>
-        <Button ghost>充值</Button>
-        <Divider orientation="center" type="vertical"/>
-        <Button ghost>提现</Button>
+        <TxButton style={{position: 'left', bottom: '10px', right: '20px'}}
+                color='blue'
+                accountPair={accountPair}
+                label='充值'
+                type='SIGNED-TX'
+                setStatus={setStatus}
+                attrs={{
+                  palletRpc: 'tokenModule',
+                  callable: 'buytoken',
+                  inputParams: [100, accountId, amount_price],
+                  paramFields: [true, true, true]
+                }}
+      />
+
+      <Divider orientation="center" type="vertical"/>
+      <TxButton style={{position: 'right', bottom: '10px', right: '20px'}}
+              color='blue'
+              accountPair={accountPair}
+              label='提现'
+              type='SIGNED-TX'
+              setStatus={setStatus}
+              attrs={{
+                palletRpc: 'tokenModule',
+                callable: 'selltoken',
+                inputParams: [1, accountId, amount_price],
+                paramFields: [true, true, true]
+              }}
+      />
       </div>
       <div className={styles.totalBalance}>
         <p>总金额</p>
