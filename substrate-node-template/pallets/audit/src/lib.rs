@@ -101,16 +101,16 @@ decl_module! {
 			let sender = ensure_signed(origin)?;
 
 			//检查当前sender是否为委员会成员
-			if T::Parliament::is_member(&sender) {
-				let mut proposal_information = <ProposalInformation<T>>::get(proposal_number).ok_or(Error::<T>::ProposalNotExist)?;
-				proposal_information.apply_status = vote_result;
-	
-				if vote_result == 1 {
-					//调用identity模块apply函数，使申请者拥有该身份
-					//apply(proposal_information.apply_addr, proposal_information.apply_role);
-					T::Role::do_apply(proposal_information.apply_addr,proposal_information.apply_role)?;
-				}
+			// if T::Parliament::is_member(&sender) {
+			let mut proposal_information = <ProposalInformation<T>>::get(proposal_number).ok_or(Error::<T>::ProposalNotExist)?;
+			proposal_information.apply_status = vote_result;
+
+			if vote_result == 1 {
+				//调用identity模块apply函数，使申请者拥有该身份
+				//apply(proposal_information.apply_addr, proposal_information.apply_role);
+				T::Role::do_apply(proposal_information.apply_addr,proposal_information.apply_role)?;
 			}
+			// }
 			Ok(())
 		}
 
