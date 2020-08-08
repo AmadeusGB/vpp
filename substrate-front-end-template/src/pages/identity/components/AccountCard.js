@@ -9,16 +9,35 @@ const AccountCard = () => {
   const {address} = useContext(AccountsContext);
   const {api} = useContext(ApiContext);
   const [balances, setBalances] = useState({token_balance: 0, token_stake: 0, token_vote: 0});
+  const [total, setTotal] = useState(0);
 
   useEffect( () => {
     if (!api || !address) return;
-
+    let unsubscribeAll = null;
     api.query.tokenModule.balanceToken(address, (result) => {
       if (!result.isNone) {
         console.log(`Balance: ${result}`);
         setBalances(result.toJSON())
       }
-    });
+    }).then(unsub => {
+      unsubscribeAll = unsub;
+    }).catch(console.error);
+    return () => unsubscribeAll && unsubscribeAll();
+
+  },[api, address]);
+
+  useEffect(() => {
+    if (!api || !address) return;
+    let unsubscribeAll = null;
+    api.query.tradeModule.currentRemainingBattery(address, (result) => {
+      if (!result.isNone) {
+        console.log(`Battery: ${result}`);
+        setTotal(result.toNumber());
+      }
+    }).then(unsub => {
+      unsubscribeAll = unsub;
+    }).catch(console.error);
+    return () => unsubscribeAll && unsubscribeAll();
 
   },[api, address]);
 
@@ -52,7 +71,7 @@ const AccountCard = () => {
       </div>
       <div className={styles.eleNum}>
         <p>当前剩余电量</p>
-        <p>0 度</p>
+        <p>{`${total} 度`}</p>
       </div>
     </div>
   )

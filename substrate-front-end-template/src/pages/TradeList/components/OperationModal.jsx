@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Modal, Result, Button, Form, Select, Input } from 'antd';
+import React, {useEffect, useState} from 'react';
+import { Modal, Form, Select, Input } from 'antd';
 import styles from '../style.less';
 
 const { Option } = Select;
@@ -9,12 +9,12 @@ const formLayout = {
   },
   wrapperCol: {
     span: 13,
-  },
+  }
 };
 
 const OperationModal = props => {
   const [form] = Form.useForm();
-  const { done, visible, operation, onDone, onCancel, onSubmit } = props;
+  const { visible, operation, onCancel, onSubmit } = props;
   useEffect(() => {
     if (form && !visible) {
       form.resetFields();
@@ -32,52 +32,54 @@ const OperationModal = props => {
     }
   };
 
-  const onGenderChange = value => {
+  const onTypeChange = value => {
     switch (value) {
-      case "male":
-        form.setFieldsValue({ note: "Hi, man!" });
+      case "0":
+        form.setFieldsValue({ type: "0" });
         break;
-      case "female":
-        form.setFieldsValue({ note: "Hi, lady!" });
+      case "1":
+        form.setFieldsValue({ type: "1" });
         break;
       default:
         break;
     }
   };
 
-  const modalFooter = done
-    ? {
-        okText: '确认',
-        onOk: handleSubmit,
-        onCancel,
-      }
-    : {
-        okText: '确认',
-        onOk: handleSubmit,
-        onCancel,
-      };
+  const onType1Change = value => {
+    switch (value) {
+      case "0":
+        form.setFieldsValue({ type1: "0" });
+        break;
+      case "1":
+        form.setFieldsValue({ type1: "1" });
+        break;
+      case "2":
+        form.setFieldsValue({ type1: "2" });
+        break;
+      case "3":
+        form.setFieldsValue({ type1: "3" });
+        break;
+      case "4":
+        form.setFieldsValue({ type1: "4" });
+        break;
+      default:
+        break;
+    }
+  };
+
+  const modalFooter = {
+    okText: '确认',
+    onOk: handleSubmit,
+    onCancel,
+  };
 
   const getModalContent = () => {
-    if (done) {
-      return (
-        <Result
-          status="success"
-          title="操作成功"
-          subTitle="一系列的信息描述，很短同样也可以带标点。"
-          extra={
-            <Button type="primary" onClick={onDone}>
-              知道了
-            </Button>
-          }
-          className={styles.formResult}
-        />
-      );
-    }
+    const [amount, setAmount] = useState(0);
 
     return (
       <Form {...formLayout} form={form} onFinish={handleFinish}>
         <Form.Item
-          name="num"
+          name="buy_energy_number"
           label= {operation === 1 ? "购买数量" : "出售数量"}
           rules={[
             {
@@ -103,28 +105,28 @@ const OperationModal = props => {
         <Form.Item name="type" label="电能类型" rules={[{ required: true }]}>
           <Select
             placeholder="请选择电能类型"
-            onChange={onGenderChange}
+            onChange={onTypeChange}
             allowClear
           >
-            <Option value="type1">交流</Option>
-            <Option value="type2">直流</Option>
+            <Option value="0">交流</Option>
+            <Option value="1">直流</Option>
           </Select>
         </Form.Item>
-        <Form.Item name="types" label="电压类型" rules={[{ required: true }]}>
+        <Form.Item name="type1" label="电压类型" rules={[{ required: true }]}>
           <Select
             placeholder="请选择电压类型"
-            onChange={onGenderChange}
+            onChange={onType1Change}
             allowClear
           >
-            <Option value="220">220V</Option>
-            <Option value="110">110V</Option>
-            <Option value="36">36V</Option>
-            <Option value="12">12V</Option>
-            <Option value="5">5V</Option>
+            <Option value="0">220V</Option>
+            <Option value="1">110V</Option>
+            <Option value="2">36V</Option>
+            <Option value="3">12V</Option>
+            <Option value="4">5V</Option>
           </Select>
         </Form.Item>
         <div style={{marginLeft: '24px'}}>
-          <p>{operation === 1 ? '需支付金额：¥' : '预计收益金额：¥'}</p>
+          <p>{operation === 1 ? `需支付金额：¥ ${amount}` : `预计收益金额：¥ ${amount}`}</p>
         </div>
       </Form>
     );
@@ -136,13 +138,9 @@ const OperationModal = props => {
       className={styles.standardListForm}
       width={640}
       bodyStyle={
-        done
-          ? {
-              padding: '72px 0',
-            }
-          : {
-              padding: '28px 0 0',
-            }
+        {
+          padding: '28px 0 0',
+        }
       }
       destroyOnClose
       visible={visible}

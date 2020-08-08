@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Modal, Result, Button, Form, Select, Input } from 'antd';
+import { Modal, Form, Select, Input } from 'antd';
 import styles from '../style.less';
 
 const { Option } = Select;
@@ -14,7 +14,8 @@ const formLayout = {
 
 const AddEditModal = props => {
   const [form] = Form.useForm();
-  const {visible, operation, onCancel } = props;
+  const {visible, addEdit, onCancel, onSubmit} = props;
+
   useEffect(() => {
     if (form && !visible) {
       form.resetFields();
@@ -26,17 +27,39 @@ const AddEditModal = props => {
     form.submit();
   };
 
-  const onGenderChange = value => {
-    // switch (value) {
-    //   case "male":
-    //     form.setFieldsValue({ note: "Hi, man!" });
-    //     break;
-    //   case "female":
-    //     form.setFieldsValue({ note: "Hi, lady!" });
-    //     break;
-    //   default:
-    //     break;
-    // }
+  const handleFinish = values => {
+    if (onSubmit) {
+      onSubmit(values);
+    }
+  };
+
+  const onEnergyChange = value => {
+    switch (value) {
+      case "0":
+        form.setFieldsValue({ energy_type: "0" });
+        break;
+      case "1":
+        form.setFieldsValue({ energy_type: "1" });
+        break;
+      case "2":
+        form.setFieldsValue({ energy_type: "2" });
+        break;
+      default:
+        break;
+    }
+  };
+
+  const onElectricChange = value => {
+    switch (value) {
+      case "0":
+        form.setFieldsValue({ electric_type: "0" });
+        break;
+      case "1":
+        form.setFieldsValue({ electric_type: "1" });
+        break;
+      default:
+        break;
+    }
   };
 
   const modalFooter = {
@@ -46,91 +69,48 @@ const AddEditModal = props => {
     };
 
   const getModalContent = () => {
-
     return (
-      <Form {...formLayout} form={form}>
-        <Form.Item
-          name="name"
-          label= "虚拟电厂名称"
-          rules={[
-            {
-              required: true,
-              message: "请输入",
-            },
-          ]}
-        >
+      <Form {...formLayout} form={form} onFinish={handleFinish}>
+        <Form.Item name="name" label= "虚拟电厂名称" rules={[{ required: true, message: "请输入"}]}>
           <Input placeholder="请输入虚拟电厂名称" />
         </Form.Item>
-        <Form.Item name="type" label="发电类型" rules={[{ required: true }]}>
+        <Form.Item name="energy_type" label="能源类型" rules={[{ required: true }]}>
           <Select
-            placeholder="请选择发电类型"
-            onChange={onGenderChange}
+            placeholder="请选择能源类型"
+            onChange={onEnergyChange}
             allowClear
           >
-            <Option value="type1">风电</Option>
-            <Option value="type2">光电</Option>
-            <Option value="type2">热电</Option>
-            <Option value="type2">生物能电</Option>
+            <Option value="0">光电</Option>
+            <Option value="1">风电</Option>
+            <Option value="2">火电</Option>
           </Select>
         </Form.Item>
-        <Form.Item
-          name="name"
-          label= "购买价"
-          rules={[
-            {
-              required: true,
-              message: "请输入",
-            },
-          ]}
-        >
+        <Form.Item name="electric_type" label="电流类型" rules={[{ required: true }]}>
+          <Select
+            placeholder="请选择电流类型"
+            onChange={onElectricChange}
+            allowClear
+          >
+            <Option value="0">直流</Option>
+            <Option value="1">交流</Option>
+          </Select>
+        </Form.Item>
+        <Form.Item name="pre_total_stock" label= "额定容量" rules={[{ required: true, message: "请输入"}]}>
+          <Input placeholder="请输入额定容量" />
+        </Form.Item>
+        <Form.Item name="buy_price" label= "购买价" rules={[{required: true, message: "请输入"}]}>
           <Input placeholder="请输入购买价格" />
         </Form.Item>
-        <Form.Item
-          name="name"
-          label= "出售价"
-          rules={[
-            {
-              required: true,
-              message: "请输入",
-            },
-          ]}
-        >
+        <Form.Item name="sell_price" label= "出售价" rules={[{required: true, message: "请输入"}]}>
           <Input placeholder="请输入出售价格" />
         </Form.Item>
-        <Form.Item
-          name="code"
-          label= "邮编"
-          rules={[
-            {
-              required: true,
-              message: "请输入",
-            },
-          ]}
-        >
+        <Form.Item name="post_code" label= "邮编" rules={[{required: true, message: "请输入"}]}>
           <Input placeholder="请输入邮编" />
         </Form.Item>
-        <Form.Item
-          name="code"
-          label= "线损"
-          rules={[
-            {
-              required: true,
-              message: "请输入",
-            },
-          ]}
-        >
+        <Form.Item name="transport_lose" label= "线损" rules={[{required: true, message: "请输入"}]}>
           <Input placeholder="请输入线损" />
         </Form.Item>
-        <Form.Item
-          name="code"
-          label= "设备编号"
-          rules={[
-            {
-              required: true,
-              message: "请输入",
-            },
-          ]}
-        >
+        <Form.Item name="device_id" label= "设备编号" rules={[{required: true, message: "请输入"}]}>
           <Input placeholder="请输入设备编号" />
         </Form.Item>
       </Form>
@@ -139,7 +119,7 @@ const AddEditModal = props => {
 
   return (
     <Modal
-      title={operation === 1 ? '新增电厂' : `编辑电厂`}
+      title={addEdit === 1 ? '新增电厂' : `编辑电厂`}
       className={styles.standardListForm}
       width={640}
       bodyStyle={

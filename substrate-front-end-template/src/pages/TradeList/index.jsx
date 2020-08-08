@@ -1,5 +1,4 @@
-import React, {useRef, useState, useEffect} from 'react';
-import {DownOutlined} from '@ant-design/icons';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   Card,
   Input,
@@ -7,10 +6,10 @@ import {
   Radio,
   Button
 } from 'antd';
-import {findDOMNode} from 'react-dom';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
-import {connect} from 'umi';
 import TradeListCell from "@/pages/TradeList/components/TradeListCell";
+import {AccountsContext} from "@/context/accounts";
+import {ApiContext} from "@/context/api";
 import OperationModal from './components/OperationModal';
 import AddEditModal from "./components/AddEditModal";
 import styles from './style.less';
@@ -19,40 +18,59 @@ const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const {Search} = Input;
 
-export const TradeList = props => {
-  const addBtn = useRef(null);
-  const {
-    dispatch,
-    tradeList: {list},
-  } = props;
-  const [done, setDone] = useState(false);
+const paginationProps = {
+  showSizeChanger: true,
+  showQuickJumper: true,
+  pageSize: 5,
+};
+
+const tmp = {
+  id: 0,
+  address: '5GgmNnKVdSRJqHmKttZrxWGdy5j1a6nU8oWWNKf7DffR6ssi',
+  logo: 'https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png',
+  latest: '2020/07/22 12:00:00',
+  total: '12345.0',
+  name: '悦动水西门',
+  type: '光电',
+  canSell: '10000',
+  sellPrice: '1',
+  needBuy: '20000',
+  buyPrice: '0.8',
+  status: '营业中',
+  code: '100000',
+  loss: '0.1'
+};
+
+export const TradeList = () => {
   const [visible, setVisible] = useState(false);
-  const [operation, setOperation] = useState(1);// 1 buy 2 sell
   const [visibleModal, setVisibleModal] = useState(false);
+  const [operation, setOperation] = useState(1);// 1购买 2出售
+  const [addEdit, setAddEdit] = useState(1);// 1新增 2编辑
+
+  const [count, setCount] = useState();
+  const [dataSource, setDataSource] = useState([tmp]);
+  const {address} = useContext(AccountsContext);
+  const {api} = useContext(ApiContext);
+
   useEffect(() => {
-    dispatch({
-      type: 'tradeList/fetch',
-      payload: {
-        count: 5,
-      },
+    if (!api || !address) return;
+
+    api.query.tradeModule.vppCounts(address, (result) => {
+      if (!result.isNone) {
+        setCount(result.toNumber());
+      }
     });
-  }, [1]);
 
-  const paginationProps = {
-    showSizeChanger: true,
-    showQuickJumper: true,
-    pageSize: 5,
-    total: 50,
-  };
+  },[api]);
 
-  const showBuyModal = item => {
-    setVisible(true);
+  const showBuyModal = (item) => {
     setOperation(1);
+    setVisible(true);
   };
 
-  const showSellModal = item => {
-    setVisible(true);
+  const showSellModal = (item) => {
     setOperation(2);
+    setVisible(true);
   };
 
   const extraContent = (
@@ -64,6 +82,7 @@ export const TradeList = props => {
       </RadioGroup>
       <Search className={styles.extraContentSearch} placeholder="请输入邮编进行搜索" onSearch={() => ({})}/>
       <Button type="primary" onClick={() => {
+        setAddEdit(1);
         setVisibleModal(true);
       }}>
         新增电厂
@@ -71,38 +90,22 @@ export const TradeList = props => {
     </div>
   );
 
-  const setAddBtnblur = () => {
-    if (addBtn.current) {
-      // eslint-disable-next-line react/no-find-dom-node
-      const addBtnDom = findDOMNode(addBtn.current);
-      setTimeout(() => addBtnDom.blur(), 0);
-    }
+  const handleOpeationCancel = () => {
+    setVisible(false);
   };
 
-  const handleDone = () => {
-    setAddBtnblur();
-    setDone(false);
+  const handleOpeationSubmit = values => {
+    console.log(values);
     setVisible(false);
-    setVisibleModal(false);
   };
 
   const handleCancel = () => {
-    setAddBtnblur();
-    setVisible(false);
     setVisibleModal(false);
   };
 
   const handleSubmit = values => {
-    const id = '';
-    setAddBtnblur();
-    setDone(true);
-    dispatch({
-      type: 'tradeList/submit',
-      payload: {
-        id,
-        ...values,
-      },
-    });
+    console.log(values);
+    setVisibleModal(false);
   };
 
   return (
@@ -125,15 +128,22 @@ export const TradeList = props => {
               size="large"
               rowKey="id"
               pagination={paginationProps}
-              dataSource={list}
+              dataSource={dataSource}
               renderItem={item => (
                 <TradeListCell
                   item={item}
+                  admin={address && address === item.address}
                   buyClick={() => {
                     showBuyModal(item);
                   }}
                   sellClick={() => {
                     showSellModal(item)
+                  }}
+                  editClick={() => {
+                    setAddEdit(2);
+                    setVisibleModal(true);
+                  }}
+                  closeClick={() => {
                   }}
                 />
               )}
@@ -143,23 +153,18 @@ export const TradeList = props => {
       </PageHeaderWrapper>
 
       <OperationModal
-        done={done}
-        operation={operation}
         visible={visible}
-        onDone={handleDone}
-        onCancel={handleCancel}
-        onSubmit={handleSubmit}
+        operation={operation}
+        onCancel={handleOpeationCancel}
+        onSubmit={handleOpeationSubmit}
       />
-
       <AddEditModal
         visible={visibleModal}
-        operation={1}
+        addEdit={addEdit}
         onCancel={handleCancel}
         onSubmit={handleSubmit}
       />
     </div>
   );
 };
-export default connect(({tradeList}) => ({
-  tradeList
-}))(TradeList);
+export default TradeList;

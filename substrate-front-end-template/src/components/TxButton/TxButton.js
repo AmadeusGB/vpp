@@ -4,7 +4,7 @@ import {Button} from 'semantic-ui-react';
 import {web3FromSource} from '@polkadot/extension-dapp';
 
 import {ApiContext} from "@/context/api";
-import utils from './utils';
+import {utils} from './utils';
 
 function TxButton({
                     accountPair = null,
