@@ -2,7 +2,7 @@ restart: build purge run
 rerun: purge run
 
 run:
-	RUST_LOG=warn;babe=debug target/debug/node-template --dev -d target/node-template --execution=Both --ws-external -lruntime=debug
+	RUST_LOG=warn;babe=debug target/debug/node-template --dev -d target/substrate --execution=Both --ws-external -lruntime=debug
 
 run-wasm:
 	target/debug/node-template --dev -d target/node-template --execution=Wasm --ws-external -lruntime=debug
