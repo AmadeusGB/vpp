@@ -53,13 +53,13 @@ pub trait Contract<AccountId> {
 
 #[derive(Encode, Decode, PartialEq, Eq, Clone, Copy, RuntimeDebug)]
 pub enum ApprovalStatus {
-    Denied,
-    Passed,
     Pending,
+    Passed,
+    Denied,
 }
 
 #[derive(Encode, Decode, PartialEq, Eq, Clone, Copy, RuntimeDebug)]
 pub enum BusinessStatus {
-    Opened,
     Closed,
+    Opened,
 }
