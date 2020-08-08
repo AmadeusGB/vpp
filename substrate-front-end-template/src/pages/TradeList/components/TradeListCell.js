@@ -3,8 +3,7 @@ import { Row, Col, Divider, Button } from 'antd';
 import styles from '../style.less';
 
 const TradeListCell = props => {
-  const { item, buyClick, sellClick } = props;
-
+  const { item, admin, buyClick, sellClick, editClick, closeClick } = props;
   return (
     <div className={styles.tradeListCell}>
       <Row>
@@ -51,9 +50,21 @@ const TradeListCell = props => {
           </div>
         </Col>
         <Col span={5}>
-          <Button type="primary" size="default" onClick={buyClick}>购买电能</Button>
-          <Divider orientation="center" type="vertical"/>
-          <Button type="primary" danger size="default" onClick={sellClick}>出售电能</Button>
+          <>
+            <Button type="primary" size="default" onClick={buyClick}>购买</Button>
+            <Divider orientation="center" type="vertical"/>
+            <Button type="primary" danger size="default" onClick={sellClick}>出售</Button>
+          </>
+          {
+            admin ?
+              <div style={{marginTop: 10}}>
+                <Button type="primary" size="default" onClick={editClick}>编辑</Button>
+                <Divider orientation="center" type="vertical"/>
+                <Button type="primary" danger size="default" onClick={closeClick}>歇业</Button>
+              </div>
+              :
+              null
+          }
         </Col>
       </Row>
       <Divider type="horizontal"/>

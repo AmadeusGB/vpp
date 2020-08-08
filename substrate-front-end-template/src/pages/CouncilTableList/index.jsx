@@ -3,6 +3,8 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import {ApiContext} from "@/context/api";
+import {transformParams} from "@/components/TxButton/utils";
+import {AccountsContext} from "@/context/accounts";
 
 const columns = [
   {
@@ -115,9 +117,21 @@ const columns = [
   },
 ];
 
-function optionClick(type,record) {
-  let api = record.apiHook;
-  if (!api) return;
+const txResHandler = ({ status }) =>
+  status.isFinalized
+    ? console.log(`😉 Finalized. Block hash: ${status.asFinalized.toString()}`)
+    : console.log(`Current transaction status: ${status.type}`);
+
+const txErrHandler = err =>
+  console.log(`😞 Transaction Failed: ${err.toString()}`);
+
+async function optionClick(type,record) {
+  const api = record.apiHook;
+  const accountPair = record.pairHook;
+  if (!api && !accountPair ) return;
+
+  const param = transformParams([true, true],[2, Number(type)]);
+  const unsub = await api.tx.sudo.sudo(api.tx.auditModule.setproposalrole(...param)).signAndSend(accountPair, txResHandler).catch(txErrHandler);
 }
 
 const TableList = () => {
@@ -125,7 +139,15 @@ const TableList = () => {
   const [dataSource, setDataSource] = useState([]);
   const actionRef = useRef();
   const {api} = useContext(ApiContext);
+  const {address,keyring} = useContext(AccountsContext);
+  const [accountPair, setAccountPair] = useState(null);
   console.log(`Api: ${api}`);
+
+  useEffect(() => {
+    if (!keyring && !address) return;
+    setAccountPair(keyring.getPair('5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'));
+  },[keyring]);
+
 
   useEffect(() => {
     if (!api) return;
@@ -141,7 +163,7 @@ const TableList = () => {
   // "apply_addr":"5GgmNnKVdSRJqHmKttZrxWGdy5j1a6nU8oWWNKf7DffR6ssi","apply_role":2,"apply_status":0,"apply_annex":true
   useEffect(() => {
     if (!api || !count) return;
-    let source = [];
+    const source = [];
     for (let i=0; i<count; i++ ) {
       api.query.auditModule.proposalInformation(i, (result) => {
         if (!result.isNone) {
@@ -153,7 +175,8 @@ const TableList = () => {
             role: 0,
             status: data.apply_status,
             annex: data.apply_annex ? 0 : 1,
-            apiHook: api
+            apiHook: api,
+            pairHook: accountPair
           });
         }
         setDataSource(source);

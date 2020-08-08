@@ -18,68 +18,72 @@ const columns = [
   },
   {
     title: '合同区块号',
-    dataIndex: 'blockNum',
+    dataIndex: 'block_number',
     valueType: 'textarea',
   },
   {
     title: '合同分类',
-    dataIndex: 'blockSort',
+    dataIndex: 'contract_type',
     sorter: false,
     hideInForm: false,
     valueEnum: {
       0: {
         text: '购买',
-        status: 'buy',
+        status: '0',
       },
       1: {
         text: '售出',
-        status: 'sell',
+        status: '1',
       },
     },
   },
   {
     title: '合同总价',
-    dataIndex: 'contactTotal',
+    dataIndex: 'contract_price',
     valueType: 'textarea',
   },
   {
     title: '电能度数',
-    dataIndex: 'energyNum',
+    dataIndex: 'energy_amount',
     valueType: 'textarea',
   },
   {
     title: '能源类型',
-    dataIndex: 'energyStatus',
+    dataIndex: 'energy_type',
     hideInForm: false,
     valueEnum: {
       0: {
         text: '光电',
-        status: 'lightEnergy',
+        status: '0'
       },
       1: {
         text: '风电',
-        status: 'windEnergy',
+        status: '1'
       },
-    },
+      2: {
+        text: '火电',
+        status: '2'
+      }
+    }
   },
   {
     title: '执行状态',
-    dataIndex: 'execStatus',
+    dataIndex: 'execution_status',
     hideInForm: false,
     valueEnum: {
-      0: {
-        text: '执行中',
-        status: 'Default',
-      },
       1: {
-        text: '已完成',
-        status: 'AlreadyDone',
+        text: '执行中',
+        status: '1'
       },
       2: {
-        text: '已终止',
-        status: 'AlreadyStop',
+        text: '已完成',
+        status: '2'
       },
-    },
+      3: {
+        text: '已终止',
+        status: '3'
+      }
+    }
   },
   {
     title: '操作',
@@ -104,16 +108,16 @@ const columns = [
 ];
 
 const tableListDataSource = [];
-for (let i = 0; i < 20; i += 1) {
+for (let i = 0; i < 1; i += 1) {
   tableListDataSource.push({
     key: i,
     name: (i % 2 === 0) ? '光电合同' : '风能合同',
-    blockNum: i+1000,
-    blockSort: Math.floor(Math.random() * 10) % 2,
-    contactTotal: i+100,
-    energyNum: i+2000,
-    energyStatus: Math.floor(Math.random() * 10) % 2,
-    execStatus: Math.floor(Math.random() * 10) % 3,
+    block_number: i+1000,
+    contract_type: Math.floor(Math.random() * 10) % 2,
+    contract_price: i+100,
+    energy_amount: i+2000,
+    energy_type: Math.floor(Math.random() * 10) % 3,
+    execution_status: Math.floor(Math.random() * 10) % 3 + 1,
   });
 }
 

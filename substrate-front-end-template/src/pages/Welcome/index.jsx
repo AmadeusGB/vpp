@@ -7,7 +7,7 @@ import {useSubstrate} from "@/lib/lib";
 function Welcome() {
   const lib = useSubstrate();
   const { api, apiState } = React.useContext(ApiContext);
-  const { address } = React.useContext(AccountsContext);
+  const { address, keyring } = React.useContext(AccountsContext);
   const [nodeInfo, setNodeInfo] = useState({ chain: '', nodeName: '', nodeVersion: '' });
   const [addr, setAddr] = useState('');
 
@@ -41,7 +41,7 @@ function Welcome() {
 
   useEffect(() => {
     (async () => {
-      if (address) {
+      if (address && !keyring) {
         await lib.keyring();
       }
     })();

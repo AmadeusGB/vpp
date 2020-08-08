@@ -24,6 +24,23 @@ const paginationProps = {
   pageSize: 5,
 };
 
+const tmp = {
+  id: 0,
+  address: '5GgmNnKVdSRJqHmKttZrxWGdy5j1a6nU8oWWNKf7DffR6ssi',
+  logo: 'https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png',
+  latest: '2020/07/22 12:00:00',
+  total: '12345.0',
+  name: '悦动水西门',
+  type: '光电',
+  canSell: '10000',
+  sellPrice: '1',
+  needBuy: '20000',
+  buyPrice: '0.8',
+  status: '营业中',
+  code: '100000',
+  loss: '0.1'
+};
+
 export const TradeList = () => {
   const [visible, setVisible] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
@@ -31,7 +48,7 @@ export const TradeList = () => {
   const [addEdit, setAddEdit] = useState(1);// 1新增 2编辑
 
   const [count, setCount] = useState();
-  const [dataSource, setDataSource] = useState([]);
+  const [dataSource, setDataSource] = useState([tmp]);
   const {address} = useContext(AccountsContext);
   const {api} = useContext(ApiContext);
 
@@ -47,13 +64,13 @@ export const TradeList = () => {
   },[api]);
 
   const showBuyModal = (item) => {
-    setVisible(true);
     setOperation(1);
+    setVisible(true);
   };
 
   const showSellModal = (item) => {
-    setVisible(true);
     setOperation(2);
+    setVisible(true);
   };
 
   const extraContent = (
@@ -72,6 +89,15 @@ export const TradeList = () => {
       </Button>
     </div>
   );
+
+  const handleOpeationCancel = () => {
+    setVisible(false);
+  };
+
+  const handleOpeationSubmit = values => {
+    console.log(values);
+    setVisible(false);
+  };
 
   const handleCancel = () => {
     setVisibleModal(false);
@@ -106,11 +132,18 @@ export const TradeList = () => {
               renderItem={item => (
                 <TradeListCell
                   item={item}
+                  admin={address && address === item.address}
                   buyClick={() => {
                     showBuyModal(item);
                   }}
                   sellClick={() => {
                     showSellModal(item)
+                  }}
+                  editClick={() => {
+                    setAddEdit(2);
+                    setVisibleModal(true);
+                  }}
+                  closeClick={() => {
                   }}
                 />
               )}
@@ -122,8 +155,8 @@ export const TradeList = () => {
       <OperationModal
         visible={visible}
         operation={operation}
-        onCancel={handleCancel}
-        onSubmit={handleSubmit}
+        onCancel={handleOpeationCancel}
+        onSubmit={handleOpeationSubmit}
       />
       <AddEditModal
         visible={visibleModal}

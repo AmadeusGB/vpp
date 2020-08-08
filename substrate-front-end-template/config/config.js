@@ -65,19 +65,19 @@ export default defineConfig({
                 },
                 {
                   name: 'contact',
-                  icon: 'smile',
+                  icon: 'table',
                   path: '/contacttablelist',
                   component: './ContactTableList',
                 },
                 {
                   name: 'identity',
-                  icon: 'smile',
+                  icon: 'table',
                   path: '/identity',
                   component: './Identity',
                 },
                 {
                   name: 'council',
-                  icon: 'smile',
+                  icon: 'table',
                   path: '/counciltablelist',
                   component: './CouncilTableList',
                 },
