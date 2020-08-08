@@ -117,7 +117,7 @@ decl_module! {
 			let sender = ensure_signed(origin)?;
 
 			//check address identity
-			ensure!(T::Role::has_role(&sender, 2), Error::<T>::OnlyPsAllowed);
+			// ensure!(T::Role::has_role(&sender, 2), Error::<T>::OnlyPsAllowed);
 
 			let idx = <VppCounts<T>>::get(sender.clone());
 			let next_id = idx.checked_add(1).ok_or(Error::<T>::Overflow)?;
