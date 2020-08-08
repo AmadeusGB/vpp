@@ -140,6 +140,7 @@ decl_module! {
 				let mut contractHaveDone = <Contracts<T>>::get( (&item.0, &item.1) ).unwrap();
 				contractHaveDone.execution_status = 3;
 				Contracts::<T>::insert((&item.0, &item.1), contractHaveDone);
+				Self::deposit_event(RawEvent::ContractExecutionStatusChanged(sender, contract_number, 3));
 			}
 
 			Ok(())
