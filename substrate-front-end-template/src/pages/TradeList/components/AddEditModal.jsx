@@ -95,8 +95,11 @@ const AddEditModal = props => {
             <Option value="1">交流</Option>
           </Select>
         </Form.Item>
-        <Form.Item name="pre_total_stock" label= "额定容量" rules={[{ required: true, message: "请输入"}]}>
-          <Input placeholder="请输入额定容量" />
+        <Form.Item name="pre_total_stock" label= "预售总额度" rules={[{ required: true, message: "请输入"}]}>
+          <Input placeholder="请输入预售总额度" />
+        </Form.Item>
+        <Form.Item name="sold_total" label= "已售总额度" rules={[{ required: true, message: "请输入"}]}>
+          <Input placeholder="请输入已售总额度" />
         </Form.Item>
         <Form.Item name="buy_price" label= "购买价" rules={[{required: true, message: "请输入"}]}>
           <Input placeholder="请输入购买价格" />
