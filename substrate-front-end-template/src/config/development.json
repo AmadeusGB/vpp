@@ -29,14 +29,14 @@
       ]
     },
     "PsVpp": {
-      "vpp_name": "u8",
+      "vpp_name": "Vec<u8>",
       "pre_total_stock": "u64",
       "sold_total": "u64",
       "electric_type": "bool",
       "energy_type": "u8",
       "buy_price": "u32",
       "sell_price": "u32",
-      "post_code": "u8",
+      "post_code": "Vec<u8>",
       "transport_lose": "u32",
       "business_status": "BusinessStatus",
       "approval_status": "ApprovalStatus",

@@ -3,8 +3,9 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import {ApiContext} from "@/context/api";
-import {transformParams} from "@/components/TxButton/utils";
 import {AccountsContext} from "@/context/accounts";
+import {transformParams,txResHandler,txErrHandler} from "@/components/TxButton/utils";
+import {web3FromSource} from "@polkadot/extension-dapp";
 
 const columns = [
   {
@@ -117,22 +118,57 @@ const columns = [
   },
 ];
 
-const txResHandler = ({ status }) =>
-  status.isFinalized
-    ? console.log(`😉 Finalized. Block hash: ${status.asFinalized.toString()}`)
-    : console.log(`Current transaction status: ${status.type}`);
+const getFromAcct = async (api,pair) => {
+  if (!pair) {
+    console.log('No accountPair!');
+    return ;
+  }
+  const {
+    addr,
+    meta: {source, isInjected}
+  } = pair;
+  let fromAcct;
 
-const txErrHandler = err =>
-  console.log(`😞 Transaction Failed: ${err.toString()}`);
+  // signer is from Polkadot-js browser extension
+  if (isInjected) {
+    console.log('看你会不会走到这里来');
+    const injected = await web3FromSource(source);
+    fromAcct = addr;
+    api.setSigner(injected.signer);
+  } else {
+    fromAcct = pair;
+  }
+
+  // eslint-disable-next-line consistent-return
+  return fromAcct;
+};
 
 async function optionClick(type,record) {
   const api = record.apiHook;
   const accountPair = record.pairHook;
   if (!api && !accountPair ) return;
-
-  const param = transformParams([true, true],[2, Number(type)]);
-  const unsub = await api.tx.sudo.sudo(api.tx.auditModule.setproposalrole(...param)).signAndSend(accountPair, txResHandler).catch(txErrHandler);
+  console.log(record);
+  const fromAcct = await getFromAcct(api,accountPair);
+  const param = transformParams([true, true],[record.key, Number(type)]);
+  const unsub = await api.tx.auditModule.setproposalrole(...param).signAndSend(fromAcct, txResHandler).catch(txErrHandler);
 }
+
+const roleName = (type) => {
+  switch (type) {
+    case 0:
+      return 'PU';
+    case 1:
+      return 'PG';
+    case 2:
+      return 'PS';
+    case 3:
+      return 'SG';
+    case 4:
+      return 'ASS';
+    default:
+      return 'PU'
+  }
+};
 
 const TableList = () => {
   const [count, setCount] = useState(0);
@@ -141,19 +177,18 @@ const TableList = () => {
   const {api} = useContext(ApiContext);
   const {address,keyring} = useContext(AccountsContext);
   const [accountPair, setAccountPair] = useState(null);
-  console.log(`Api: ${api}`);
 
   useEffect(() => {
     if (!keyring && !address) return;
     setAccountPair(keyring.getPair('5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'));
   },[keyring]);
 
-
   useEffect(() => {
     if (!api) return;
 
     api.query.auditModule.proposalCount((result) => {
       if (!result.isNone) {
+        console.log(`提案数量：${result.toNumber()}`);
         setCount(result.toNumber());
       }
     });
@@ -170,19 +205,20 @@ const TableList = () => {
           const data = result.toJSON();
           source.push({
             key: i,
-            name: '申请PS角色',
+            name: `申请${roleName(data.apply_role)}角色`,// 0:pu, 1:pg，2:ps，3:sg，4:ass
             purpose: 0,
-            role: 0,
+            role: roleName(data.apply_role),
             status: data.apply_status,
             annex: data.apply_annex ? 0 : 1,
             apiHook: api,
             pairHook: accountPair
           });
         }
-        setDataSource(source);
       });
     }
-
+    setTimeout(function () {
+      setDataSource(source);
+    }, 500*count);
   }, [count, api]);
 
   return (

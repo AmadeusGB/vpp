@@ -16,10 +16,10 @@ const TableList = () => {
   const [status, setStatus] = useState(null);
   const [tableListDataSource, settableListDataSource] = useState([]);
 
-  // useEffect(() => {
-  //   if (!keyring) return;
-  //   setAccountPair(keyring.getPair(address));
-  // },[keyring]);
+  useEffect(() => {
+    if (!keyring) return;
+    setAccountPair(keyring.getPair(address));
+  },[keyring]);
 
   useEffect(() => {
     if (!api || !address) return;
@@ -27,12 +27,35 @@ const TableList = () => {
     console.log(address, count);
     api.query.contractModule.contractcounts(address, (result) => {
       if (!result.isNone) {
-          setCount(result);
-          console.log(result);
-          console.log(address, count);
-        }
+        setCount(result);
+        console.log(result);
+        console.log(address, count);
+      }
     });
   },[api]);
+
+  useEffect(() => {
+    if (!api) return;
+
+    for (let i = 0; i < count; i += 1) {
+      api.query.contractModule.contracts([address, i], (result) => {
+        if (!result.isNone) {
+          console.log(result.toJSON());
+          const jsonContract = result.toJSON();
+          tableListDataSource.push({
+            key: i,
+            name: (jsonContract.energy_type  === 0) ? '光电合同' : ((jsonContract.energy_type  === 1)?'风能合同':'火电合同'),
+            block_number: jsonContract.block_number,
+            contract_type: jsonContract.contract_type,
+            contract_price: jsonContract.contract_price,
+            energy_amount: jsonContract.energy_amount,
+            energy_type: jsonContract.energy_type,
+            execution_status: jsonContract.execution_status
+          });
+        }
+      });
+    }
+  }, [count]);
 
   const columns = [
     {
@@ -132,55 +155,35 @@ const TableList = () => {
           >
             终止
           </a>,
-          
+
           <TxButton style={{position: 'absolute', bottom: '10px', right: '20px'}}
-                  color='blue'
-                  accountPair={accountPair}
-                  label='终止'
-                  type='SIGNED-TX'
-                  setStatus={setStatus}
-                  attrs={{
-                    palletRpc: 'contraceModule',
-                    callable: 'stopcontract',
-                    inputParams: [record.key],
-                    paramFields: [true]
-                  }}
+                    color='blue'
+                    accountPair={accountPair}
+                    label='终止'
+                    type='SIGNED-TX'
+                    setStatus={setStatus}
+                    attrs={{
+                      palletRpc: 'contraceModule',
+                      callable: 'stopcontract',
+                      inputParams: [record.key],
+                      paramFields: [true]
+                    }}
           />]
       ),
     },
   ];
 
-  for (let i = 0; i < count; i += 1) {
-    api.query.contractModule.contracts([address, i], (result) => {
-      if (!result.isNone) {
-        console.log(result.toJSON());
-        let jsonContract = result.toJSON();
-
-        tableListDataSource.push({
-          key: i,
-          name: (jsonContract.energy_type  === 0) ? '光电合同' : ((jsonContract.energy_type  === 1)?'风能合同':'火电合同'),
-          block_number: jsonContract.block_number,
-          contract_type: jsonContract.contract_type,
-          contract_price: jsonContract.contract_price,
-          energy_amount: jsonContract.energy_amount,
-          energy_type: jsonContract.energy_type,
-          execution_status: jsonContract.execution_status
-        });
-      }
-    });
-  }
-
   return (
     <div>
       <PageHeaderWrapper>
-      <ProTable
-        actionRef={actionRef}
-        rowKey="key"
-        columns={columns}
-        dataSource={tableListDataSource}
-        rowSelection={false}
-      />
-    </PageHeaderWrapper>
+        <ProTable
+          actionRef={actionRef}
+          rowKey="key"
+          columns={columns}
+          dataSource={tableListDataSource}
+          rowSelection={false}
+        />
+      </PageHeaderWrapper>
     </div>
   );
 };

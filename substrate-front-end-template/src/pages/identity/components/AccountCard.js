@@ -66,33 +66,33 @@ const AccountCard = () => {
       </div>
       <div className={styles.accountButtons}>
         <TxButton style={{position: 'left', bottom: '10px', right: '20px'}}
-                color='blue'
-                accountPair={accountPair}
-                label='充值'
-                type='SIGNED-TX'
-                setStatus={setStatus}
-                attrs={{
-                  palletRpc: 'tokenModule',
-                  callable: 'buytoken',
-                  inputParams: [100, accountId, amount_price],
-                  paramFields: [true, true, true]
-                }}
-      />
+                  color='blue'
+                  accountPair={accountPair}
+                  label='充值'
+                  type='SIGNED-TX'
+                  setStatus={setStatus}
+                  attrs={{
+                    palletRpc: 'tokenModule',
+                    callable: 'buytoken',
+                    inputParams: [1000, accountId, amount_price],
+                    paramFields: [true, true, true]
+                  }}
+        />
 
-      <Divider orientation="center" type="vertical"/>
-      <TxButton style={{position: 'right', bottom: '10px', right: '20px'}}
-              color='blue'
-              accountPair={accountPair}
-              label='提现'
-              type='SIGNED-TX'
-              setStatus={setStatus}
-              attrs={{
-                palletRpc: 'tokenModule',
-                callable: 'selltoken',
-                inputParams: [1, accountId, amount_price],
-                paramFields: [true, true, true]
-              }}
-      />
+        <Divider orientation="center" type="vertical"/>
+        <TxButton style={{position: 'right', bottom: '10px', right: '20px'}}
+                  color='blue'
+                  accountPair={accountPair}
+                  label='提现'
+                  type='SIGNED-TX'
+                  setStatus={setStatus}
+                  attrs={{
+                    palletRpc: 'tokenModule',
+                    callable: 'selltoken',
+                    inputParams: [1, accountId, amount_price],
+                    paramFields: [true, true, true]
+                  }}
+        />
       </div>
       <div className={styles.totalBalance}>
         <p>总金额</p>

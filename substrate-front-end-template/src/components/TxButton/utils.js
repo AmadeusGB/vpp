@@ -1,3 +1,5 @@
+import {message} from "antd";
+
 const utils = {
   paramConversion: {
     num: [
@@ -48,6 +50,14 @@ const transformParams = (paramFields, inputParams, opts = {emptyAsNull: true}) =
   }, []);
 };
 
-export {utils, transformParams};
+const txResHandler = ({ status }) =>
+  status.isFinalized
+    ? message.success(`😉 Finalized. Block hash: ${status.asFinalized.toString()}`)
+    : message.info(`Current transaction status: ${status.type}`);
+
+const txErrHandler = err =>
+  message.error(`😞 Transaction Failed: ${err.toString()}`);
+
+export {utils, transformParams, txResHandler, txErrHandler};
 
 
