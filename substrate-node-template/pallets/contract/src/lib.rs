@@ -117,14 +117,14 @@ decl_module! {
 
 		#[weight = 0]
 		pub fn completecontract(
-			_origin, 
+			origin, 
 		) -> dispatch::DispatchResult {
 			//为简化，默认同一个电表，同一时间只有一个可执行合同；
 			//合同开始执行，读取电表一个度数；
 			//OCW按周期查询该电表度数；=>当前用区块号模拟电表度数
 			//当电表度数>=电表度数（合同开始时刻）+购买电能度数，自动将合同标记为已完成
 
-			let sender = ensure_signed(_origin)?;
+			let sender = ensure_signed(origin)?;
 
 			let block_number_now = system::Module::<T>::block_number();//用区块号模拟度数
 			let block_number_now = TryInto::<u64>::try_into(block_number_now).ok().unwrap();
@@ -132,7 +132,7 @@ decl_module! {
 			let mut vec_modify_key = Vec::new();
 
 			for item in Contracts::<T>::iter() {
-				if (block_number_now >= item.1.energy_amount && 3 != item.1.execution_status) {
+				if block_number_now >= item.1.energy_amount && 3 != item.1.execution_status {
 					vec_modify_key.push((item.1.ps_addr, item.1.vpp_number));
 				}
 			}
