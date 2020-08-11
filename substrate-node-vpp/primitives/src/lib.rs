@@ -49,7 +49,7 @@ pub trait Contract<AccountId> {
                     energy_amount: u64,							  			 //购买/出售电能度数
                     contract_type:bool,								 			//合同分类（购买/出售）
                     energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
-                    voltage_type: u8,											  //电压类型
+                    voltage_type: u32,											  //电压类型
                     ammeter_id: Vec<u8> 									//电表编号
     ) -> dispatch::DispatchResult;
 }

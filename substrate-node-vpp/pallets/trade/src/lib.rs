@@ -208,7 +208,7 @@ decl_module! {
 			vpp_number: u64, 
 			buy_energy_number: u64, 
 			buy_energy_token_amount: u32, 
-			voltage_type: u8,
+			voltage_type: u32,
 			pu_ammeter_id: Vec<u8>
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
@@ -233,7 +233,7 @@ decl_module! {
 			vpp_number: u64, 
 			sell_energy_number: u64, 
 			sell_energy_token_amount: u32, 
-			voltage_type: u8,
+			voltage_type: u32,
 			pg_ammeter_id: Vec<u8>
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
