@@ -237,7 +237,7 @@ impl<T:Trait> Token<T::AccountId> for Module<T>{
 		to_tokeninfo.token_balance += token_amount;
 
 		BalanceToken::<T>::insert(&from, from_tokeninfo);
-		BalanceToken::<T>::insert(&to, to_tokeninfo);
+		BalanceToken::<T>::insert(&to, to_tokeninfo); 
 		Ok(())
 	}
 }
