@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Spin } from 'antd';
 import { AccountsContext } from '@/context/accounts';
 import { ApiContext } from '@/context/api';
-import {useSubstrate} from "@/lib/lib";
+import {useSubstrate} from "@/hook/lib";
 
 function Welcome() {
   const lib = useSubstrate();
