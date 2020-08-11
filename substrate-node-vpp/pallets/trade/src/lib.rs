@@ -148,13 +148,13 @@ decl_module! {
 		pub fn editvpp(
 			origin, 
 			vpp_name: Vec<u8>, 										 //虚拟电厂名称
-			pre_total_stock: u64,
-			// sold_total: u64,					  							//已售总额度
-			electric_type: bool,   										  //0直流 1交流
 			energy_type: u8,											   //能源类型（0：光电，1：风电，2：火电）
+			//electric_type: bool,   								     //0直流 1交流
+			pre_total_stock: u64,									   //额定容量
+			// sold_total: u64,					  							//已售总额度
 			buy_price: u32,
 			sell_price: u32,
-			// post_code: Vec<u8>,
+			post_code: Vec<u8>,
 			transport_lose: u32, 										  //线损
 			// business_status: BusinessStatus, 			//0 不营业  1 营业
 			//approval_status: u8, 										//0 不通过  1 通过  2 审核中
@@ -166,13 +166,13 @@ decl_module! {
 
 			let modify_vpp = PsVpp {
 				 vpp_name,
+				 energy_type,
 				 pre_total_stock,
 				 // sold_total,
-				 electric_type,
-				 energy_type,
+				 //electric_type,
 				 buy_price,
 				 sell_price,
-				 // post_code,
+				 post_code,
 				 transport_lose,
 				 // business_status,
 				 approval_status: ApprovalStatus::Pending,
@@ -188,7 +188,7 @@ decl_module! {
 		#[weight = 0]
 		pub fn setvppstatus(
 			origin, 
-			#[compact] vpp_number: u64, 
+			vpp_number: u64, 
 			status: BusinessStatus
 		) -> dispatch::DispatchResult{		
 			let sender = ensure_signed(origin)?;
@@ -208,6 +208,7 @@ decl_module! {
 			vpp_number: u64, 
 			buy_energy_number: u64, 
 			buy_energy_token_amount: u32, 
+			voltage_type: u8,
 			pu_ammeter_id: Vec<u8>
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
@@ -216,7 +217,7 @@ decl_module! {
 			
 			//调用contract模块addcontract签订购买电能合同
 			let vpp = <VppList<T>>::get((ps_addr.clone(), vpp_number)).ok_or(Error::<T>::VppNotExist)?;
-			T::Contract::do_addcontract(sender.clone(), ps_addr.clone(), vpp_number, buy_energy_token_amount, buy_energy_number, true, vpp.energy_type, pu_ammeter_id)?;
+			T::Contract::do_addcontract(sender.clone(), ps_addr.clone(), vpp_number, buy_energy_token_amount, buy_energy_number, true, vpp.energy_type, voltage_type, pu_ammeter_id)?;
 
 			let vpp_transcation_amount = <TransactionAmount<T>>::get((ps_addr.clone(), vpp_number));
 			TransactionAmount::<T>::insert((&ps_addr, vpp_number), vpp_transcation_amount + buy_energy_token_amount);
@@ -232,6 +233,7 @@ decl_module! {
 			vpp_number: u64, 
 			sell_energy_number: u64, 
 			sell_energy_token_amount: u32, 
+			voltage_type: u8,
 			pg_ammeter_id: Vec<u8>
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
@@ -240,7 +242,7 @@ decl_module! {
 
 			//调用contract模块addcontract签订出售电能合同
 			let vpp = <VppList<T>>::get((ps_addr.clone(), vpp_number)).ok_or(Error::<T>::VppNotExist)?;
-			T::Contract::do_addcontract(sender.clone(), ps_addr.clone(), vpp_number, sell_energy_token_amount, sell_energy_number, false, vpp.energy_type, pg_ammeter_id)?;
+			T::Contract::do_addcontract(sender.clone(), ps_addr.clone(), vpp_number, sell_energy_token_amount, sell_energy_number, false, vpp.energy_type, voltage_type, pg_ammeter_id)?;
 
 			let vpp_transcation_amount = <TransactionAmount<T>>::get((ps_addr.clone(), vpp_number));
 			TransactionAmount::<T>::insert((&ps_addr, vpp_number), vpp_transcation_amount + sell_energy_token_amount);

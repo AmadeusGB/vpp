@@ -7,7 +7,7 @@ use frame_support::{
 };
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
-use primitives::{TypeTransfer, Token};
+use primitives::{TypeTransfer, Token, StakeStatus};
 use frame_support::dispatch::DispatchResult;
 use pallet_timestamp as timestamp;
 
@@ -61,13 +61,13 @@ decl_module! {
 		#[weight = 0]
 		pub fn buytransfer(
 			origin, 
-			vpp_addr: T::AccountId, 
+			ps_addr: T::AccountId, 
 			vpp_number: u64, 
 			payment_addr: T::AccountId, 
 			payment_token: u32
 		) -> dispatch::DispatchResult{
 			let _sender = ensure_signed(origin)?;
-			Self::do_buytransfer(vpp_addr,vpp_number,payment_addr,payment_token)?;
+			Self::do_buytransfer(ps_addr,vpp_number,payment_addr,payment_token)?;
 			Ok(())
 		}
 
@@ -105,10 +105,11 @@ decl_module! {
 		#[weight = 0]
 		pub fn staketransfer(
 			origin, 
-			energy_token: u32
+			energy_token: u32,
+			stake_status: StakeStatus
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
-			<Self as TypeTransfer<T::AccountId>>::staketransfer(&sender, energy_token)?;
+			<Self as TypeTransfer<T::AccountId>>::staketransfer(&sender, energy_token, stake_status)?;
 			Ok(())
 		}
 
@@ -149,9 +150,9 @@ impl<T:Trait> TypeTransfer<T::AccountId> for Module<T> {
 		Ok(())
 	}
 	
-	fn staketransfer(who: &T::AccountId, energy_token: u32) -> DispatchResult {
+	fn staketransfer(who: &T::AccountId, energy_token: u32, stake_status: StakeStatus) -> DispatchResult {
 		//调用token模块的staketoken函数，以实现申请PS身份质押token功能
-		T::Token::do_staketoken(who.clone(), energy_token)?;
+		T::Token::do_staketoken(who.clone(), energy_token, stake_status)?;
 
 		Ok(())
 	}

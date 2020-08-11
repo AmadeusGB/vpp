@@ -7,7 +7,7 @@ use frame_support::{
 use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
-use primitives::{TypeTransfer, Parliament, Role};
+use primitives::{TypeTransfer, Parliament, StakeStatus, Role, DEPOSIT_AMOUNT};
 
 #[cfg(test)]
 mod mock;
@@ -72,7 +72,7 @@ decl_module! {
 			let sender = ensure_signed(origin)?;
 
 			match apply_role {
-				2 => T::TypeTransfer::staketransfer(&sender, 200)?,
+				2 => T::TypeTransfer::staketransfer(&sender, DEPOSIT_AMOUNT, StakeStatus::Deposit)?,
 				_ => (),
 			}
 
@@ -93,6 +93,24 @@ decl_module! {
 		}
 
 		#[weight = 0]
+		pub fn applyproposalcancelrole(
+			origin, 
+			apply_role: u8, 
+			apply_annex: bool
+		) -> dispatch::DispatchResult{
+			let sender = ensure_signed(origin)?;
+
+			match apply_role {
+				2 => T::TypeTransfer::staketransfer(&sender, DEPOSIT_AMOUNT, StakeStatus::TakeDeposit)?,
+				_ => (),
+			}
+
+			T::Role::do_apply_cancel(sender, apply_role)?;
+
+			Ok(())
+		}
+
+		#[weight = 0]
 		pub fn setproposalrole(
 			origin, 
 			proposal_number: u32, 
@@ -103,29 +121,15 @@ decl_module! {
 			//检查当前sender是否为委员会成员
 			if T::Parliament::is_member(&sender) {
 				let mut proposal_information = <ProposalInformation<T>>::get(proposal_number).ok_or(Error::<T>::ProposalNotExist)?;
-				/*
-				let apply_addr = proposal_information.apply_addr;
-				let apply_role = proposal_information.apply_role;
-				let apply_annex = proposal_information.apply_annex;*/
-
 				proposal_information.apply_status = vote_result;
-/*
-				let proposal_template = ProposalInfo::<T> {
-					apply_addr: apply_addr.clone(),
-					apply_role: apply_role,
-					apply_status: vote_result,
-					apply_annex: apply_annex,
-				};
-*/
+
 				if vote_result == 1 {
 					//调用identity模块apply函数，使申请者拥有该身份
 					//apply(proposal_information.apply_addr, proposal_information.apply_role);
 					T::Role::do_apply(proposal_information.apply_addr.clone(), proposal_information.apply_role)?;
 				}
 
-				ProposalInformation::insert(proposal_number, proposal_information);
-
-				
+				ProposalInformation::insert(proposal_number, proposal_information);				
 			}
 			Ok(())
 		}

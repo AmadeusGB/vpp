@@ -91,31 +91,23 @@ decl_module! {
 		fn deposit_event() = default;
 
 		#[weight = 0]
-		pub fn apply(origin, owner: T::AccountId, apply_role: u8) -> dispatch::DispatchResult{
-			let _sender = ensure_signed(origin)?;
+		pub fn apply(
+			origin, 
+			owner: T::AccountId, 
+			apply_role: u8
+		) -> dispatch::DispatchResult{
+			ensure_signed(origin)?;
 			Self::do_apply(owner, apply_role)?;
 			Ok(())
 		}
 
 		#[weight = 0]
-		pub fn logout(origin, apply_role: u8) -> dispatch::DispatchResult{			
+		pub fn logout(
+			origin, 
+			apply_role: u8
+		) -> dispatch::DispatchResult{			
 			let sender = ensure_signed(origin)?;
-			let mut ps_role = <Roles<T>>::get(sender.clone());
-
-			 match apply_role {
-				0 => ps_role.pu = false,
-				1 => ps_role.pg = false,
-				2 => ps_role.ps = false,
-				3 => ps_role.sg = false,
-				4 => ps_role.ass = false,
-				5 => ps_role.pom = false,
-				_ => ps_role.pom = false,
-			};
-
-			Roles::<T>::insert(sender.clone(), ps_role);
-
-			Self::deposit_event(RawEvent::LogoutRoled(sender, apply_role));
-
+			Self::do_apply_cancel(sender, apply_role)?;
 			Ok(())
 		}
 	}
@@ -147,6 +139,25 @@ impl<T> Role<T::AccountId> for Module<T> where T: Trait {
 			3 => ps_role.sg = true,
 			4 => ps_role.ass = true,
 			5 => ps_role.pom = true,
+			_ => ps_role.pom = false,
+		};
+
+		Roles::<T>::insert(owner.clone(), ps_role);
+
+		Self::deposit_event(RawEvent::ApplyRoled(owner, apply_role));
+		Ok(())
+	}
+
+	fn do_apply_cancel(owner: T::AccountId, apply_role: u8) -> DispatchResult {
+		let mut ps_role = <Roles<T>>::get(owner.clone());
+
+		match apply_role {
+			0 => ps_role.pu = false,
+			1 => ps_role.pg = false,
+			2 => ps_role.ps = false,
+			3 => ps_role.sg = false,
+			4 => ps_role.ass = false,
+			5 => ps_role.pom = false,
 			_ => ps_role.pom = false,
 		};
 

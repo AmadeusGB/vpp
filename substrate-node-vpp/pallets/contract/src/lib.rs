@@ -37,6 +37,7 @@ pub struct ContractT<T: Trait> {
 	pub execution_status:u8,									  //合同执行状态（执行中：1，已完成：2，已终止：3）
 	pub contract_type:bool,								 		   //合同分类（购买true/出售false）
 	pub energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
+	pub voltage_type: u8,											 //电压类型
 	pub ammeter_id: Vec<u8>,						 		   //消费者/生产者电表编号
 }
 
@@ -81,6 +82,7 @@ decl_module! {
 			energy_amount: u64,							  			 //购买电能度数
 			contract_type:bool,								 			//合同分类（购买/出售）
 			energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
+			voltage_type: u8,											  //电压类型
 			ammeter_id: Vec<u8> 									//电表编号
 		) -> dispatch::DispatchResult {
 			let sender = ensure_signed(origin)?;
@@ -92,6 +94,7 @@ decl_module! {
 				energy_amount,							  			 //购买电能度数
 				contract_type,								 			//合同分类（购买/出售）
 				energy_type,											 //能源类型（0：光电，1：风电，2：火电）
+				voltage_type,											//电压类型
 				ammeter_id												//电表编号
 			)?;
 			Ok(())
@@ -160,6 +163,7 @@ impl<T:Trait> Contract<T::AccountId> for Module<T>{
 					energy_amount: u64,							  			 //购买电能度数
 					contract_type:bool,								 			//合同分类（购买true/出售false）
 					energy_type: u8,											  //能源类型（0：光电，1：风电，2：火电）
+					voltage_type: u8,											  //电压类型
 					ammeter_id: Vec<u8> 									//电表编号
 					) -> dispatch::DispatchResult {
 		// update the vpp
@@ -176,6 +180,7 @@ impl<T:Trait> Contract<T::AccountId> for Module<T>{
 			execution_status: 1,									//合同执行状态（执行中：1，已完成：2，已终止：3）
 			contract_type: contract_type,
 			energy_type: energy_type,
+			voltage_type: voltage_type,						//电压类型
 			ammeter_id: ammeter_id
 		};
 

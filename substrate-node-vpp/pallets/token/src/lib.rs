@@ -8,7 +8,7 @@ use frame_system::{self as system, ensure_signed};
 use sp_std::prelude::*;
 //use sp_runtime::traits::StaticLookup;
 use codec::{Encode, Decode};
-use primitives::{Token, PTO, DOT};
+use primitives::{Token, StakeStatus, PTO, DOT};
 use frame_support::dispatch::DispatchResult;
 
 #[cfg(test)]
@@ -162,10 +162,11 @@ decl_module! {
 		#[weight = 0]
 		pub fn staketoken(
 			origin, 
-			stake_token: u32
+			stake_token: u32,
+			stake_status: StakeStatus
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
-			Self::do_staketoken(sender, stake_token)?;
+			Self::do_staketoken(sender, stake_token, stake_status)?;
 			Ok(())
 		}
 
@@ -193,10 +194,19 @@ impl<T:Trait> Token<T::AccountId> for Module<T>{
 		Ok(())
 	}
 	
-	fn do_staketoken(sender: T::AccountId,stake_token:u32) -> dispatch::DispatchResult {
+	fn do_staketoken(sender: T::AccountId, stake_token:u32, stake_status: StakeStatus) -> dispatch::DispatchResult {
 		let mut tokeninfo = <BalanceToken<T>>::get(&sender);
-		tokeninfo.token_balance -= stake_token;
-		tokeninfo.token_stake += stake_token;
+
+		match stake_status {
+			StakeStatus::Deposit => {
+				tokeninfo.token_balance -= stake_token;
+				tokeninfo.token_stake += stake_token;
+			},
+			StakeStatus::TakeDeposit => {
+				tokeninfo.token_balance += stake_token;
+				tokeninfo.token_stake -= stake_token;
+			}
+		}
 
 		BalanceToken::<T>::insert(&sender, tokeninfo);
 		Ok(())
