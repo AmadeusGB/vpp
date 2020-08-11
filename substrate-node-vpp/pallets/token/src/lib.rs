@@ -123,7 +123,7 @@ decl_module! {
 			let sender = ensure_signed(origin)?;
 			let mut rate = <SelfRate<T>>::get(&sender);
 			let mut tokeninfo = <BalanceToken<T>>::get(&sender);
-			ensure!(tokeninfo.token_balance > sell_token, Error::<T>::BalanceNotEnough);
+			ensure!(tokeninfo.token_balance >= sell_token, Error::<T>::BalanceNotEnough);
 
 			tokeninfo.token_balance -= sell_token;
 			rate.buy_rate *= PTO / DOT;
@@ -200,12 +200,12 @@ impl<T:Trait> Token<T::AccountId> for Module<T>{
 
 		match stake_status {
 			StakeStatus::Deposit => {
-				ensure!(tokeninfo.token_balance > stake_token, Error::<T>::TokenOverflow);
+				ensure!(tokeninfo.token_balance >= stake_token, Error::<T>::TokenOverflow);
 				tokeninfo.token_balance -= stake_token;
 				tokeninfo.token_stake += stake_token;
 			},
 			StakeStatus::TakeDeposit => {
-				ensure!(tokeninfo.token_stake > stake_token, Error::<T>::TokenOverflow);
+				ensure!(tokeninfo.token_stake >= stake_token, Error::<T>::TokenOverflow);
 				tokeninfo.token_balance += stake_token;
 				tokeninfo.token_stake -= stake_token;
 			}
@@ -217,7 +217,7 @@ impl<T:Trait> Token<T::AccountId> for Module<T>{
 	
 	fn do_votetoken(sender: T::AccountId,vote_token:u32) -> dispatch::DispatchResult {
 		let mut tokeninfo = <BalanceToken<T>>::get(&sender);
-		ensure!(tokeninfo.token_balance > vote_token, Error::<T>::TokenOverflow);
+		ensure!(tokeninfo.token_balance >= vote_token, Error::<T>::TokenOverflow);
 
 		tokeninfo.token_balance -= vote_token;
 		tokeninfo.token_vote += vote_token;
@@ -231,7 +231,7 @@ impl<T:Trait> Token<T::AccountId> for Module<T>{
 		let mut from_tokeninfo = <BalanceToken<T>>::get(&from);
 		let mut to_tokeninfo = <BalanceToken<T>>::get(&to);
 
-		ensure!(from_tokeninfo.token_balance > token_amount, Error::<T>::TokenOverflow);
+		ensure!(from_tokeninfo.token_balance >= token_amount, Error::<T>::TokenOverflow);
 
 		from_tokeninfo.token_balance -= token_amount;
 		to_tokeninfo.token_balance += token_amount;
