@@ -217,6 +217,8 @@ impl<T:Trait> Token<T::AccountId> for Module<T>{
 	
 	fn do_votetoken(sender: T::AccountId,vote_token:u32) -> dispatch::DispatchResult {
 		let mut tokeninfo = <BalanceToken<T>>::get(&sender);
+		ensure!(tokeninfo.token_balance > vote_token, Error::<T>::TokenOverflow);
+
 		tokeninfo.token_balance -= vote_token;
 		tokeninfo.token_vote += vote_token;
 
@@ -229,10 +231,13 @@ impl<T:Trait> Token<T::AccountId> for Module<T>{
 		let mut from_tokeninfo = <BalanceToken<T>>::get(&from);
 		let mut to_tokeninfo = <BalanceToken<T>>::get(&to);
 
-		ensure!(from_tokeninfo.token_balance > token_amount, Error::<T>::BalanceNotEnough);
+		ensure!(from_tokeninfo.token_balance > token_amount, Error::<T>::TokenOverflow);
 
 		from_tokeninfo.token_balance -= token_amount;
 		to_tokeninfo.token_balance += token_amount;
+
+		BalanceToken::<T>::insert(&from, from_tokeninfo);
+		BalanceToken::<T>::insert(&to, to_tokeninfo);
 		Ok(())
 	}
 }
