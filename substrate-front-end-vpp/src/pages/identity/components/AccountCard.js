@@ -89,7 +89,7 @@ const AccountCard = () => {
                   attrs={{
                     palletRpc: 'tokenModule',
                     callable: 'selltoken',
-                    inputParams: [1, accountId, amount_price],
+                    inputParams: [100, accountId, amount_price],
                     paramFields: [true, true, true]
                   }}
         />

@@ -1,11 +1,12 @@
-import { Divider } from 'antd';
+import {Divider, message} from 'antd';
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import {ApiContext} from "@/context/api";
 import {AccountsContext} from "@/context/accounts";
 import {transformParams,txResHandler,txErrHandler} from "@/components/TxButton/utils";
-import {web3FromSource} from "@polkadot/extension-dapp";
+import {web3Accounts, web3Enable, web3FromSource} from "@polkadot/extension-dapp";
+import config from "@/config";
 
 const columns = [
   {
@@ -131,7 +132,6 @@ const getFromAcct = async (api,pair) => {
 
   // signer is from Polkadot-js browser extension
   if (isInjected) {
-    console.log('看你会不会走到这里来');
     const injected = await web3FromSource(source);
     fromAcct = addr;
     api.setSigner(injected.signer);
@@ -148,9 +148,23 @@ async function optionClick(type,record) {
   const accountPair = record.pairHook;
   if (!api && !accountPair ) return;
   console.log(record);
+
   const fromAcct = await getFromAcct(api,accountPair);
-  const param = transformParams([true, true],[record.key, Number(type)]);
-  const unsub = await api.tx.auditModule.setproposalrole(...param).signAndSend(fromAcct, txResHandler).catch(txErrHandler);
+  const param = transformParams([true],['5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY']);
+  await api.tx.parliamentModule.forceAddMember(...param).signAndSend(fromAcct,({status}) => {
+    if (status.isFinalized) {
+      try {
+        (async () => {
+          const params = transformParams([true, true],[record.key, Number(type)]);
+          await api.tx.auditModule.setproposalrole(...params).signAndSend(fromAcct, txResHandler).catch(txErrHandler);
+        })()
+      } catch (error) {
+        console.log(error)
+      }
+    } else {
+      message.info(`Current transaction status: ${status.type}`);
+    }
+  }).catch(txErrHandler);
 }
 
 const roleName = (type) => {
@@ -180,12 +194,11 @@ const TableList = () => {
 
   useEffect(() => {
     if (!keyring && !address) return;
-    setAccountPair(keyring.getPair('5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'));
+    setAccountPair(keyring.getPair('5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'));// Alice
   },[keyring]);
 
   useEffect(() => {
     if (!api) return;
-
     api.query.auditModule.proposalCount((result) => {
       if (!result.isNone) {
         console.log(`提案数量：${result.toNumber()}`);
@@ -194,8 +207,6 @@ const TableList = () => {
     });
   },[api]);
 
-  // get data
-  // "apply_addr":"5GgmNnKVdSRJqHmKttZrxWGdy5j1a6nU8oWWNKf7DffR6ssi","apply_role":2,"apply_status":0,"apply_annex":true
   useEffect(() => {
     if (!api || !count) return;
     const source = [];

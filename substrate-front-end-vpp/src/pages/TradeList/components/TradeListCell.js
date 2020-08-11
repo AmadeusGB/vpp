@@ -57,7 +57,7 @@ const TradeListCell = props => {
           </>
           {
             admin ?
-              <div style={{marginTop: 10}}>
+              <div style={{marginTop: 10, hidden: true}}>
                 <Button type="primary" size="default" onClick={editClick}>编辑</Button>
                 <Divider orientation="center" type="vertical"/>
                 <Button type="primary" danger size="default" onClick={closeClick}>歇业</Button>
