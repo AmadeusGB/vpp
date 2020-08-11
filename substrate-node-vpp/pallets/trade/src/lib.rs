@@ -216,12 +216,16 @@ decl_module! {
 			T::TypeTransfer::do_buytransfer(ps_addr.clone(), vpp_number, sender.clone(), buy_energy_token_amount)?;
 			
 			//调用contract模块addcontract签订购买电能合同
-			let vpp = <VppList<T>>::get((ps_addr.clone(), vpp_number)).ok_or(Error::<T>::VppNotExist)?;
+			let mut vpp = <VppList<T>>::get((ps_addr.clone(), vpp_number)).ok_or(Error::<T>::VppNotExist)?;
+			let sold_amount = vpp.sold_total.checked_add(buy_energy_number).ok_or(Error::<T>::Overflow)?;
+			vpp.sold_total += sold_amount;
 			T::Contract::do_addcontract(sender.clone(), ps_addr.clone(), vpp_number, buy_energy_token_amount, buy_energy_number, true, vpp.energy_type, voltage_type, pu_ammeter_id)?;
 
 			let vpp_transcation_amount = <TransactionAmount<T>>::get((ps_addr.clone(), vpp_number));
 			TransactionAmount::<T>::insert((&ps_addr, vpp_number), vpp_transcation_amount + buy_energy_token_amount);
 			CurrentRemainingBattery::<T>::insert(&sender, buy_energy_number);
+
+			VppList::<T>::insert((&ps_addr, vpp_number), vpp);
 
 			Ok(())
 		}
@@ -241,11 +245,15 @@ decl_module! {
 			T::TypeTransfer::do_selltransfer(ps_addr.clone(), vpp_number, sender.clone(), sell_energy_token_amount)?;
 
 			//调用contract模块addcontract签订出售电能合同
-			let vpp = <VppList<T>>::get((ps_addr.clone(), vpp_number)).ok_or(Error::<T>::VppNotExist)?;
+			let mut vpp = <VppList<T>>::get((ps_addr.clone(), vpp_number)).ok_or(Error::<T>::VppNotExist)?;
+			ensure!(vpp.sold_total >= sell_energy_number, Error::<T>::Overflow);
+			vpp.sold_total -= sell_energy_number;
 			T::Contract::do_addcontract(sender.clone(), ps_addr.clone(), vpp_number, sell_energy_token_amount, sell_energy_number, false, vpp.energy_type, voltage_type, pg_ammeter_id)?;
 
 			let vpp_transcation_amount = <TransactionAmount<T>>::get((ps_addr.clone(), vpp_number));
 			TransactionAmount::<T>::insert((&ps_addr, vpp_number), vpp_transcation_amount + sell_energy_token_amount);
+
+			VppList::<T>::insert((&ps_addr, vpp_number), vpp);
 
 			Ok(())
 		}
