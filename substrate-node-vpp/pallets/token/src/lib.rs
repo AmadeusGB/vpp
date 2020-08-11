@@ -79,6 +79,7 @@ decl_error! {
 	pub enum Error for Module<T: Trait> {
 		TokenAcountNotExist,
 		BalanceNotEnough,
+		TokenOverflow,
 	}
 }
 
@@ -199,10 +200,12 @@ impl<T:Trait> Token<T::AccountId> for Module<T>{
 
 		match stake_status {
 			StakeStatus::Deposit => {
+				ensure!(tokeninfo.token_balance > stake_token, Error::<T>::TokenOverflow);
 				tokeninfo.token_balance -= stake_token;
 				tokeninfo.token_stake += stake_token;
 			},
 			StakeStatus::TakeDeposit => {
+				ensure!(tokeninfo.token_stake > stake_token, Error::<T>::TokenOverflow);
 				tokeninfo.token_balance += stake_token;
 				tokeninfo.token_stake -= stake_token;
 			}
