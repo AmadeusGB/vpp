@@ -49,8 +49,9 @@ export function useSubstrate() {
               icon: 'user',
             }));
             const initialAddress = keyringOptions.length > 0 ? keyringOptions[0].value : '';
-            resolve(initialAddress);
-            storeAddress(initialAddress);
+            // TODO 使用Alice演示
+            resolve('5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY');
+            storeAddress('5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY');
             setAddressTmp(initialAddress);
           } else {
             resolve(addressTmp)

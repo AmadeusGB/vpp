@@ -194,7 +194,7 @@ const TableList = () => {
 
   useEffect(() => {
     if (!keyring && !address) return;
-    setAccountPair(keyring.getPair('5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'));// Alice
+    setAccountPair(keyring.getPair(address));// Alice
   },[keyring]);
 
   useEffect(() => {

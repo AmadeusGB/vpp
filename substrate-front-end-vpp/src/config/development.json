@@ -62,7 +62,8 @@
       "execution_status": "u8",
       "contract_type": "bool",
       "energy_type": "u8",
-      "ammeter_id": "u8"
+      "voltage_type": "u32",
+      "ammeter_id": "Vec<u8>"
     }
   },
   "PROVIDER_SOCKET": "ws://127.0.0.1:9944"

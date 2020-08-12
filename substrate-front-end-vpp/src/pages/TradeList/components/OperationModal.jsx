@@ -15,6 +15,7 @@ const formLayout = {
 const OperationModal = props => {
   const [form] = Form.useForm();
   const { visible, operation, onCancel, onSubmit } = props;
+  const [amount, setAmount] = useState(0);
   useEffect(() => {
     if (form && !visible) {
       form.resetFields();
@@ -32,35 +33,35 @@ const OperationModal = props => {
     }
   };
 
-  const onTypeChange = value => {
+  const onElecTypeChange = value => {
     switch (value) {
       case "0":
-        form.setFieldsValue({ type: "0" });
+        form.setFieldsValue({ electric_type: "0" });
         break;
       case "1":
-        form.setFieldsValue({ type: "1" });
+        form.setFieldsValue({ electric_type: "1" });
         break;
       default:
         break;
     }
   };
 
-  const onType1Change = value => {
+  const onTypeChange = value => {
     switch (value) {
-      case "0":
-        form.setFieldsValue({ type1: "0" });
+      case "220":
+        form.setFieldsValue({ type: "220" });
         break;
-      case "1":
-        form.setFieldsValue({ type1: "1" });
+      case "110":
+        form.setFieldsValue({ type: "110" });
         break;
-      case "2":
-        form.setFieldsValue({ type1: "2" });
+      case "36":
+        form.setFieldsValue({ type: "36" });
         break;
-      case "3":
-        form.setFieldsValue({ type1: "3" });
+      case "12":
+        form.setFieldsValue({ type: "12" });
         break;
-      case "4":
-        form.setFieldsValue({ type1: "4" });
+      case "5":
+        form.setFieldsValue({ type: "4" });
         break;
       default:
         break;
@@ -74,10 +75,12 @@ const OperationModal = props => {
   };
 
   const getModalContent = () => {
-    const [amount, setAmount] = useState(0);
-
     return (
-      <Form {...formLayout} form={form} onFinish={handleFinish}>
+      <Form {...formLayout} form={form} onFinish={handleFinish} onFieldsChange={(changedFields, allFields) => {
+        if (changedFields.length > 0 && changedFields[0].name[0] === 'buy_energy_number') {
+          setAmount(changedFields[0].value)
+        }
+      }}>
         <Form.Item
           name="buy_energy_number"
           label= {operation === 1 ? "购买数量" : "出售数量"}
@@ -102,27 +105,27 @@ const OperationModal = props => {
         >
           <Input placeholder="请输入线损率（%）" />
         </Form.Item>
-        <Form.Item name="type" label="电能类型" rules={[{ required: true }]}>
+        <Form.Item name="electric_type" label="电流类型" rules={[{ required: true }]}>
           <Select
             placeholder="请选择电能类型"
-            onChange={onTypeChange}
+            onChange={onElecTypeChange}
             allowClear
           >
             <Option value="0">交流</Option>
             <Option value="1">直流</Option>
           </Select>
         </Form.Item>
-        <Form.Item name="type1" label="电压类型" rules={[{ required: true }]}>
+        <Form.Item name="type" label="电压类型" rules={[{ required: true }]}>
           <Select
             placeholder="请选择电压类型"
-            onChange={onType1Change}
+            onChange={onTypeChange}
             allowClear
           >
-            <Option value="0">220V</Option>
-            <Option value="1">110V</Option>
-            <Option value="2">36V</Option>
-            <Option value="3">12V</Option>
-            <Option value="4">5V</Option>
+            <Option value="220">220V</Option>
+            <Option value="110">110V</Option>
+            <Option value="36">36V</Option>
+            <Option value="12">12V</Option>
+            <Option value="5">5V</Option>
           </Select>
         </Form.Item>
         <div style={{marginLeft: '24px'}}>

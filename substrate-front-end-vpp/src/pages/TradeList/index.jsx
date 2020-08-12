@@ -4,7 +4,7 @@ import {
   Input,
   List,
   Radio,
-  Button
+  Button, message
 } from 'antd';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
 import {web3FromSource} from "@polkadot/extension-dapp";
@@ -71,19 +71,19 @@ export const TradeList = () => {
           console.log(JSON.stringify(data));
           source.push({
             id: i,
-            address: '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY',
+            address: address,
             logo: 'https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png',
-            latest: '2020/08/08 20:00:00',
-            total: data.pre_total_stock,
+            latest: new Date().toLocaleDateString(),
+            total: 0,
+            canSell: data.pre_total_stock,
+            needBuy: data.sold_total,
             name: data.vpp_name,
             type: data.energy_type,
-            canSell: data.sold_total,
             sellPrice: data.sell_price,
-            needBuy: data.sold_total,
             buyPrice: data.buy_price,
-            status: data.business_status,
+            status: data.business_status === 'Opened' ? '营业中':'歇业',
             code: data.post_code,
-            loss: data.device_id
+            loss: data.transport_lose
           });
         }
       });
@@ -94,7 +94,7 @@ export const TradeList = () => {
   }, [count, api]);
 
   //  *********** start *********** //
-  //  *********** 因为Ant脚手架会多次渲染入口 wrapper 通过context存储keyring会报重复初始化的错误 如果页面有刷新需要重新访问（http://localhost:8000）加载keyring
+  //  *********** 因为Ant脚手架会多次渲染入口 通过context存储keyring会报重复初始化的错误 如果页面有刷新需要重新访问（http://localhost:8000）加载keyring
   const getFromAcct = async () => {
     if (!accountPair) {
       console.log('No accountPair!');
@@ -125,7 +125,7 @@ export const TradeList = () => {
       [
         values.name,
         values.pre_total_stock,
-        values.sold_total,
+        0,
         (Number(values.electric_type) !== 0),
         values.energy_type,
         values.buy_price,
@@ -189,15 +189,15 @@ export const TradeList = () => {
     console.log(values);
     setVisible(false);
     if (!api && !accountPair ) return;
-
     const param = transformParams(
-      [true, true, true, true, true],
+      [true, true, true, true, true, true],
       [
-        '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY',
-        0,
-        100,// buy_energy_number sell_energy_number
-        100,// buy_energy_token_amount sell_energy_token_amount
-        10000,// pu_ammeter_id pg_ammeter_id
+        address,
+        10001,// 该PS对应VPP编号
+        values.buy_energy_number ? values.buy_energy_number : 100,// buy_energy_number sell_energy_number
+        values.buy_energy_number ? values.buy_energy_number : 100,// buy_energy_token_amount sell_energy_token_amount
+        values.type,
+        10000,// pu_ammeter_id pg_ammeter_id 消费者电表编号
       ]
     );
     if (unsub) {
@@ -206,10 +206,58 @@ export const TradeList = () => {
     }
     const fromAcct = await getFromAcct();
     if (operation === 1) {// buy
-      const unsu = await api.tx.tradeModule.buyenergy(...param).signAndSend(fromAcct, txResHandler).catch(txErrHandler);
+      const unsu = await api.tx.tradeModule.buyenergy(...param).signAndSend(fromAcct, ({status}) => {
+        if (status.isFinalized) {
+          try {
+            (async () => {
+              const params = transformParams(
+                [true, true, true, true, true, true, true, true],
+                [
+                  address,
+                  10001,// PS对应VPP编号
+                  values.buy_energy_number,
+                  values.buy_energy_number,
+                  true,// 合同分类
+                  0, // 能源类型
+                  values.type,
+                  10000,// 电表编号
+                ]);
+              await api.tx.contractModule.addcontract(...params).signAndSend(fromAcct, txResHandler).catch(txErrHandler);
+            })()
+          } catch (error) {
+            console.log(error)
+          }
+        } else {
+          message.info(`Current transaction status: ${status.type}`);
+        }
+      }).catch(txErrHandler);
       setUnsub(() => unsu);
     } else { // sell
-      const unsu = await api.tx.tradeModule.buyenergy(...param).signAndSend(fromAcct, txResHandler).catch(txErrHandler);
+      const unsu = await api.tx.tradeModule.sellenergy(...param).signAndSend(fromAcct, ({status}) => {
+        if (status.isFinalized) {
+          try {
+            (async () => {
+              const params = transformParams(
+                [true, true, true, true, true, true, true, true],
+                [
+                  address,
+                  10001,// PS对应VPP编号
+                  values.buy_energy_number,
+                  values.buy_energy_number,
+                  false,// 合同分类
+                  0, // 能源类型
+                  values.type,
+                  10000,// 电表编号
+                ]);
+              await api.tx.contractModule.addcontract(...params).signAndSend(fromAcct, txResHandler).catch(txErrHandler);
+            })()
+          } catch (error) {
+            console.log(error)
+          }
+        } else {
+          message.info(`Current transaction status: ${status.type}`);
+        }
+      }).catch(txErrHandler);
       setUnsub(() => unsu);
     }
   };

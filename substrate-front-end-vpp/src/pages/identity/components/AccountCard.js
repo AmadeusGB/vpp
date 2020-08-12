@@ -58,7 +58,7 @@ const AccountCard = () => {
       <img alt="logo" className={styles.logo} src={GroupSvg} />
       <div className={styles.accountAddress}>
         <p>账户地址</p>
-        <p>{address !== undefined ? address : '15d4X7aZVDgnGpmqrXcs6f6nphifGQLcDJEzXceTmkgwH8oU'}</p>
+        <p>{address !== undefined ? address : '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'}</p>
       </div>
       <div className={styles.accountBalance}>
         <p>可用余额</p>
