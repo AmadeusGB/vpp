@@ -4,7 +4,7 @@ import {
   Input,
   List,
   Radio,
-  Button, message
+  Button, message, Modal
 } from 'antd';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
 import {web3FromSource} from "@polkadot/extension-dapp";
@@ -93,8 +93,7 @@ export const TradeList = () => {
     }, 500*count);
   }, [count, api]);
 
-  //  *********** start *********** //
-  //  *********** 因为Ant脚手架会多次渲染入口 通过context存储keyring会报重复初始化的错误 如果页面有刷新需要重新访问（http://localhost:8000）加载keyring
+  //  *********** create vpp *********** //
   const getFromAcct = async () => {
     if (!accountPair) {
       console.log('No accountPair!');
@@ -193,7 +192,7 @@ export const TradeList = () => {
       [true, true, true, true, true, true],
       [
         address,
-        10001,// 该PS对应VPP编号
+        0,// 该PS对应VPP编号 临时写成第一个
         values.buy_energy_number ? values.buy_energy_number : 100,// buy_energy_number sell_energy_number
         values.buy_energy_number ? values.buy_energy_number : 100,// buy_energy_token_amount sell_energy_token_amount
         values.type,
@@ -214,7 +213,7 @@ export const TradeList = () => {
                 [true, true, true, true, true, true, true, true],
                 [
                   address,
-                  10001,// PS对应VPP编号
+                  0,// PS对应VPP编号
                   values.buy_energy_number,
                   values.buy_energy_number,
                   true,// 合同分类
@@ -241,7 +240,7 @@ export const TradeList = () => {
                 [true, true, true, true, true, true, true, true],
                 [
                   address,
-                  10001,// PS对应VPP编号
+                  0,// PS对应VPP编号
                   values.buy_energy_number,
                   values.buy_energy_number,
                   false,// 合同分类
@@ -260,6 +259,34 @@ export const TradeList = () => {
       }).catch(txErrHandler);
       setUnsub(() => unsu);
     }
+  };
+
+  // close ps
+  const closePs = async (status) => {
+    if (!api && !accountPair) return;
+    const param = transformParams(
+      [true, true],
+      [
+        0,// 该PS对应VPP编号
+        status === "开业" ? "Opened" : "Closed" ,
+      ]
+    );
+    if (unsub) {
+      unsub();
+      setUnsub(null);
+    }
+    const fromAcct = await getFromAcct();
+    const unsu = await api.tx.tradeModule.setvppstatus(...param).signAndSend(fromAcct, txResHandler).catch(txErrHandler);
+  };
+
+  const closeClick = (status) => {
+    Modal.confirm({
+      title: '操作提示',
+      content: `是否确定${status}？`,
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {closePs(status)},
+    });
   };
 
   const extraContent = (
@@ -311,10 +338,11 @@ export const TradeList = () => {
                     showSellModal(item)
                   }}
                   editClick={() => {
-                    setAddEdit(2);
-                    setVisibleModal(true);
+                    //setAddEdit(2);
+                    //setVisibleModal(true);
                   }}
-                  closeClick={() => {
+                  closeClick={(status) => {
+                    closeClick(status)
                   }}
                 />
               )}

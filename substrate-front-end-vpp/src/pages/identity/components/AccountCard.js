@@ -1,8 +1,10 @@
 import React, {useContext, useEffect, useState} from "react";
 import {Button, Divider} from 'antd';
-import {TxButton} from "@/components/TxButton/TxButton";
+import TokenTradeModal from "@/pages/Identity/components/TokenTradeModal";
 import {AccountsContext} from "@/context/accounts";
 import {ApiContext} from "@/context/api";
+import {web3FromSource} from "@polkadot/extension-dapp";
+import {transformParams, txErrHandler, txResHandler} from "@/components/TxButton/utils";
 import styles from "../index.less";
 import GroupSvg from "../assets/group.svg";
 
@@ -17,6 +19,10 @@ const AccountCard = () => {
 
   const [accountPair, setAccountPair] = useState(null);
   const [status, setStatus] = useState(null);
+
+  const [visible, setVisible] = useState(false);
+  const [operation, setOperation] = useState(1);// 1兑换 2提示
+  const [unsub, setUnsub] = useState(null);
 
   useEffect(() => {
     if (!keyring) return;
@@ -53,6 +59,75 @@ const AccountCard = () => {
 
   },[api, address]);
 
+  const handleOnClick = (opera) => {
+    setOperation(opera);
+    setVisible(true);
+  };
+
+  const handleCancel = () => {
+    setVisible(false);
+  };
+
+  const getFromAcct = async () => {
+    if (!accountPair) {
+      console.log('No accountPair!');
+      return ;
+    }
+
+    const {
+      addr,
+      meta: {source, isInjected}
+    } = accountPair;
+    let fromAcct;
+
+    // signer is from Polkadot-js browser extension
+    if (isInjected) {
+      const injected = await web3FromSource(source);
+      fromAcct = addr;
+      api.setSigner(injected.signer);
+    } else {
+      fromAcct = accountPair;
+    }
+
+    return fromAcct;
+  };
+
+  const signedTx = async (values) => {
+    const paramFields = [true, true, true];
+    const inputParams =
+      [
+        values.buy_token,
+        accountId,
+        values.amount_price,
+      ];
+    const fromAcct = await getFromAcct();
+    const transformed = transformParams(paramFields, inputParams);
+    // transformed can be empty parameters
+
+    const txExecute = (operation === 1) ? (transformed
+      ? api.tx.tokenModule.buytoken(...transformed)
+      : api.tx.tokenModule.buytoken()) : transformed
+      ? api.tx.tokenModule.selltoken(...transformed)
+      : api.tx.tokenModule.selltoken();
+
+    const unsu = await txExecute.signAndSend(fromAcct, txResHandler)
+      .catch(txErrHandler);
+    setUnsub(() => unsu);
+  };
+
+  const handleSubmit = (values) => {
+    console.log(values);
+    setVisible(false);
+    if (!api && !accountPair ) return;
+
+    if (unsub) {
+      unsub();
+      setUnsub(null);
+    }
+    signedTx(values)
+  };
+
+
   return (
     <div className={styles.accountCard}>
       <img alt="logo" className={styles.logo} src={GroupSvg} />
@@ -65,34 +140,13 @@ const AccountCard = () => {
         <p>{balances.token_balance}</p>
       </div>
       <div className={styles.accountButtons}>
-        <TxButton style={{position: 'left', bottom: '10px', right: '20px'}}
-                  color='blue'
-                  accountPair={accountPair}
-                  label='充值'
-                  type='SIGNED-TX'
-                  setStatus={setStatus}
-                  attrs={{
-                    palletRpc: 'tokenModule',
-                    callable: 'buytoken',
-                    inputParams: [1000, accountId, amount_price],
-                    paramFields: [true, true, true]
-                  }}
-        />
-
-        <Divider orientation="center" type="vertical"/>
-        <TxButton style={{position: 'right', bottom: '10px', right: '20px'}}
-                  color='blue'
-                  accountPair={accountPair}
-                  label='提现'
-                  type='SIGNED-TX'
-                  setStatus={setStatus}
-                  attrs={{
-                    palletRpc: 'tokenModule',
-                    callable: 'selltoken',
-                    inputParams: [100, accountId, amount_price],
-                    paramFields: [true, true, true]
-                  }}
-        />
+        <Button ghost size="middle" onClick={() => handleOnClick(1)}>
+          充值
+        </Button>
+        <Divider orientation="center" type="vertical" style={{backgroundColor: 'white'}}/>
+        <Button ghost size="middle" onClick={() => handleOnClick(2)}>
+          提现
+        </Button>
       </div>
       <div className={styles.totalBalance}>
         <p>总金额</p>
@@ -110,6 +164,13 @@ const AccountCard = () => {
         <p>当前剩余电量</p>
         <p>{`${total} 度`}</p>
       </div>
+
+      <TokenTradeModal
+        visible={visible}
+        operation={operation}
+        onCancel={handleCancel}
+        onSubmit={handleSubmit}
+      />
     </div>
   )
 };

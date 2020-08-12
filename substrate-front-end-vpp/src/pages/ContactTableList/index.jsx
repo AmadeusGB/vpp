@@ -25,12 +25,16 @@ const TableList = () => {
 
   useEffect(() => {
     if (!api || !address) return;
+    let unsubscribeAll = null;
     api.query.contractModule.contractcounts(address, (result) => {
       if (!result.isNone) {
         console.log(`合同数量：${result}`);
         setCount(result);
       }
-    });
+    }).then(unsub => {
+      unsubscribeAll = unsub;
+    }).catch(console.error);
+    return () => unsubscribeAll && unsubscribeAll();
   },[api]);
 
   useEffect(() => {
@@ -97,8 +101,8 @@ const TableList = () => {
     // transformed can be empty parameters
 
     const txExecute = transformed
-      ? api.tx.contraceModule.stopcontract(...transformed)
-      : api.tx.contraceModule.stopcontract();
+      ? api.tx.contractModule.stopcontract(...transformed)
+      : api.tx.contractModule.stopcontract();
 
     const unsu = await txExecute.signAndSend(fromAcct, txResHandler)
       .catch(txErrHandler);
@@ -190,6 +194,7 @@ const TableList = () => {
       dataIndex: 'option',
       valueType: 'option',
       render: (_, record) => ([
+        record.execution_status !== '已终止' ?
           <a
             onClick={() => {
               Modal.confirm({
@@ -202,7 +207,7 @@ const TableList = () => {
             }}
           >
             终止
-          </a>]
+          </a> : null]
       ),
     },
   ];

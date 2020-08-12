@@ -3,12 +3,12 @@ import styles from "../index.less";
 import { List, Typography } from 'antd';
 
 const data = [
-  '2020/08/10 转入 1000',
-  '2020/08/10 转出 1000',
-  '2020/08/10 转入 1000',
-  '2020/08/10 转出 1000',
-  '2020/08/10 转入 1000',
-  '2020/08/10 转出 1000',
+  `${new Date().toLocaleDateString()} 转入 1000`,
+  `${new Date().toLocaleDateString()} 转入 1000`,
+  `${new Date().toLocaleDateString()} 转入 1000`,
+  `${new Date().toLocaleDateString()} 转入 1000`,
+  `${new Date().toLocaleDateString()} 转入 1000`,
+  `${new Date().toLocaleDateString()} 转入 1000`,
 ];
 
 const AccountHistory = () => {
