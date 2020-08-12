@@ -129,7 +129,7 @@ const OperationModal = props => {
           </Select>
         </Form.Item>
         <div style={{marginLeft: '24px'}}>
-          <p>{operation === 1 ? `需支付金额：¥ ${amount}` : `预计收益金额：¥ ${amount}`}</p>
+          <p>{operation === 1 ? `需支付金额：${amount}` : `预计收益金额：${amount}`}</p>
         </div>
       </Form>
     );
