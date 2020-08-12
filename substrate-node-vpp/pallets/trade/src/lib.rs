@@ -50,14 +50,6 @@ pub struct PsVpp {
 	pub device_id: u64,						  							 //设备编号
 }
 
-#[cfg_attr(feature = "std", derive(Debug, PartialEq, Eq))]
-#[derive(Encode, Decode)]
-pub struct RoleInfo {
-	pub meter_code: Vec<u8>,			//电表编号
-	pub meter_number: Vec<u8>,		//电表读数
-	pub post_code: Vec<u8>,				  //邮编
-}
-
 // This pallet's storage items.
 decl_storage! {
 	trait Store for Module<T: Trait> as TemplateModule {
