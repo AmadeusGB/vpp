@@ -158,7 +158,7 @@ decl_module! {
 			transport_lose: u32, 										  //线损
 			// business_status: BusinessStatus, 			//0 不营业  1 营业
 			//approval_status: u8, 										//0 不通过  1 通过  2 审核中
-			// device_id: u64,						   						 //设备编号
+			device_id: u64,						   						 //设备编号
 			vpp_number: u64
 		) -> dispatch::DispatchResult{
 			let sender = ensure_signed(origin)?;
@@ -176,7 +176,7 @@ decl_module! {
 				 transport_lose,
 				 // business_status,
 				 approval_status: ApprovalStatus::Pending,
-				 // device_id,
+				 device_id,
 				 ..vpp
 			};
 

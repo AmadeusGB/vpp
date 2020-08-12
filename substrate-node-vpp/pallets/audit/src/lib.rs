@@ -123,10 +123,10 @@ decl_module! {
 				let mut proposal_information = <ProposalInformation<T>>::get(proposal_number).ok_or(Error::<T>::ProposalNotExist)?;
 				proposal_information.apply_status = vote_result;
 
-				if vote_result == 1 {
-					//调用identity模块apply函数，使申请者拥有该身份
-					//apply(proposal_information.apply_addr, proposal_information.apply_role);
-					T::Role::do_apply(proposal_information.apply_addr.clone(), proposal_information.apply_role)?;
+				match vote_result {
+					1 => T::Role::do_apply(proposal_information.apply_addr.clone(), proposal_information.apply_role)?,
+					2 => T::TypeTransfer::staketransfer(&sender, DEPOSIT_AMOUNT, StakeStatus::TakeDeposit)?,
+					_ => (),
 				}
 
 				ProposalInformation::insert(proposal_number, proposal_information);				
