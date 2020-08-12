@@ -60,7 +60,7 @@ const TradeListCell = props => {
               <div style={{marginTop: 10, hidden: true}}>
                 <Button type="primary" size="default" onClick={editClick}>编辑</Button>
                 <Divider orientation="center" type="vertical"/>
-                <Button type="primary" danger size="default" onClick={closeClick}>歇业</Button>
+                <Button type="primary" danger size="default" onClick={() => closeClick(item.status === '歇业' ? "开业" : "歇业")}>{item.status === '歇业' ? "开业" : "歇业"}</Button>
               </div>
               :
               null

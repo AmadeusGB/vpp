@@ -74,16 +74,11 @@ const AddEditModal = props => {
         <Form.Item name="name" label= "虚拟电厂名称" rules={[{ required: true, message: "请输入"}]}>
           <Input placeholder="请输入虚拟电厂名称" />
         </Form.Item>
-        <Form.Item name="energy_type" label="能源类型" rules={[{ required: true }]}>
-          <Select
-            placeholder="请选择能源类型"
-            onChange={onEnergyChange}
-            allowClear
-          >
-            <Option value="0">光电</Option>
-            <Option value="1">风电</Option>
-            <Option value="2">火电</Option>
-          </Select>
+        <Form.Item name="pre_total_stock" label= "预售总额度" rules={[{ required: true, message: "请输入"}]}>
+          <Input placeholder="请输入预售总额度" />
+        </Form.Item>
+        <Form.Item name="sold_total" label= "已售总额度" rules={[{ required: true, message: "请输入"}]}>
+          <Input placeholder="请输入已售总额度" />
         </Form.Item>
         <Form.Item name="electric_type" label="电流类型" rules={[{ required: true }]}>
           <Select
@@ -95,16 +90,21 @@ const AddEditModal = props => {
             <Option value="1">交流</Option>
           </Select>
         </Form.Item>
-        <Form.Item name="pre_total_stock" label= "预售总额度" rules={[{ required: true, message: "请输入"}]}>
-          <Input placeholder="请输入预售总额度" />
+        <Form.Item name="energy_type" label="能源类型" rules={[{ required: true }]}>
+          <Select
+            placeholder="请选择能源类型"
+            onChange={onEnergyChange}
+            allowClear
+          >
+            <Option value="0">光电</Option>
+            <Option value="1">风电</Option>
+            <Option value="2">火电</Option>
+          </Select>
         </Form.Item>
-        <Form.Item name="sold_total" label= "已售总额度" rules={[{ required: true, message: "请输入"}]}>
-          <Input placeholder="请输入已售总额度" />
-        </Form.Item>
-        <Form.Item name="buy_price" label= "购买价" rules={[{required: true, message: "请输入"}]}>
+        <Form.Item name="buy_price" label= "购买价格" rules={[{required: true, message: "请输入"}]}>
           <Input placeholder="请输入购买价格" />
         </Form.Item>
-        <Form.Item name="sell_price" label= "出售价" rules={[{required: true, message: "请输入"}]}>
+        <Form.Item name="sell_price" label= "出售价格" rules={[{required: true, message: "请输入"}]}>
           <Input placeholder="请输入出售价格" />
         </Form.Item>
         <Form.Item name="post_code" label= "邮编" rules={[{required: true, message: "请输入"}]}>

@@ -1,12 +1,11 @@
-import {Divider, message} from 'antd';
+import {Divider, message, Modal} from 'antd';
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import {ApiContext} from "@/context/api";
 import {AccountsContext} from "@/context/accounts";
 import {transformParams,txResHandler,txErrHandler} from "@/components/TxButton/utils";
-import {web3Accounts, web3Enable, web3FromSource} from "@polkadot/extension-dapp";
-import config from "@/config";
+import {web3FromSource} from "@polkadot/extension-dapp";
 
 const columns = [
   {
@@ -97,25 +96,40 @@ const columns = [
     title: '操作',
     dataIndex: 'option',
     valueType: 'option',
-    render: (_, record) => (
-      <>
-        <a
-          onClick={() => {
-            optionClick(1,record)
-          }}
-        >
-          同意
-        </a>
-        <Divider type="vertical" />
-        <a
-          onClick={() => {
-            optionClick(2,record)
-          }}
-        >
-          拒绝
-        </a>
-      </>
-    ),
+    render: (_, record) => [
+      record.status === 0 ?
+        <>
+          <a
+            onClick={() => {
+              Modal.confirm({
+                title: '操作提示',
+                content: '是否同意该提案？',
+                okText: '确认',
+                cancelText: '取消',
+                onOk: () => {optionClick(1,record)},
+              });
+            }}
+          >
+            同意
+          </a>
+          <Divider type="vertical" />
+          <a
+            onClick={() => {
+              Modal.confirm({
+                title: '操作提示',
+                content: '是否拒绝该提案？',
+                okText: '确认',
+                cancelText: '取消',
+                onOk: () => {optionClick(2,record)},
+              });
+            }}
+          >
+            拒绝
+          </a>
+        </>
+        :
+        null
+    ],
   },
 ];
 
@@ -194,7 +208,7 @@ const TableList = () => {
 
   useEffect(() => {
     if (!keyring && !address) return;
-    setAccountPair(keyring.getPair('5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'));// Alice
+    setAccountPair(keyring.getPair(address));// Alice
   },[keyring]);
 
   useEffect(() => {

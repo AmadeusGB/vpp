@@ -1,61 +1,113 @@
-import {Divider, Modal} from 'antd';
+import {Modal} from 'antd';
 import React, {useState, useRef, useContext, useEffect} from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import {ApiContext} from "@/context/api";
 import {AccountsContext} from "@/context/accounts";
-import {TxButton} from "@/components/TxButton/TxButton";
+import {web3FromSource} from "@polkadot/extension-dapp";
+import {transformParams, txErrHandler, txResHandler} from "@/components/TxButton/utils";
 
 const TableList = () => {
   const actionRef = useRef();
   const [count, setCount] = useState(0);
-  const {address} = useContext(AccountsContext);
-  const {api} = useContext(ApiContext);
-  const {keyring} = useContext(AccountsContext);
-  const [accountPair, setAccountPair] = useState(null);
-  const [status, setStatus] = useState(null);
-  const [tableListDataSource, settableListDataSource] = useState([]);
+  const [tableListDataSource, setTableListDataSource] = useState([]);
+  const [unsub, setUnsub] = useState(null);
 
+  const {address,keyring} = useContext(AccountsContext);
+  const {api} = useContext(ApiContext);
+  const [accountPair, setAccountPair] = useState(null);
+
+  // get pair
   useEffect(() => {
-    if (!keyring) return;
+    if (!api && !keyring && !address) return;
     setAccountPair(keyring.getPair(address));
   },[keyring]);
 
   useEffect(() => {
     if (!api || !address) return;
-
-    console.log(address, count);
+    let unsubscribeAll = null;
     api.query.contractModule.contractcounts(address, (result) => {
       if (!result.isNone) {
+        console.log(`合同数量：${result}`);
         setCount(result);
-        console.log(result);
-        console.log(address, count);
       }
-    });
+    }).then(unsub => {
+      unsubscribeAll = unsub;
+    }).catch(console.error);
+    return () => unsubscribeAll && unsubscribeAll();
   },[api]);
 
   useEffect(() => {
     if (!api) return;
-
+    const source = [];
     for (let i = 0; i < count; i += 1) {
       api.query.contractModule.contracts([address, i], (result) => {
         if (!result.isNone) {
           console.log(result.toJSON());
           const jsonContract = result.toJSON();
-          tableListDataSource.push({
+          source.push({
             key: i,
             name: (jsonContract.energy_type  === 0) ? '光电合同' : ((jsonContract.energy_type  === 1)?'风能合同':'火电合同'),
             block_number: jsonContract.block_number,
-            contract_type: jsonContract.contract_type,
+            contract_type: jsonContract.contract_type ? "购买" : "出售",
             contract_price: jsonContract.contract_price,
             energy_amount: jsonContract.energy_amount,
-            energy_type: jsonContract.energy_type,
-            execution_status: jsonContract.execution_status
+            energy_type: (jsonContract.energy_type  === 0) ? '光电' : ((jsonContract.energy_type  === 1)?'风能':'火电'),
+            execution_status:(jsonContract.execution_status === 1) ? "执行中":((jsonContract.execution_status === 2) ? "已完成":"已终止")
           });
         }
       });
     }
+    setTimeout(function () {
+      setTableListDataSource(source);
+    }, 500*count);
   }, [count]);
+
+  const getFromAcct = async () => {
+    if (!accountPair) {
+      console.log('No accountPair!');
+      return ;
+    }
+
+    const {
+      addr,
+      meta: {source, isInjected}
+    } = accountPair;
+    let fromAcct;
+
+    // signer is from Polkadot-js browser extension
+    if (isInjected) {
+      const injected = await web3FromSource(source);
+      fromAcct = addr;
+      api.setSigner(injected.signer);
+    } else {
+      fromAcct = accountPair;
+    }
+
+    return fromAcct;
+  };
+
+  const cancelContract = async (values) => {
+    if (!api && !accountPair ) return;
+
+    if (unsub) {
+      unsub();
+      setUnsub(null);
+    }
+    const paramFields = [true];
+    const inputParams = [values.key];
+    const fromAcct = await getFromAcct();
+    const transformed = transformParams(paramFields, inputParams);
+    // transformed can be empty parameters
+
+    const txExecute = transformed
+      ? api.tx.contractModule.stopcontract(...transformed)
+      : api.tx.contractModule.stopcontract();
+
+    const unsu = await txExecute.signAndSend(fromAcct, txResHandler)
+      .catch(txErrHandler);
+    setUnsub(() => unsu);
+  };
 
   const columns = [
     {
@@ -142,6 +194,7 @@ const TableList = () => {
       dataIndex: 'option',
       valueType: 'option',
       render: (_, record) => ([
+        record.execution_status !== '已终止' ?
           <a
             onClick={() => {
               Modal.confirm({
@@ -149,26 +202,12 @@ const TableList = () => {
                 content: '是否确定终止合同？',
                 okText: '确认',
                 cancelText: '取消',
-                onOk: () => {window.console.log(record)},
+                onOk: () => {cancelContract(record)},
               });
             }}
           >
             终止
-          </a>,
-
-          <TxButton style={{position: 'absolute', bottom: '10px', right: '20px'}}
-                    color='blue'
-                    accountPair={accountPair}
-                    label='终止'
-                    type='SIGNED-TX'
-                    setStatus={setStatus}
-                    attrs={{
-                      palletRpc: 'contraceModule',
-                      callable: 'stopcontract',
-                      inputParams: [record.key],
-                      paramFields: [true]
-                    }}
-          />]
+          </a> : null]
       ),
     },
   ];

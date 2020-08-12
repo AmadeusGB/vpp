@@ -10,6 +10,7 @@ function Welcome() {
   const { address, keyring } = React.useContext(AccountsContext);
   const [nodeInfo, setNodeInfo] = useState({ chain: '', nodeName: '', nodeVersion: '' });
   const [addr, setAddr] = useState('');
+  const [blockNumber, setBlockNumber] = useState(0);
 
   useEffect(() => {
     const getInfo = async () => {
@@ -45,7 +46,22 @@ function Welcome() {
         await lib.keyring();
       }
     })();
-  },[address]);
+  },[address, keyring]);
+
+  useEffect(() => {
+    if (!api) return ;
+    let unsubscribeAll = null;
+
+    api.derive.chain.bestNumber(number => {
+      setBlockNumber(number.toNumber());
+    })
+      .then(unsub => {
+        unsubscribeAll = unsub;
+      })
+      .catch(console.error);
+
+    return () => unsubscribeAll && unsubscribeAll();
+  }, [api]);
 
   const Main = () => {
     return (
@@ -54,7 +70,7 @@ function Welcome() {
       >
         {`${nodeInfo.chain  } | ${  nodeInfo.nodeName  } | ${  nodeInfo.nodeVersion}`}
         <br/>
-        {addr}
+        {`#${blockNumber}`}
       </div>
     );
   };

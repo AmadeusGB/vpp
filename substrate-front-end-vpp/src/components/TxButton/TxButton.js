@@ -1,4 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
+import {message} from "antd";
 import PropTypes from 'prop-types';
 import {Button} from 'semantic-ui-react';
 import {web3FromSource} from '@polkadot/extension-dapp';
@@ -70,11 +71,11 @@ function TxButton({
 
   const txResHandler = ({status}) =>
     status.isFinalized
-      ? setStatus(`😉 Finalized. Block hash: ${status.asFinalized.toString()}`)
-      : setStatus(`Current transaction status: ${status.type}`);
+      ? message.success(`😉 Finalized. Block hash: ${status.asFinalized.toString()}`)
+      : message.info(`Current transaction status: ${status.type}`);
 
   const txErrHandler = err =>
-    setStatus(`😞 Transaction Failed: ${err.toString()}`);
+    message.error(`😞 Transaction Failed: ${err.toString()}`);
 
   const sudoTx = async () => {
     const fromAcct = await getFromAcct();
