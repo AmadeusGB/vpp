@@ -4,7 +4,7 @@ import jsonrpc from '@polkadot/types/interfaces/jsonrpc';
 import config from "@/config";
 
 const initialApi = null;
-const ENDPOINT = 'ws://127.0.0.1:9944';
+const ENDPOINT = process.env.ENDPOINT || 'ws://127.0.0.1:9944';
 
 const ApiContext = createContext({
   api: initialApi,
