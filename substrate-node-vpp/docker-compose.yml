@@ -1,9 +1,12 @@
-version: "3.2"
+version: "3.5"
+networks:
+  vppnetwork:
+    name: vppnetwork
 
 services:
   dev:
     container_name: node-template
-    image: parity/rust-builder:latest
+    image: develop/vpp-node:release
     working_dir: /var/www/node-template
     ports:
       - "9944:9944"
@@ -11,7 +14,7 @@ services:
       - CARGO_HOME=/var/www/node-template/.cargo
     volumes:
       - .:/var/www/node-template
-      - type: bind
-        source: ./.local
-        target: /root/.local
-    command: bash -c "cargo build --release && ./target/release/node-template --dev --ws-external"
+    networks:
+      vppnetwork:
+        aliases: 
+          - vppnetwork
