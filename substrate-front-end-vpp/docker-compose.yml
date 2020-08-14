@@ -9,10 +9,10 @@ services:
     image: develop/vpp-front:release
     container_name: vpp-front
     ports:
-      - "9966:9966"
+      - "8887:8887"
     environment:
       ENDPOINT: ws:node-template:9944
-      PORT: li
+      PORT: 8887
     restart: always
     networks:
       vppnetwork:
