@@ -4,7 +4,6 @@
 # 1、Project Description
 This project is a virtual energy resource trading system based on blockchain technology, which aggregates scattered and intermittent distributed power generation units (usually new energy) and distributed energy storage units distributed around the world to provide energy trading services as a whole. Through our design plan, we provide an energy trading solution for residential, commercial and industrial areas. Promote the orderly development and credible transactions of new energy around the world, and help the power grid gain stronger stability and provide better services.
 
-部署文档
 # 2、install docker
 mac环境下
 https://docs.docker.com/docker-for-mac/install/
