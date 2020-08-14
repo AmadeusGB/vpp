@@ -6,7 +6,7 @@ networks:
 services:
   dev:
     container_name: node-template
-    image: develop/vpp-node:release
+    image: baidang201/vpp-node:release
     working_dir: /var/www/node-template
     ports:
       - "9944:9944"

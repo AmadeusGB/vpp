@@ -6,13 +6,15 @@ networks:
     
 services:
   vpp-front:
-    image: develop/vpp-front:release
+    image: baidang201/vpp-front:release
     container_name: vpp-front
     ports:
       - "8887:8887"
     environment:
-      ENDPOINT: ws:node-template:9944
+      ENDPOINT: ws:vpp.com:9944
       PORT: 8887
+    extra_hosts:
+      - "vpp.com:8.210.143.28"
     restart: always
     networks:
       vppnetwork:
