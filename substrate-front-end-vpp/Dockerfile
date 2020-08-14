@@ -14,4 +14,4 @@ ARG PORT
 ENV ENDPOINT ${ENDPOINT}
 ENV PORT ${PORT}
 
-CMD serve -s build
+CMD serve -s build/dist
