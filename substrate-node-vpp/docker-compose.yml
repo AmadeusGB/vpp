@@ -12,8 +12,6 @@ services:
       - "9944:9944"
     environment:
       - CARGO_HOME=/var/www/node-template/.cargo
-    volumes:
-      - .:/var/www/node-template
     networks:
       vppnetwork:
         aliases: 
